@@ -167,7 +167,7 @@
 
         <!-- Metrics Grid -->
         <div class="metrics-grid">
-          <div class="metric-card">
+          <div class="metric-card" onclick="switchTab('manager-suppliers')" style="cursor: pointer;">
             <div class="metric-icon bg-info">
               <svg class="icon-md" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>
             </div>
@@ -176,7 +176,7 @@
               <span>Monitored Vendors</span>
             </div>
           </div>
-          <div class="metric-card">
+          <div class="metric-card" onclick="switchTab('manager-suppliers')" style="cursor: pointer;">
             <div class="metric-icon bg-warning">
               <svg class="icon-md" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
             </div>
@@ -185,7 +185,7 @@
               <span>Avg Compliance Rating</span>
             </div>
           </div>
-          <div class="metric-card">
+          <div class="metric-card" onclick="switchTab('manager-actions'); filterActions('gap');" style="cursor: pointer;">
             <div class="metric-icon bg-danger">
               <svg class="icon-md" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/></svg>
             </div>
@@ -194,7 +194,7 @@
               <span>Identified Control Gaps</span>
             </div>
           </div>
-          <div class="metric-card">
+          <div class="metric-card" onclick="switchTab('manager-actions'); filterActions('awaiting');" style="cursor: pointer;">
             <div class="metric-icon bg-success">
               <svg class="icon-md" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>
             </div>
@@ -378,7 +378,7 @@
             <h3>Configure Collector Scan</h3>
             <div class="form-group mt-3">
               <label for="collector-target-supplier">Target Supplier</label>
-              <select id="collector-target-supplier" class="dropdown-control mt-1" onchange="updateCollectorDocumentsList(this.value)">
+              <select id="collector-target-supplier" class="dropdown-control mt-1" onchange="updateCollectorDocumentsList(this.value); initAttackSurfaceView(this.value);">
                 <!-- Loaded dynamically in app.js -->
               </select>
             </div>
@@ -386,16 +386,21 @@
             <div class="form-group mt-3">
               <label>Select Control Modules (15 Available)</label>
               <div class="checkbox-group mt-1 scrollable-checkboxes">
-                <label><input type="checkbox" checked disabled> Information & Cyber Security (PDF 535KB)</label>
-                <label><input type="checkbox" checked disabled> Data Management (PDF 156KB)</label>
-                <label><input type="checkbox" checked disabled> Recovery Planning (PDF 234KB)</label>
-                <label><input type="checkbox" id="chk-domain-pcidss" checked> PCIDSS Compliance (PDF 232KB)</label>
-                <label><input type="checkbox" id="chk-domain-people" checked> People Screening (PDF 144KB)</label>
-                <label><input type="checkbox" id="chk-domain-phys" checked> Physical Security (PDF 77KB)</label>
-                <label><input type="checkbox" id="chk-domain-euda" checked> EUDA - End User Applications (PDF 224KB)</label>
-                <label><input type="checkbox" id="chk-domain-power" checked> Premises Power Resilience (PDF 96KB)</label>
-                <label><input type="checkbox" id="chk-domain-records" checked> Records Management (PDF 151KB)</label>
-                <label><input type="checkbox" id="chk-domain-tech" checked> Technology Risk Technical (PDF 127KB)</label>
+                <label><input type="checkbox" id="chk-mod-1" checked disabled> 1.0 Accessibility</label>
+                <label><input type="checkbox" id="chk-mod-2" checked disabled> 2.0 Complaints Management</label>
+                <label><input type="checkbox" id="chk-mod-3" checked disabled> 3.0 Data Management</label>
+                <label><input type="checkbox" id="chk-mod-4" checked disabled> 4.0 EUDA</label>
+                <label><input type="checkbox" id="chk-mod-5" checked> 5.0 Information & Cyber Security</label>
+                <label><input type="checkbox" id="chk-mod-6" checked> 6.0 Management Framework</label>
+                <label><input type="checkbox" id="chk-mod-7" checked> 7.0 Payments Process</label>
+                <label><input type="checkbox" id="chk-mod-8" checked> 8.0 PCIDSS</label>
+                <label><input type="checkbox" id="chk-mod-9" checked> 9.0 People Screening</label>
+                <label><input type="checkbox" id="chk-mod-10" checked> 10.0 Physical Security</label>
+                <label><input type="checkbox" id="chk-mod-11" checked> 11.0 Premises Power Resilience</label>
+                <label><input type="checkbox" id="chk-mod-12" checked> 12.0 Records Management</label>
+                <label><input type="checkbox" id="chk-mod-13" checked> 13.0 Recovery Planning</label>
+                <label><input type="checkbox" id="chk-mod-14" checked> 14.0 Technology Risk Technical</label>
+                <label><input type="checkbox" id="chk-mod-15" checked> 15.0 Transaction Operations</label>
               </div>
             </div>
 
@@ -406,10 +411,16 @@
               </div>
             </div>
 
-            <button id="btn-start-collector" class="btn btn-primary mt-4 w-full" onclick="runAutoCollector()">
-              <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z" fill="currentColor"/></svg>
-              Start AI Auto-Collector
-            </button>
+            <div style="display: flex; flex-direction: column; gap: 8px;" class="mt-4">
+              <button id="btn-start-collector" class="btn btn-primary w-full" onclick="runAutoCollector()">
+                <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z" fill="currentColor"/></svg>
+                Start AI Auto-Collector
+              </button>
+              <button id="btn-dispatch-assessment" class="btn btn-secondary w-full" onclick="dispatchCustomAssessment()">
+                <svg class="icon-sm" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/></svg>
+                Dispatch Custom Assessment
+              </button>
+            </div>
           </div>
 
           <!-- Execution Logs and Real-time Findings -->
@@ -434,6 +445,48 @@
             </div>
           </div>
         </div>
+
+        <!-- Continuous Attack Surface Mapping Showcase -->
+        <div class="dashboard-card mt-4">
+          <div class="panel-header-action">
+            <div>
+              <h3>Continuous Attack Surface Mapping</h3>
+              <p class="panel-subtitle">360-degree, real-time scanning of the supplier's external digital footprint and open ports</p>
+            </div>
+            <button class="btn btn-secondary" id="btn-surface-scan" onclick="runAttackSurfaceScan()">
+              Initiate External Port & SSL Scan
+            </button>
+          </div>
+          
+          <div class="attack-surface-grid mt-3">
+            <!-- Asset Checklist -->
+            <div class="surface-panel p-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--border-radius-md);">
+              <h4 style="color: var(--color-cyan); font-size: 0.95rem; font-weight: 600;">Monitored Public Assets</h4>
+              <div class="asset-list mt-3" id="surface-assets-list">
+                <!-- Dynamically updated -->
+              </div>
+            </div>
+
+            <!-- Port Scan Status -->
+            <div class="surface-panel p-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--border-radius-md);">
+              <h4 style="color: var(--color-violet); font-size: 0.95rem; font-weight: 600;">External Port Exposure</h4>
+              <div class="port-grid mt-3" id="surface-ports-grid">
+                <!-- Dynamically updated -->
+              </div>
+            </div>
+
+            <!-- Active Scan Log -->
+            <div class="surface-panel terminal-card" style="margin: 0; min-height: 200px;">
+              <div class="terminal-header" style="padding: 8px 12px; background: rgba(0,0,0,0.3);">
+                <span class="terminal-title" style="font-size: 0.75rem;">ATTACK SURFACE MAPPING LOGS</span>
+                <span class="terminal-badge" id="surface-scan-status">Idle</span>
+              </div>
+              <div class="terminal-body" id="surface-scan-logs" style="font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; height: 180px; overflow-y: auto; color: #38bdf8;">
+                <span class="terminal-placeholder">Select a supplier above and click "Initiate External Port & SSL Scan" to run real-time footprint discovery.</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ============================================== -->
@@ -450,10 +503,10 @@
             <div class="panel-header-action">
               <h3>Outstanding Supplier Control Actions</h3>
               <div class="status-filters">
-                <span class="filter-pill active" onclick="filterActions('all')">All Actions</span>
-                <span class="filter-pill" onclick="filterActions('gap')">Control Gaps</span>
-                <span class="filter-pill" onclick="filterActions('awaiting')">Awaiting Response</span>
-                <span class="filter-pill" onclick="filterActions('review')">Pending Review</span>
+                 <span class="filter-pill active" onclick="filterActions('all', this)">All Actions</span>
+                 <span class="filter-pill" onclick="filterActions('gap', this)">Control Gaps</span>
+                 <span class="filter-pill" onclick="filterActions('awaiting', this)">Awaiting Response</span>
+                 <span class="filter-pill" onclick="filterActions('review', this)">Pending Review</span>
               </div>
             </div>
 
@@ -710,6 +763,7 @@
       </div>
       <div class="modal-tabs">
         <button id="modal-tab-assessment" class="modal-tab-btn active" onclick="switchModalTab('assessment')">Control Obligations Mapping</button>
+        <button id="modal-tab-risk-model" class="modal-tab-btn" onclick="switchModalTab('risk-model')">Intelligent Risk Weights</button>
         <button id="modal-tab-history" class="modal-tab-btn" onclick="switchModalTab('history')">Actions & Audit History</button>
       </div>
       <div class="modal-body">
@@ -737,6 +791,52 @@
 
           <div class="obligation-details-list mt-4" id="modal-obligations-list">
             <!-- Dynamically populated in app.js -->
+          </div>
+        </div>
+
+        <!-- Modal Tab: Intelligent Risk Weights -->
+        <div id="modal-view-risk-model" class="modal-tab-view">
+          <h3>Interactive Risk Weighting Model</h3>
+          <p class="panel-subtitle">Tailor the weights of key compliance pillars to match your organization's risk tolerance. Compliance scores recalculate dynamically.</p>
+          
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: var(--spacing-lg); margin-top: 15px;">
+            <!-- Sliders Panel -->
+            <div>
+              <div class="weight-slider-container">
+                <div class="weight-slider-header">
+                  <span>ICT & Cyber Security (Security, Encryption)</span>
+                  <span id="slider-weight-ict-val" style="color: var(--color-cyan); font-weight: 600;">40%</span>
+                </div>
+                <input type="range" id="slider-weight-ict" class="slider-input" min="0" max="100" value="40" oninput="updateRiskWeights()">
+              </div>
+              
+              <div class="weight-slider-container">
+                <div class="weight-slider-header">
+                  <span>Operational Resilience (Power, Disaster Recovery)</span>
+                  <span id="slider-weight-ops-val" style="color: var(--color-violet); font-weight: 600;">30%</span>
+                </div>
+                <input type="range" id="slider-weight-ops" class="slider-input" min="0" max="100" value="30" oninput="updateRiskWeights()">
+              </div>
+              
+              <div class="weight-slider-container">
+                <div class="weight-slider-header">
+                  <span>Business & Governance (Vetting, Auditing, Complaints)</span>
+                  <span id="slider-weight-gov-val" style="color: var(--color-accent); font-weight: 600;">30%</span>
+                </div>
+                <input type="range" id="slider-weight-gov" class="slider-input" min="0" max="100" value="30" oninput="updateRiskWeights()">
+              </div>
+              
+              <div class="mt-3 text-muted text-xs" style="font-style: italic;">
+                Note: Weights must total 100%. Adjusting any slider will auto-balance the others.
+              </div>
+            </div>
+            
+            <!-- Result Panel -->
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.05); border-radius: var(--border-radius-md); padding: 20px;">
+              <span class="text-muted text-xs">Tailored Score</span>
+              <h1 id="modal-tailored-score-display" style="font-size: 3.5rem; color: var(--color-cyan); margin: 8px 0; font-family: 'Outfit', sans-serif;">80%</h1>
+              <span class="badge badge-accent" id="modal-tailored-risk-badge">Low Adjusted Risk</span>
+            </div>
           </div>
         </div>
 

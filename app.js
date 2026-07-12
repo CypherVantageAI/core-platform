@@ -467,6 +467,25 @@ window.openSupplierModal = function(supplierId) {
       statusBadge = `<span class="badge badge-danger">Control Gap</span>`;
     }
 
+    let hashHtml = '';
+    if (a.document !== 'None') {
+      const docObj = s.documents.find(d => d.name === a.document);
+      if (docObj) {
+        const hash = getDocHash(docObj);
+        const intStatus = docObj.integrityStatus || 'unverified';
+        let statusText = '<span style="color: var(--text-muted);">Not Verified</span>';
+        if (intStatus === 'verified') statusText = '<span style="color: var(--color-success); font-weight:600;">Secure Ledger Verified</span>';
+        else if (intStatus === 'tampered') statusText = '<span style="color: var(--color-danger); font-weight:600;">TAMPER WARNING</span>';
+        
+        hashHtml = `
+          <div class="mt-2 pt-2 text-xs font-mono text-muted flex-align-center gap-2" style="border-top: 1px solid rgba(255,255,255,0.03);">
+            <span>SHA-256: ${hash.slice(0, 16)}...${hash.slice(-8)}</span> | 
+            <span>Status: ${statusText}</span>
+          </div>
+        `;
+      }
+    }
+
     card.innerHTML = `
       <div class="obligation-detail-header">
         <span class="obligation-section-tag">${a.section}</span>
@@ -484,6 +503,7 @@ window.openSupplierModal = function(supplierId) {
           <span>Verified via Cypher Vantage AI Scan</span>
         </div>
         <p class="evidence-snippet">"${a.snippet}"</p>
+        ${hashHtml}
       </div>
     `;
     listContainer.appendChild(card);
@@ -505,6 +525,9 @@ window.openSupplierModal = function(supplierId) {
     `;
     auditContainer.appendChild(item);
   });
+
+  // Initialize weights for this modal
+  initRiskModelWeights(supplierId);
 
   switchModalTab('assessment');
   document.getElementById('supplier-detail-modal').classList.remove('hidden');
@@ -657,10 +680,22 @@ function showNotification(msg) {
 // --------------------------------------------------------------------------
 let activeActionsFilter = 'all';
 
-window.filterActions = function(filter) {
+window.filterActions = function(filter, element) {
   activeActionsFilter = filter;
   document.querySelectorAll('.filter-pill').forEach(pill => pill.classList.remove('active'));
-  event.target.classList.add('active');
+  
+  if (element) {
+    element.classList.add('active');
+  } else {
+    const pills = document.querySelectorAll('.filter-pill');
+    let targetIndex = 0;
+    if (filter === 'gap') targetIndex = 1;
+    else if (filter === 'awaiting') targetIndex = 2;
+    else if (filter === 'review') targetIndex = 3;
+    if (pills[targetIndex]) {
+      pills[targetIndex].classList.add('active');
+    }
+  }
   renderManagerActions();
 };
 
@@ -1136,6 +1171,7 @@ window.submitResponseToManager = function(actionId) {
 // --------------------------------------------------------------------------
 function renderSupplierVaultTable() {
   const tbody = document.getElementById('supplier-vault-table-body');
+  if (!tbody) return;
   tbody.innerHTML = '';
   
   const s = state.suppliers[state.activeSupplierId];
@@ -1145,12 +1181,27 @@ function renderSupplierVaultTable() {
     let badgeClass = 'badge-success';
     if (doc.status === 'Outdated') badgeClass = 'badge-warning';
 
+    const hash = getDocHash(doc);
+    const intStatus = doc.integrityStatus || 'unverified';
+    
+    let verifyBadgeHtml = `<span class="verify-badge unverified">Not Verified</span>`;
+    if (intStatus === 'checking') {
+      verifyBadgeHtml = `<span class="verify-badge scanning">Verifying...</span>`;
+    } else if (intStatus === 'verified') {
+      verifyBadgeHtml = `<span class="verify-badge verified">Hash Verified</span>`;
+    } else if (intStatus === 'tampered') {
+      verifyBadgeHtml = `<span class="verify-badge tampered">Hash Mismatch</span>`;
+    }
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
         <div class="flex-align-center gap-2">
           <svg class="icon-sm text-accent" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg>
-          <strong>${doc.name}</strong>
+          <div>
+            <strong>${doc.name}</strong>
+            <small class="block hash-text mt-1">SHA-256: ${hash.slice(0, 16)}...${hash.slice(-8)}</small>
+          </div>
         </div>
       </td>
       <td><span class="text-secondary">${doc.type}</span></td>
@@ -1158,7 +1209,11 @@ function renderSupplierVaultTable() {
       <td><span class="text-secondary">${doc.scanned}</span></td>
       <td><span class="badge ${badgeClass}">${doc.status}</span></td>
       <td>
-        <button class="btn btn-secondary py-1 px-3 text-xs">Download</button>
+        <div class="flex-align-center gap-2" style="display: flex; align-items: center; gap: 8px;">
+          ${verifyBadgeHtml}
+          <button class="btn btn-secondary py-1 px-2 text-xs" onclick="verifyFileIntegrity('${doc.name}')">Verify</button>
+          <button class="btn btn-danger py-1 px-2 text-xs" style="background: rgba(239,68,68,0.15); border: 1px solid var(--color-danger); color: var(--color-danger);" onclick="simulateTampering('${doc.name}')">Tamper</button>
+        </div>
       </td>
     `;
     tbody.appendChild(tr);
@@ -1450,10 +1505,457 @@ Risk Director, Cypher Vantage Compliance Team
 }
 
 // --------------------------------------------------------------------------
-// 15. INITIALIZATION
+// 15. ATTACK SURFACE DATA & LOGIC (Continuous Attack Surface Mapping Showcase)
+// --------------------------------------------------------------------------
+const supplierSurfaceData = {
+  aws: {
+    assets: [
+      { name: 'aws.amazon.com', type: 'Primary Domain', status: 'Secure' },
+      { name: 'console.aws.amazon.com', type: 'Management Portal', status: 'Secure' },
+      { name: 's3.amazonaws.com', type: 'Storage Bucket API', status: 'Secure' }
+    ],
+    ports: [
+      { num: '80 (HTTP)', status: 'Closed (Redirect)' },
+      { num: '443 (HTTPS)', status: 'Closed (Secure)' },
+      { num: '22 (SSH)', status: 'Closed (Secure)' },
+      { num: '3389 (RDP)', status: 'Closed (Secure)' }
+    ]
+  },
+  salesforce: {
+    assets: [
+      { name: 'salesforce.com', type: 'Primary Domain', status: 'Secure' },
+      { name: 'login.salesforce.com', type: 'SAML Portal', status: 'Secure' }
+    ],
+    ports: [
+      { num: '80 (HTTP)', status: 'Closed (Redirect)' },
+      { num: '443 (HTTPS)', status: 'Closed (Secure)' },
+      { num: '22 (SSH)', status: 'Closed (Secure)' },
+      { num: '3389 (RDP)', status: 'Closed (Secure)' }
+    ]
+  },
+  infosys: {
+    assets: [
+      { name: 'infosys.com', type: 'Primary Domain', status: 'Secure' },
+      { name: 'staging.infosys-tprm.com', type: 'Staging Database Host', status: 'Vulnerable' }
+    ],
+    ports: [
+      { num: '80 (HTTP)', status: 'Open (Insecure)', isGap: true },
+      { num: '443 (HTTPS)', status: 'Closed (Secure)' },
+      { num: '22 (SSH)', status: 'Closed (Secure)' },
+      { num: '3389 (RDP)', status: 'Open (Risk!)', isGap: true }
+    ]
+  },
+  slack: {
+    assets: [
+      { name: 'slack.com', type: 'Primary Domain', status: 'Secure' },
+      { name: 'api.slack.com', type: 'API Gateway', status: 'Secure' }
+    ],
+    ports: [
+      { num: '80 (HTTP)', status: 'Closed (Redirect)' },
+      { num: '443 (HTTPS)', status: 'Closed (Secure)' },
+      { num: '22 (SSH)', status: 'Closed (Secure)' },
+      { num: '3389 (RDP)', status: 'Closed (Secure)' }
+    ]
+  },
+  acme: {
+    assets: [
+      { name: 'acme.org', type: 'Primary Domain', status: 'Secure' },
+      { name: 'mail.acme.org', type: 'Mail Server Host', status: 'Secure' }
+    ],
+    ports: [
+      { num: '80 (HTTP)', status: 'Closed (Redirect)' },
+      { num: '443 (HTTPS)', status: 'Closed (Secure)' },
+      { num: '22 (SSH)', status: 'Open (Vulnerable)', isGap: true },
+      { num: '3389 (RDP)', status: 'Closed (Secure)' }
+    ]
+  }
+};
+
+window.initAttackSurfaceView = function(supplierId) {
+  const data = supplierSurfaceData[supplierId];
+  if (!data) return;
+
+  // Render assets
+  const assetContainer = document.getElementById('surface-assets-list');
+  if (assetContainer) {
+    assetContainer.innerHTML = '';
+    data.assets.forEach(asset => {
+      const div = document.createElement('div');
+      div.className = 'asset-item';
+      div.innerHTML = `
+        <span>${asset.name}</span>
+        <span class="badge ${asset.status === 'Secure' ? 'badge-success' : 'badge-danger'}">${asset.status}</span>
+      `;
+      assetContainer.appendChild(div);
+    });
+  }
+
+  // Render ports
+  const portContainer = document.getElementById('surface-ports-grid');
+  if (portContainer) {
+    portContainer.innerHTML = '';
+    data.ports.forEach(port => {
+      const div = document.createElement('div');
+      div.className = 'port-item';
+      div.innerHTML = `
+        <span>Port ${port.num}</span>
+        <span class="port-status-badge closed">Closed</span>
+      `;
+      portContainer.appendChild(div);
+    });
+  }
+
+  // Reset logs
+  const statusBadge = document.getElementById('surface-scan-status');
+  if (statusBadge) {
+    statusBadge.innerText = 'Idle';
+    statusBadge.className = 'terminal-badge';
+  }
+  const scanLogs = document.getElementById('surface-scan-logs');
+  if (scanLogs) {
+    scanLogs.innerHTML = `
+      <span class="terminal-placeholder">Select a supplier above and click "Initiate External Port & SSL Scan" to run real-time footprint discovery.</span>
+    `;
+  }
+};
+
+window.runAttackSurfaceScan = function() {
+  const supplierId = document.getElementById('collector-target-supplier').value;
+  const data = supplierSurfaceData[supplierId];
+  if (!data) return;
+
+  const statusBadge = document.getElementById('surface-scan-status');
+  if (statusBadge) {
+    statusBadge.innerText = 'Scanning';
+    statusBadge.className = 'terminal-badge running';
+  }
+
+  const logBody = document.getElementById('surface-scan-logs');
+  if (logBody) {
+    logBody.innerHTML = '';
+  }
+
+  const portsGrid = document.getElementById('surface-ports-grid');
+  let portBadges = [];
+  if (portsGrid) {
+    portBadges = portsGrid.querySelectorAll('.port-status-badge');
+    portBadges.forEach(badge => {
+      badge.innerText = 'Scanning...';
+      badge.className = 'port-status-badge scanning';
+    });
+  }
+
+  const logLines = [
+    { text: '[SYSTEM] Initializing 360-degree digital footprint mapping...', delay: 200, type: 'info' },
+    { text: `[ASSETS] Querying DNS sub-domains for ${supplierId === 'aws' ? 'amazon.com' : supplierId + '.com'}...`, delay: 600, type: 'info' },
+    { text: `[ASSETS] Discovered ${data.assets.length} active internet-facing nodes.`, delay: 1000, type: 'success' },
+    { text: '[SSL/TLS] Verifying active SSL handshake certificate chains...', delay: 1400, type: 'info' }
+  ];
+
+  // Discovered assets logs
+  data.assets.forEach((asset, idx) => {
+    logLines.push({
+      text: `[SSL/TLS] Node: ${asset.name} | SSL Cipher: TLS_AES_256_GCM_SHA384 | Status: ${asset.status}`,
+      delay: 1800 + (idx * 300),
+      type: asset.status === 'Secure' ? 'success' : 'warning'
+    });
+  });
+
+  logLines.push({ text: '[PORTS] Initiating TCP port scan on external interface...', delay: 2800, type: 'info' });
+
+  // Port checks logs and UI badge updates
+  data.ports.forEach((port, idx) => {
+    const delay = 3200 + (idx * 650);
+    logLines.push({
+      text: `[PORTS] Scanning node interface port ${port.num}...`,
+      delay: delay,
+      type: 'info'
+    });
+
+    logLines.push({
+      text: `[PORTS] Port ${port.num} -> ${port.status}`,
+      delay: delay + 300,
+      type: port.status.startsWith('Closed') ? 'success' : 'warning',
+      callback: () => {
+        const badge = portBadges[idx];
+        if (badge) {
+          badge.innerText = port.status;
+          badge.className = `port-status-badge ${port.status.startsWith('Closed') ? 'closed' : 'open'}`;
+        }
+      }
+    });
+  });
+
+  // Final summary
+  const hasGaps = data.ports.some(p => p.isGap) || data.assets.some(a => a.status !== 'Secure');
+  logLines.push({
+    text: hasGaps 
+      ? `[COMPLETE] Scan finished. Security violations identified. Automated compliance alert generated.` 
+      : '[COMPLETE] Scan finished. 0 external vulnerabilities detected. Perimeter secure.',
+    delay: 3200 + (data.ports.length * 650) + 600,
+    type: hasGaps ? 'warning' : 'success',
+    callback: () => {
+      if (statusBadge) {
+        statusBadge.innerText = 'Completed';
+        statusBadge.className = `terminal-badge ${hasGaps ? 'warning' : 'success'}`;
+      }
+    }
+  });
+
+  // Run the logger sequence
+  logLines.forEach(line => {
+    setTimeout(() => {
+      if (logBody) {
+        const p = document.createElement('p');
+        p.className = `term-line-${line.type}`;
+        p.innerHTML = `<span class="term-line-time">${new Date().toTimeString().slice(0, 8)}</span> ${line.text}`;
+        logBody.appendChild(p);
+        logBody.scrollTop = logBody.scrollHeight;
+      }
+      if (line.callback) line.callback();
+    }, line.delay);
+  });
+};
+
+// --------------------------------------------------------------------------
+// 16. INTELLIGENT RISK SCORING WEIGHTS LOGIC
+// --------------------------------------------------------------------------
+window.initRiskModelWeights = function(supplierId) {
+  // Set default sliders to 40 / 30 / 30
+  document.getElementById('slider-weight-ict').value = 40;
+  document.getElementById('slider-weight-ops').value = 30;
+  document.getElementById('slider-weight-gov').value = 30;
+
+  document.getElementById('slider-weight-ict-val').innerText = '40%';
+  document.getElementById('slider-weight-ops-val').innerText = '30%';
+  document.getElementById('slider-weight-gov-val').innerText = '30%';
+
+  recalculateTailoredScore(40, 30, 30);
+};
+
+window.updateRiskWeights = function(changedSlider) {
+  const ictInput = document.getElementById('slider-weight-ict');
+  const opsInput = document.getElementById('slider-weight-ops');
+  const govInput = document.getElementById('slider-weight-gov');
+
+  let ict = parseInt(ictInput.value) || 0;
+  let ops = parseInt(opsInput.value) || 0;
+  let gov = parseInt(govInput.value) || 0;
+
+  const total = ict + ops + gov;
+  if (total !== 100) {
+    if (changedSlider === 'ict') {
+      const remaining = 100 - ict;
+      const sumOthers = ops + gov || 1;
+      ops = Math.round(remaining * (ops / sumOthers));
+      gov = 100 - ict - ops;
+    } else if (changedSlider === 'ops') {
+      const remaining = 100 - ops;
+      const sumOthers = ict + gov || 1;
+      ict = Math.round(remaining * (ict / sumOthers));
+      gov = 100 - ops - ict;
+    } else if (changedSlider === 'gov') {
+      const remaining = 100 - gov;
+      const sumOthers = ict + ops || 1;
+      ict = Math.round(remaining * (ict / sumOthers));
+      ops = 100 - gov - ict;
+    }
+  }
+
+  // Update slider positions
+  ictInput.value = ict;
+  opsInput.value = ops;
+  govInput.value = gov;
+
+  // Update percentages display
+  document.getElementById('slider-weight-ict-val').innerText = `${ict}%`;
+  document.getElementById('slider-weight-ops-val').innerText = `${ops}%`;
+  document.getElementById('slider-weight-gov-val').innerText = `${gov}%`;
+
+  recalculateTailoredScore(ict, ops, gov);
+};
+
+function recalculateTailoredScore(ictW, opsW, govW) {
+  const s = state.suppliers[currentModalSupplierId];
+  if (!s) return;
+
+  let ictMet = 0, ictTotal = 0;
+  let opsMet = 0, opsTotal = 0;
+  let govMet = 0, govTotal = 0;
+
+  s.assessments.forEach(a => {
+    const secNum = parseFloat(a.section.split(' ')[0]);
+    const isMet = a.status === 'Met';
+
+    if ([1, 3, 5, 8, 14].includes(secNum)) {
+      ictTotal++;
+      if (isMet) ictMet++;
+    } else if ([10, 11, 13, 15].includes(secNum)) {
+      opsTotal++;
+      if (isMet) opsMet++;
+    } else {
+      govTotal++;
+      if (isMet) govMet++;
+    }
+  });
+
+  const ictScore = ictTotal > 0 ? (ictMet / ictTotal) * 100 : 100;
+  const opsScore = opsTotal > 0 ? (opsMet / opsTotal) * 100 : 100;
+  const govScore = govTotal > 0 ? (govMet / govTotal) * 100 : 100;
+
+  const tailoredScore = Math.round((ictScore * ictW + opsScore * opsW + govScore * govW) / 100);
+
+  document.getElementById('modal-tailored-score-display').innerText = `${tailoredScore}%`;
+
+  const badge = document.getElementById('modal-tailored-risk-badge');
+  badge.className = 'badge';
+  if (tailoredScore >= 85) {
+    badge.innerText = 'Low Adjusted Risk';
+    badge.classList.add('badge-success');
+  } else if (tailoredScore >= 70) {
+    badge.innerText = 'Medium Adjusted Risk';
+    badge.classList.add('badge-warning');
+  } else {
+    badge.innerText = 'High Adjusted Risk';
+    badge.classList.add('badge-danger');
+  }
+}
+
+// --------------------------------------------------------------------------
+// 17. AUTOMATED VENDOR ASSESSMENTS (Dynamic Dispatch & AI verification)
+// --------------------------------------------------------------------------
+window.dispatchCustomAssessment = function() {
+  const supplierId = document.getElementById('collector-target-supplier').value;
+  const s = state.suppliers[supplierId];
+  if (!s) return;
+
+  // Let's see which modules are selected
+  const selectedModules = [];
+  for (let i = 1; i <= 15; i++) {
+    const chk = document.getElementById(`chk-mod-${i}`);
+    if (chk && chk.checked) {
+      selectedModules.push(i);
+    }
+  }
+
+  if (selectedModules.length === 0) {
+    alert('Please select at least one control module to build the questionnaire.');
+    return;
+  }
+
+  // Create follow-up action
+  const actionId = `act-${Math.floor(Math.random() * 900) + 100}`;
+  const subject = `Action Required: Dynamic Compliance Assessment - ${s.name}`;
+  
+  const body = `Dear ${s.contactName},
+
+Our automated risk governance program has generated a custom compliance assessment for ${s.name}.
+
+Please respond to the obligations listed below and upload supporting evidence in the Supplier Portal:
+Modules: ${selectedModules.map(m => `${m}.0`).join(', ')}
+
+Regards,
+Sarah Jenkins
+Third-Party Risk Operations, Cypher Vantage Team`;
+
+  const action = {
+    id: actionId,
+    supplierId: supplierId,
+    domain: 'Governance',
+    controlId: `cCustom-${selectedModules[0]}`,
+    title: `Dynamic Assessment Questionnaire (${selectedModules.length} Modules)`,
+    gapDetails: `Risk Manager dispatched a dynamic questionnaire targeting: ${selectedModules.map(m => `${m}.0`).join(', ')}. Evidence verification required.`,
+    status: 'Awaiting Response',
+    dateCreated: formatDate(new Date()),
+    emailDraft: body,
+    responseMessage: '',
+    responseAttachment: ''
+  };
+
+  state.actions.push(action);
+  s.status = 'Awaiting Response';
+  
+  s.history.unshift({
+    type: 'action-raised',
+    title: 'Custom Assessment Dispatched',
+    body: `Sarah Jenkins dispatched a dynamic questionnaire targeting ${selectedModules.length} modules.`,
+    user: 'Sarah Jenkins',
+    date: `${formatDate(new Date())} ${new Date().toTimeString().slice(0, 5)}`
+  });
+
+  state.activityLog.unshift({
+    type: 'action-raised',
+    time: 'Just Now',
+    text: `Dispatched dynamic assessment <b>${actionId}</b> to <b>${s.name}</b> (${selectedModules.length} Modules).`
+  });
+
+  renderDashboard();
+  renderSuppliersTable();
+  renderManagerActions();
+  showNotification('Custom assessment dispatched to supplier portal.');
+};
+
+// --------------------------------------------------------------------------
+// 18. CRYPTOGRAPHIC FILE INTEGRITY HELPERS
+// --------------------------------------------------------------------------
+window.getDocHash = function(doc) {
+  if (!doc.hash) {
+    let hash = "";
+    const chars = "0123456789abcdef";
+    let seed = 0;
+    for (let i = 0; i < doc.name.length; i++) {
+      seed += doc.name.charCodeAt(i);
+    }
+    for (let i = 0; i < 64; i++) {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      hash += chars[seed % 16];
+    }
+    doc.hash = hash;
+  }
+  return doc.hash;
+};
+
+window.verifyFileIntegrity = function(docName) {
+  const s = state.suppliers[state.activeSupplierId];
+  const doc = s.documents.find(d => d.name === docName);
+  if (doc) {
+    doc.integrityStatus = 'checking';
+    renderSupplierVaultTable();
+    
+    setTimeout(() => {
+      if (doc.hash.startsWith('TAMPERED_')) {
+        doc.integrityStatus = 'tampered';
+        showNotification('CRITICAL HASH MISMATCH! Document integrity compromised.');
+      } else {
+        doc.integrityStatus = 'verified';
+        showNotification('Success: File SHA-256 hash verified against Cypher Vantage Ledger.');
+      }
+      renderSupplierVaultTable();
+    }, 1200);
+  }
+};
+
+window.simulateTampering = function(docName) {
+  const s = state.suppliers[state.activeSupplierId];
+  const doc = s.documents.find(d => d.name === docName);
+  if (doc) {
+    const hashVal = getDocHash(doc);
+    doc.hash = "TAMPERED_" + hashVal.slice(9);
+    doc.integrityStatus = 'tampered';
+    renderSupplierVaultTable();
+    showNotification('Vulnerability Simulated: Document content tampered. Hash invalidated!');
+  }
+};
+
+// --------------------------------------------------------------------------
+// 19. INITIALIZATION
 // --------------------------------------------------------------------------
 window.onload = function() {
   renderDashboard();
   renderSuppliersTable();
   updateCollectorDropdown();
+  const defaultSupplier = document.getElementById('collector-target-supplier').value;
+  if (defaultSupplier) {
+    initAttackSurfaceView(defaultSupplier);
+  }
 };

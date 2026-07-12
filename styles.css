@@ -1731,3 +1731,126 @@ body.dark-mode {
   color: var(--text-secondary);
   margin-top: 4px;
 }
+
+/* ==========================================================================
+   Continuous Attack Surface Mapping & Interactive Enhancements
+   ========================================================================== */
+
+.attack-surface-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 1024px) {
+  .attack-surface-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.asset-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.015);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 8px;
+  border-left: 3px solid var(--color-info);
+  border: 1px solid rgba(255,255,255,0.03);
+  font-size: 13px;
+}
+
+.port-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.015);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.03);
+  font-size: 13px;
+}
+
+.port-status-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.port-status-badge.closed {
+  background: rgba(16,185,129,0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+
+.port-status-badge.open {
+  background: rgba(239,68,68,0.1);
+  color: var(--color-danger);
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+.port-status-badge.scanning {
+  background: rgba(59,130,246,0.1);
+  color: var(--color-info);
+  border: 1px solid rgba(59,130,246,0.2);
+  animation: pulse 1.5s infinite;
+}
+
+/* Weight Sliders */
+.weight-slider-container {
+  margin-top: 14px;
+}
+
+.weight-slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.slider-input {
+  width: 100%;
+  accent-color: var(--color-violet);
+  cursor: pointer;
+  background: rgba(255,255,255,0.05);
+  border-radius: 9999px;
+  height: 6px;
+}
+
+/* Cryptographic Verification Styles */
+.hash-text {
+  font-family: 'Fira Code', Courier, monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.verify-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.verify-badge.verified {
+  background: rgba(16,185,129,0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+
+.verify-badge.tampered {
+  background: rgba(239,68,68,0.1);
+  color: var(--color-danger);
+  border: 1px solid rgba(239,68,68,0.2);
+  animation: pulse 1s infinite;
+}
+
+.verify-badge.unverified {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-muted);
+  border: 1px solid rgba(255,255,255,0.1);
+}
