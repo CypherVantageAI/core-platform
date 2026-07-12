@@ -1194,21 +1194,96 @@ window.simulateFileUpload = function() {
 // 13. SUPPLIER PORTAL VIEW: OBLIGATION REFERENCES (15 Modules Mapping)
 // --------------------------------------------------------------------------
 const scoContent = [
-  { section: '1.0 Accessibility', content: 'Ensures digital offerings and vendor delivery platforms align with global Web Content Accessibility Guidelines (WCAG 2.1 AA) supporting inclusive access.', items: ['Verify screen-reader compatibility.', 'Provide accessibility reports annually.'] },
-  { section: '2.0 Complaints Management', content: 'Outlines standard operation workflows for logging, investigating, and resolving tenant grievances or system complaints.', items: ['Log complaints within 48 hours.', 'Track resolution metrics.'] },
-  { section: '3.0 Data Management (PDF 156KB)', content: 'Core criteria for classifying, labeling, tracking, and protecting client data sets throughout their operational lifecycle.', items: ['Strict data classification standards.', 'AES-256 bit database encryption.'] },
-  { section: '4.0 EUDA (End User Developed Apps - PDF 224KB)', content: 'Mandates registration, security audits, and risk control tracking for custom spreadsheets or local code tools executing critical math models.', items: ['Enforce model validation checks.', 'Maintain inventory of all EUDA assets.'] },
-  { section: '5.0 Information & Cyber Security (PDF 535KB)', content: 'Outlines compulsory technical safeguard controls: firewalls, intrusion detection, penetration testing, and vulnerability remediation cycles.', items: ['Mandatory MFA on admin portals.', 'Monthly vulnerability scans.'] },
-  { section: '6.0 Management Framework', content: 'Criteria for supplier internal executive governance, policy reviews, and security accountability roles.', items: ['Annual executive policy sign-off.', 'Dedicated InfoSec Officer assigned.'] },
-  { section: '7.0 Payments Process (PDF 132KB)', content: 'Governance standards around wire transfers, batch settlements, payment authorization matrix controls, and segregation of roles.', items: ['Segregation of maker/checker roles.', 'Verify payment endpoint security.'] },
-  { section: '8.0 PCIDSS (PDF 232KB)', content: 'Technical security requirements for systems storing, processing, or transmitting credit cardholder data elements.', items: ['Annual Attestation of Compliance (AoC).', 'Enforced encryption for card data.'] },
-  { section: '9.0 People Screening (PDF 144KB)', content: 'Enforces pre-employment vetting, background checks, credit evaluations, and security clearance criteria for third-party personnel.', items: ['Criminal record background checks.', 'Verify education and credentials.'] },
-  { section: '10.0 Physical Security (PDF 77KB)', content: 'Technical physical boundaries: biometric data center entries, badge checks, video surveillance logs, and visitor escorts.', items: ['24/7 CCTV surveillance logs.', 'Biometric entry checks on server cages.'] },
-  { section: '11.0 Premises Power Resilience (PDF 96KB)', content: 'Enforces electrical redundancies: Uninterruptible Power Supplies (UPS), backup diesel generator test cycles, and multi-feed power sources.', items: ['Backup generators tested quarterly.', 'RTO for power failure under 5 seconds.'] },
-  { section: '12.0 Records Management (PDF 151KB)', content: 'Mandated storage duration parameters, archival policies, and secure shredding methods for corporate data.', items: ['7-year financial record archive.', 'Secure physical/digital data shredding.'] },
-  { section: '13.0 Recovery Planning (PDF 234KB)', content: 'Requires disaster recovery plans, annual regional failover drills, and system backup testing frequencies (DORA compatible).', items: ['Failover test summary submitted annually.', 'Backup recovery testing verified.'] },
-  { section: '14.0 Technology Risk Technical (PDF 127KB)', content: 'Focuses on sub-processor evaluation protocols, source code secure build pipelines, and API integrations audit guidelines.', items: ['Contractual flow-down to subcontractors.', 'Source code security scans.'] },
-  { section: '15.0 Transaction Operations (PDF 118KB)', content: 'Operational guidelines for logging and auditing general system transactions, settling batch transfers, and handling processing exceptions.', items: ['Maintain untampered transaction log trails.', 'Exception queues cleared daily.'] }
+  { 
+    section: '1.0 Accessibility', 
+    content: 'Ensures digital offerings and vendor delivery platforms align with global Web Content Accessibility Guidelines (WCAG 2.1 AA) supporting inclusive access.', 
+    regulatoryMapping: 'European Accessibility Act (EAA), US Section 508, and WCAG 2.1 AA.',
+    items: ['Verify screen-reader compatibility.', 'Provide accessibility reports annually.'] 
+  },
+  { 
+    section: '2.0 Complaints Management', 
+    content: 'Outlines standard operation workflows for logging, investigating, and resolving tenant grievances or system complaints.', 
+    regulatoryMapping: 'UK FCA DISP (Complaints Sourcebook) and ISO 10002 Quality Management.',
+    items: ['Log complaints within 48 hours.', 'Track resolution metrics.'] 
+  },
+  { 
+    section: '3.0 Data Management', 
+    content: 'Core criteria for classifying, labeling, tracking, and protecting client data sets throughout their operational lifecycle.', 
+    regulatoryMapping: 'EU GDPR Article 32 (Security of Processing), UK DPA 2018, and ISO 27001 Annex A.8.',
+    items: ['Strict data classification standards.', 'AES-256 bit database encryption.'] 
+  },
+  { 
+    section: '4.0 EUDA (End User Developed Applications)', 
+    content: 'Mandates registration, security audits, and risk control tracking for custom spreadsheets or local code tools executing critical math models.', 
+    regulatoryMapping: 'UK PRA SS2/21 (Operational Resilience) and Sarbanes-Oxley Act (SOX) Section 404.',
+    items: ['Enforce model validation checks.', 'Maintain inventory of all EUDA assets.'] 
+  },
+  { 
+    section: '5.0 Information & Cyber Security', 
+    content: 'Outlines compulsory technical safeguard controls: firewalls, intrusion detection, penetration testing, and vulnerability remediation cycles.', 
+    regulatoryMapping: 'EU DORA Articles 6 & 7 (ICT Risk Framework), ISO 27001 Annex A.12, and NIST CSF v1.1.',
+    items: ['Mandatory MFA on admin portals.', 'Monthly vulnerability scans.'] 
+  },
+  { 
+    section: '6.0 Management Framework', 
+    content: 'Criteria for supplier internal executive governance, policy reviews, and security accountability roles.', 
+    regulatoryMapping: 'EU DORA Article 5 (Governance and Organisation) and UK PRA SS2/21 Chapter 3.',
+    items: ['Annual executive policy sign-off.', 'Dedicated InfoSec Officer assigned.'] 
+  },
+  { 
+    section: '7.0 Payments Process', 
+    content: 'Governance standards around wire transfers, batch settlements, payment authorization matrix controls, and segregation of roles.', 
+    regulatoryMapping: 'EU PSD2 (Payment Services Directive), ISO 20022, and FCA Payment Services Regulations.',
+    items: ['Segregation of maker/checker roles.', 'Verify payment endpoint security.'] 
+  },
+  { 
+    section: '8.0 PCIDSS', 
+    content: 'Technical security requirements for systems storing, processing, or transmitting credit cardholder data elements.', 
+    regulatoryMapping: 'PCI DSS v4.0 (12 core security domains).',
+    items: ['Annual Attestation of Compliance (AoC).', 'Enforced encryption for card data.'] 
+  },
+  { 
+    section: '9.0 People Screening', 
+    content: 'Enforces pre-employment vetting, background checks, credit evaluations, and security clearance criteria for third-party personnel.', 
+    regulatoryMapping: 'ISO 27001 Annex A.7 (HR Security) and BS 7858 Screening Standard.',
+    items: ['Criminal record background checks.', 'Verify education and credentials.'] 
+  },
+  { 
+    section: '10.0 Physical Security', 
+    content: 'Technical physical boundaries: biometric data center entries, badge checks, video surveillance logs, and visitor escorts.', 
+    regulatoryMapping: 'ISO 27001 Annex A.11 (Physical Security) and NIST SP 800-53 (Physical Protection).',
+    items: ['24/7 CCTV surveillance logs.', 'Biometric entry checks on server cages.'] 
+  },
+  { 
+    section: '11.0 Premises Power Resilience', 
+    content: 'Enforces electrical redundancies: Uninterruptible Power Supplies (UPS), backup diesel generator test cycles, and multi-feed power sources.', 
+    regulatoryMapping: 'EU DORA Article 11 (Business Continuity & DR) and ISO 22301.',
+    items: ['Backup generators tested quarterly.', 'RTO for power failure under 5 seconds.'] 
+  },
+  { 
+    section: '12.0 Records Management', 
+    content: 'Mandated storage duration parameters, archival policies, and secure shredding methods for corporate data.', 
+    regulatoryMapping: 'EU GDPR Article 5(1)(e) (Storage Limitation) and SEC Rule 17a-4.',
+    items: ['7-year financial record archive.', 'Secure physical/digital data shredding.'] 
+  },
+  { 
+    section: '13.0 Recovery Planning', 
+    content: 'Requires disaster recovery plans, annual regional failover drills, and system backup testing frequencies (DORA compatible).', 
+    regulatoryMapping: 'EU DORA Articles 11 & 12 (Resiliency Testing) and UK PRA SS2/21 Chapter 7.',
+    items: ['Failover test summary submitted annually.', 'Backup recovery testing verified.'] 
+  },
+  { 
+    section: '14.0 Technology Risk Technical', 
+    content: 'Focuses on sub-processor evaluation protocols, source code secure build pipelines, and API integrations audit guidelines.', 
+    regulatoryMapping: 'EU DORA Article 30 (Contractual Provisions) and UK PRA SS2/21 Chapter 5.',
+    items: ['Contractual flow-down to subcontractors.', 'Source code security scans.'] 
+  },
+  { 
+    section: '15.0 Transaction Operations', 
+    content: 'Operational guidelines for logging and auditing general system transactions, settling batch transfers, and handling processing exceptions.', 
+    regulatoryMapping: 'EU PSD2 Article 95 (Security Management) and ISO 20022 Transaction Standards.',
+    items: ['Maintain untampered transaction log trails.', 'Exception queues cleared daily.'] 
+  }
 ];
 
 function renderSCOAccordion() {
@@ -1232,7 +1307,10 @@ function renderSCOAccordion() {
         <div class="accordion-content" style="${idx === 0 ? 'max-height: 500px;' : ''}">
           <div class="accordion-body">
             <p>${sco.content}</p>
-            <ul>
+            <div class="reg-mapping-box mt-3 mb-3 p-2" style="background: rgba(255,255,255,0.02); border-left: 2px solid var(--color-accent); border-radius: 4px; font-size: 0.85rem;">
+              <span style="color: var(--color-accent); font-weight: 600;">Regulatory Alignment:</span> ${sco.regulatoryMapping}
+            </div>
+            <ul class="mt-2">
               ${itemsList}
             </ul>
           </div>
