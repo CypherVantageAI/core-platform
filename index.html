@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cypher Vantage - Third-Party Risk & Compliance Platform</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-mode">
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="eagle-logo">
+        <svg viewBox="0 0 100 100" class="svg-logo">
+          <path d="M50,15 L80,30 L80,60 L50,85 L20,60 L20,30 Z" fill="none" stroke="#8b5cf6" stroke-width="6" stroke-linejoin="round" />
+          <path d="M35,38 C35,38 43,30 50,38 C57,46 65,38 65,38 L65,55 C65,62 50,72 50,72 C50,72 35,62 35,55 Z" fill="url(#grad-cv)" />
+          <defs>
+            <linearGradient id="grad-cv" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#06b6d4" />
+              <stop offset="100%" stop-color="#8b5cf6" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>CYPHER VANTAGE</h1>
+        <span>Third-Party Risk Management</span>
+      </div>
+    </div>
+    
+    <div class="header-controls">
+      <!-- Persona Selector Toggle -->
+      <div class="persona-toggle-container">
+        <span class="toggle-label">Active Portal:</span>
+        <div class="persona-switch">
+          <button id="btn-persona-manager" class="persona-btn active" onclick="setPersona('manager')">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
+            Risk Manager
+          </button>
+          <button id="btn-persona-supplier" class="persona-btn" onclick="setPersona('supplier')">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="currentColor"/></svg>
+            Supplier Portal
+          </button>
+        </div>
+      </div>
+
+      <!-- Supplier Switcher (Visible in Supplier Persona Only) -->
+      <div id="supplier-selector-container" class="supplier-selector-container hidden">
+        <label for="active-supplier-select">Acting as:</label>
+        <select id="active-supplier-select" class="dropdown-control" onchange="changeActiveSupplier(this.value)">
+          <!-- Loaded dynamically in app.js -->
+        </select>
+      </div>
+
+      <div class="user-badge">
+        <span class="user-avatar">RM</span>
+        <span id="user-role-name" class="user-name">Sarah Jenkins</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Layout -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <nav class="sidebar-nav">
+        <!-- Risk Manager Navigation -->
+        <ul id="nav-group-manager" class="nav-list">
+          <li class="nav-section">MANAGEMENT</li>
+          <li>
+            <a href="#" id="nav-manager-dashboard" class="nav-item active" onclick="switchTab('manager-dashboard')">
+              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
+              Overview Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="#" id="nav-manager-suppliers" class="nav-item" onclick="switchTab('manager-suppliers')">
+              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>
+              Suppliers Directory
+            </a>
+          </li>
+          <li class="nav-section">ASSESSMENT & AI</li>
+          <li>
+            <a href="#" id="nav-manager-collector" class="nav-item" onclick="switchTab('manager-collector')">
+              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+              AI Auto-Collector
+              <span class="badge badge-accent">Live</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" id="nav-manager-actions" class="nav-item" onclick="switchTab('manager-actions')">
+              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5 13H7v-2h10v2zm0-4H7v-2h10v2zm-3-4H7V7h7v2z" fill="currentColor"/></svg>
+              Follow-up Actions
+              <span id="badge-actions-count" class="badge badge-warning">2</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" id="nav-manager-advisor" class="nav-item" onclick="switchTab('manager-advisor')">
+              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z" fill="currentColor"/></svg>
+              AI Advisor Chat
+            </a>
+          </li>
+        </ul>
+
+        <!-- Supplier Navigation -->
+        <ul id="nav-group-supplier" class="nav-list hidden">
+          <li class="nav-section">PORTAL CONSOLE</li>
+          <li>
+            <a href="#" id="nav-supplier-dashboard" class="nav-item active" onclick="switchTab('supplier-dashboard')">
+              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/></svg>
+              Action Gaps
+              <span id="badge-supplier-pending" class="badge badge-danger">1</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" id="nav-supplier-evidence" class="nav-item" onclick="switchTab('supplier-evidence')">
+              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" fill="currentColor"/></svg>
+              Document Vault
+            </a>
+          </li>
+          <li>
+            <a href="#" id="nav-supplier-obligations" class="nav-item" onclick="switchTab('supplier-obligations')">
+              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
+              Obligation Framework
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="footer-status">
+          <div class="status-indicator online"></div>
+          <span>CV Session: Secure</span>
+        </div>
+        <div class="regulatory-seal">
+          <span>Cypher Vantage Core</span>
+          <small>15 Reference Control Modules</small>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Pane -->
+    <main class="app-content">
+
+      <!-- ============================================== -->
+      <!-- VIEW: RISK MANAGER DASHBOARD                   -->
+      <!-- ============================================== -->
+      <section id="view-manager-dashboard" class="content-pane active">
+        <div class="view-header">
+          <h2>Overview Dashboard</h2>
+          <p>Real-time analytics and global compliance overview across vendor domains</p>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon bg-info">
+              <svg class="icon-md" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>
+            </div>
+            <div class="metric-data">
+              <h3 id="stat-total-suppliers">5</h3>
+              <span>Monitored Vendors</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon bg-warning">
+              <svg class="icon-md" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
+            </div>
+            <div class="metric-data">
+              <h3 id="stat-compliance-avg">76%</h3>
+              <span>Avg Compliance Rating</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon bg-danger">
+              <svg class="icon-md" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/></svg>
+            </div>
+            <div class="metric-data">
+              <h3 id="stat-pending-gaps">6</h3>
+              <span>Identified Control Gaps</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon bg-success">
+              <svg class="icon-md" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>
+            </div>
+            <div class="metric-data">
+              <h3 id="stat-active-followups">2</h3>
+              <span>Awaiting Response</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Visual Charts Layout -->
+        <div class="dashboard-panels">
+          
+          <!-- Supplier Status Chart Panel -->
+          <div class="dashboard-card main-panel">
+            <h3>Control Framework Module Coverage</h3>
+            <p class="panel-subtitle">Compliance rates mapped across the 15 control modules</p>
+            <div class="chart-container">
+              <svg viewBox="0 0 500 200" class="dashboard-svg-chart">
+                <line x1="40" y1="20" x2="480" y2="20" stroke="rgba(255,255,255,0.03)" />
+                <line x1="40" y1="60" x2="480" y2="60" stroke="rgba(255,255,255,0.03)" />
+                <line x1="40" y1="100" x2="480" y2="100" stroke="rgba(255,255,255,0.03)" />
+                <line x1="40" y1="140" x2="480" y2="140" stroke="rgba(255,255,255,0.03)" />
+                <line x1="40" y1="180" x2="480" y2="180" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+                
+                <!-- Bars representing combined compliance % -->
+                <rect x="55" y="44" width="22" height="136" fill="url(#gradient-violet)" rx="3" />
+                <rect x="110" y="55" width="22" height="125" fill="url(#gradient-violet)" rx="3" />
+                <rect x="165" y="32" width="22" height="148" fill="url(#gradient-violet)" rx="3" />
+                <rect x="220" y="90" width="22" height="90" fill="url(#gradient-cyan)" rx="3" />
+                <rect x="275" y="40" width="22" height="140" fill="url(#gradient-violet)" rx="3" />
+                <rect x="330" y="70" width="22" height="110" fill="url(#gradient-cyan)" rx="3" />
+                <rect x="385" y="98" width="22" height="82" fill="url(#gradient-warning)" rx="3" />
+                <rect x="440" y="36" width="22" height="144" fill="url(#gradient-violet)" rx="3" />
+
+                <!-- Chart Text Labels -->
+                <text x="66" y="193" font-size="9" fill="#9ca3af" text-anchor="middle">Cyber</text>
+                <text x="121" y="193" font-size="9" fill="#9ca3af" text-anchor="middle">Data Mgt</text>
+                <text x="176" y="193" font-size="9" fill="#9ca3af" text-anchor="middle">Recovery</text>
+                <text x="231" y="193" font-size="9" fill="#9ca3af" text-anchor="middle">PCIDSS</text>
+                <text x="286" y="193" font-size="9" fill="#9ca3af" text-anchor="middle">People</text>
+                <text x="341" y="193" font-size="9" fill="#9ca3af" text-anchor="middle">Physical</text>
+                <text x="396" y="193" font-size="9" fill="#9ca3af" text-anchor="middle">EUDA</text>
+                <text x="451" y="193" font-size="9" fill="#9ca3af" text-anchor="middle">Tech Risk</text>
+
+                <!-- Value Annotations -->
+                <text x="66" y="38" font-size="10" font-weight="bold" fill="#a78bfa" text-anchor="middle">85%</text>
+                <text x="121" y="49" font-size="10" font-weight="bold" fill="#a78bfa" text-anchor="middle">78%</text>
+                <text x="176" y="26" font-size="10" font-weight="bold" fill="#a78bfa" text-anchor="middle">92%</text>
+                <text x="231" y="84" font-size="10" font-weight="bold" fill="#22d3ee" text-anchor="middle">68%</text>
+                <text x="286" y="34" font-size="10" font-weight="bold" fill="#a78bfa" text-anchor="middle">88%</text>
+                <text x="341" y="64" font-size="10" font-weight="bold" fill="#22d3ee" text-anchor="middle">74%</text>
+                <text x="396" y="92" font-size="10" font-weight="bold" fill="#f5a623" text-anchor="middle">55%</text>
+                <text x="451" y="30" font-size="10" font-weight="bold" fill="#a78bfa" text-anchor="middle">90%</text>
+
+                <defs>
+                  <linearGradient id="gradient-violet" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#8b5cf6" />
+                    <stop offset="100%" stop-color="#4c1d95" stop-opacity="0.3" />
+                  </linearGradient>
+                  <linearGradient id="gradient-cyan" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#06b6d4" />
+                    <stop offset="100%" stop-color="#083344" stop-opacity="0.3" />
+                  </linearGradient>
+                  <linearGradient id="gradient-warning" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#f5a623" />
+                    <stop offset="100%" stop-color="#78350f" stop-opacity="0.3" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Regulatory Compliance Alignment -->
+          <div class="dashboard-card side-panel">
+            <h3>Global Regulatory Status</h3>
+            <p class="panel-subtitle">Audited compliance across global industry standards</p>
+            
+            <div class="regulatory-list">
+              <div class="regulatory-item">
+                <div class="reg-meta">
+                  <span class="reg-name">EU DORA Alignment</span>
+                  <span class="reg-progress" style="color: var(--color-violet);">86% Complete</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" style="width: 86%; background: var(--gradient-accent-color);"></div>
+                </div>
+                <small class="reg-notes">Addressed via Information Security & Recovery Planning modules.</small>
+              </div>
+
+              <div class="regulatory-item">
+                <div class="reg-meta">
+                  <span class="reg-name">UK PRA SS2/21 Standards</span>
+                  <span class="reg-progress" style="color: var(--color-violet);">78% Complete</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" style="width: 78%; background: var(--gradient-accent-color);"></div>
+                </div>
+                <small class="reg-notes">Outsourcing checks managed under vendor screening clauses.</small>
+              </div>
+
+              <div class="regulatory-item">
+                <div class="reg-meta">
+                  <span class="reg-name">PCIDSS / Payments Compliance</span>
+                  <span class="reg-progress" style="color: var(--color-violet);">91% Complete</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" style="width: 91%; background: var(--gradient-accent-color);"></div>
+                </div>
+                <small class="reg-notes">Enforced via Payment Process and PCIDSS control modules.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="dashboard-card full-panel mt-4">
+          <div class="panel-header-action">
+            <h3>Recent Compliance Log Updates</h3>
+            <span class="pulse-indicator">Active Monitoring</span>
+          </div>
+          <div class="log-timeline" id="recent-activity-log">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: RISK MANAGER SUPPLIERS                   -->
+      <!-- ============================================== -->
+      <section id="view-manager-suppliers" class="content-pane">
+        <div class="view-header flex-header">
+          <div>
+            <h2>Suppliers Compliance Directory</h2>
+            <p>Track assessment status, active gaps, and document validation results for third-party entities</p>
+          </div>
+          <div class="filter-controls">
+            <input type="text" id="supplier-search-input" placeholder="Search suppliers..." class="search-input" onkeyup="filterSuppliersTable()">
+            <select id="supplier-risk-filter" class="dropdown-control" onchange="filterSuppliersTable()">
+              <option value="all">All Risks</option>
+              <option value="Critical">Critical Risk</option>
+              <option value="High">High Risk</option>
+              <option value="Medium">Medium Risk</option>
+              <option value="Low">Low Risk</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <table class="data-table" id="suppliers-table">
+            <thead>
+              <tr>
+                <th>Supplier Name</th>
+                <th>Risk Tier</th>
+                <th>Framework Version</th>
+                <th>Compliance Score</th>
+                <th>Active Control Gaps</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="suppliers-table-body">
+              <!-- Dynamic content generated by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: RISK MANAGER AUTO-COLLECTOR (AI AGENT)   -->
+      <!-- ============================================== -->
+      <section id="view-manager-collector" class="content-pane">
+        <div class="view-header">
+          <h2>AI Supplier Obligations Auto-Collector</h2>
+          <p>Instruct the AI agent to scan supplier documents, certificates, and portals, and cross-reference with Cypher Vantage 15 Control Modules</p>
+        </div>
+
+        <div class="collector-layout">
+          <!-- Selection and Config -->
+          <div class="dashboard-card side-config">
+            <h3>Configure Collector Scan</h3>
+            <div class="form-group mt-3">
+              <label for="collector-target-supplier">Target Supplier</label>
+              <select id="collector-target-supplier" class="dropdown-control mt-1" onchange="updateCollectorDocumentsList(this.value)">
+                <!-- Loaded dynamically in app.js -->
+              </select>
+            </div>
+            
+            <div class="form-group mt-3">
+              <label>Select Control Modules (15 Available)</label>
+              <div class="checkbox-group mt-1 scrollable-checkboxes">
+                <label><input type="checkbox" checked disabled> Information & Cyber Security (PDF 535KB)</label>
+                <label><input type="checkbox" checked disabled> Data Management (PDF 156KB)</label>
+                <label><input type="checkbox" checked disabled> Recovery Planning (PDF 234KB)</label>
+                <label><input type="checkbox" id="chk-domain-pcidss" checked> PCIDSS Compliance (PDF 232KB)</label>
+                <label><input type="checkbox" id="chk-domain-people" checked> People Screening (PDF 144KB)</label>
+                <label><input type="checkbox" id="chk-domain-phys" checked> Physical Security (PDF 77KB)</label>
+                <label><input type="checkbox" id="chk-domain-euda" checked> EUDA - End User Applications (PDF 224KB)</label>
+                <label><input type="checkbox" id="chk-domain-power" checked> Premises Power Resilience (PDF 96KB)</label>
+                <label><input type="checkbox" id="chk-domain-records" checked> Records Management (PDF 151KB)</label>
+                <label><input type="checkbox" id="chk-domain-tech" checked> Technology Risk Technical (PDF 127KB)</label>
+              </div>
+            </div>
+
+            <div class="form-group mt-3">
+              <label>Supplier Documentation (Target Vault)</label>
+              <div class="supplier-vault-files mt-1" id="collector-files-list">
+                <!-- Dynamically updated -->
+              </div>
+            </div>
+
+            <button id="btn-start-collector" class="btn btn-primary mt-4 w-full" onclick="runAutoCollector()">
+              <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z" fill="currentColor"/></svg>
+              Start AI Auto-Collector
+            </button>
+          </div>
+
+          <!-- Execution Logs and Real-time Findings -->
+          <div class="collector-log-panel">
+            <div class="dashboard-card terminal-card">
+              <div class="terminal-header">
+                <span class="terminal-title">AI RISK OFFICER - DOCUMENT PARSING LOGS</span>
+                <span class="terminal-badge" id="collector-status-badge">Idle</span>
+              </div>
+              <div class="terminal-body" id="collector-terminal-logs">
+                <span class="terminal-placeholder">Select a supplier and click "Start AI Auto-Collector" to initiate real-time evidence scanning and gap analysis.</span>
+              </div>
+            </div>
+            
+            <div id="collector-results-card" class="dashboard-card results-card hidden mt-4">
+              <h3>AI Assessment Extraction Results</h3>
+              <p class="panel-subtitle">Automatically parsed control obligations and extracted compliance findings</p>
+              
+              <div class="results-gaps mt-3" id="collector-parsed-results">
+                <!-- Populated dynamically upon completion -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: RISK MANAGER FOLLOW-UP ACTIONS           -->
+      <!-- ============================================== -->
+      <section id="view-manager-actions" class="content-pane">
+        <div class="view-header">
+          <h2>Follow-up Action Center</h2>
+          <p>Review, draft, and track communications with suppliers regarding outstanding control obligations</p>
+        </div>
+
+        <div class="actions-container">
+          <div class="dashboard-card main-panel">
+            <div class="panel-header-action">
+              <h3>Outstanding Supplier Control Actions</h3>
+              <div class="status-filters">
+                <span class="filter-pill active" onclick="filterActions('all')">All Actions</span>
+                <span class="filter-pill" onclick="filterActions('gap')">Control Gaps</span>
+                <span class="filter-pill" onclick="filterActions('awaiting')">Awaiting Response</span>
+                <span class="filter-pill" onclick="filterActions('review')">Pending Review</span>
+              </div>
+            </div>
+
+            <div class="actions-list" id="manager-actions-list-container">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: RISK MANAGER AI ADVISOR CHAT             -->
+      <!-- ============================================== -->
+      <section id="view-manager-advisor" class="content-pane">
+        <div class="view-header">
+          <h2>AI Risk Manager Advisor</h2>
+          <p>Consult with the virtual risk advisor on industry regulations (DORA, PRA SS2/21, PCIDSS, GDPR) and Cypher Vantage Control Modules</p>
+        </div>
+
+        <div class="chat-layout">
+          <!-- Chat Window -->
+          <div class="dashboard-card chat-card">
+            <div class="chat-messages" id="advisor-chat-messages">
+              <div class="chat-bubble agent">
+                <div class="bubble-avatar">🤖</div>
+                <div class="bubble-text">
+                  <p>Welcome! I am your Cypher Vantage Risk Advisor. I am trained on the 15 Reference Control Modules (including Cyber Security, Recovery Planning, PCIDSS, and Power Resilience), as well as key UK and European banking regulations (DORA, SS2/21, GDPR, EBA Outsourcing Guidelines).</p>
+                  <p>How can I assist you in verifying your suppliers' control obligations today?</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="chat-input-bar">
+              <input type="text" id="advisor-user-input" placeholder="Ask about regulations, supplier status, or draft request templates..." onkeypress="handleAdvisorChatKeyPress(event)">
+              <button class="btn btn-primary" onclick="sendAdvisorChatMessage()">
+                <svg class="icon-sm" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/></svg>
+                Send
+              </button>
+            </div>
+          </div>
+
+          <!-- Suggested Queries sidebar -->
+          <div class="dashboard-card chat-suggestions">
+            <h3>Suggested Queries</h3>
+            <ul class="suggestion-list">
+              <li>
+                <button class="suggestion-btn" onclick="triggerPresetQuery('What are the key changes in the Recovery Planning and Power Resilience modules?')">
+                  Explain Recovery Planning & Power Resilience
+                </button>
+              </li>
+              <li>
+                <button class="suggestion-btn" onclick="triggerPresetQuery('Show me which suppliers are currently failing DORA resilience requirements.')">
+                  Which suppliers fail DORA resilience requirements?
+                </button>
+              </li>
+              <li>
+                <button class="suggestion-btn" onclick="triggerPresetQuery('Draft an escalation email to AWS regarding the missing BCP Test Report.')">
+                  Draft BCP escalation email to AWS
+                </button>
+              </li>
+              <li>
+                <button class="suggestion-btn" onclick="triggerPresetQuery('Explain the subcontractor flow-down obligations under Technology Risk.')">
+                  Explain Subcontractor requirements
+                </button>
+              </li>
+            </ul>
+
+            <div class="regulatory-quick-box mt-4">
+              <h4>Active Regulatory Context</h4>
+              <div class="reg-tags mt-2">
+                <span class="tag tag-accent">DORA Compliance</span>
+                <span class="tag tag-accent">PRA SS2/21</span>
+                <span class="tag tag-accent">PCIDSS v4.0</span>
+                <span class="tag tag-accent">GDPR Privacy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: SUPPLIER PORTAL VIEW                     -->
+      <!-- ============================================== -->
+      <section id="view-supplier-dashboard" class="content-pane">
+        <div class="view-header">
+          <h2 id="supplier-portal-title">Supplier Operations Console - AWS</h2>
+          <p>Respond to control obligation requests, upload certificates, and address outstanding gaps identified by Cypher Vantage Risk Managers</p>
+        </div>
+
+        <div class="supplier-portal-panels">
+          <div class="dashboard-card main-panel">
+            <h3>Actions Required by Cypher Vantage Risk Management</h3>
+            <p class="panel-subtitle">Please address these items promptly to maintain compliance status</p>
+            
+            <div class="actions-list mt-3" id="supplier-pending-actions-list">
+              <!-- Dynamically populated in app.js -->
+            </div>
+          </div>
+
+          <div class="dashboard-card side-panel">
+            <h3>My Compliance Overview</h3>
+            <p class="panel-subtitle">Assessed under Cypher Vantage 15 Control Modules</p>
+            
+            <div class="supplier-compliance-circle-container mt-4">
+              <svg viewBox="0 0 100 100" class="radial-progress-svg">
+                <circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.03)" stroke-width="8" fill="none" />
+                <circle id="supplier-radial-progress" cx="50" cy="50" r="40" stroke="#8b5cf6" stroke-width="8" fill="none" 
+                        stroke-dasharray="251.2" stroke-dashoffset="50.2" transform="rotate(-90 50 50)" />
+                <text x="50" y="55" id="supplier-percentage-text" font-family="'Outfit', sans-serif" font-weight="bold" font-size="18" fill="#fff" text-anchor="middle">80%</text>
+              </svg>
+              <div class="text-center mt-2">
+                <span class="badge badge-accent" id="supplier-overall-status">Healthy</span>
+              </div>
+            </div>
+
+            <div class="quick-contact-box mt-4">
+              <h4>Assigned Risk Manager</h4>
+              <div class="risk-manager-contact mt-2">
+                <div class="user-avatar-sm">SJ</div>
+                <div class="rm-details">
+                  <h5>Sarah Jenkins</h5>
+                  <p>Senior Risk Assurance Lead</p>
+                  <small>sjenkins@cyphervantage.com</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: SUPPLIER DOCUMENT VAULT                  -->
+      <!-- ============================================== -->
+      <section id="view-supplier-evidence" class="content-pane">
+        <div class="view-header flex-header">
+          <div>
+            <h2>Supplier Document Vault</h2>
+            <p>Upload, manage, and review compliance evidence files that Cypher Vantage AI agents scan to auto-collect obligations</p>
+          </div>
+          <button class="btn btn-primary" onclick="simulateFileUpload()">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M19 13h-6V7h-2v6H5v2h6v6h2v-6h6z" fill="currentColor"/></svg>
+            Upload New Document
+          </button>
+        </div>
+
+        <div class="dashboard-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Document Name</th>
+                <th>Type</th>
+                <th>Upload Date</th>
+                <th>Last Scanned</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="supplier-vault-table-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: SUPPLIER SCO REFERENCE                   -->
+      <!-- ============================================== -->
+      <section id="view-supplier-obligations" class="content-pane">
+        <div class="view-header">
+          <h2>Cypher Vantage Control Framework</h2>
+          <p>Browse the 15 Reference Control Modules (Criteria derived from banking-grade security standards)</p>
+        </div>
+
+        <div class="sco-references-layout">
+          <!-- Accordion of Sections -->
+          <div class="dashboard-card main-panel">
+            <h3>Control Modules Accordion</h3>
+            <p class="panel-subtitle">Review targeted domains under contract</p>
+            
+            <div class="accordion mt-3" id="sco-accordion-container">
+              <!-- Dynamically populated in app.js -->
+            </div>
+          </div>
+
+          <div class="dashboard-card side-panel">
+            <h3>Support & Guidelines</h3>
+            <p class="panel-subtitle">Need help understanding these obligations?</p>
+            <div class="faq-box mt-3">
+              <div class="faq-item">
+                <h5>How often are assessments run?</h5>
+                <p>Cypher Vantage runs auto-collect sweeps weekly. Gaps trigger automated Risk Manager notifications and invite you to respond in this portal.</p>
+              </div>
+              <div class="faq-item mt-3">
+                <h5>What format is accepted?</h5>
+                <p>SOC 2, ISO Certificates, Audit reports, or signed company statements (PDF/Word format) are preferred for AI data collection.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL: SUPPLIER COMPLIANCE DETAIL DRILLDOWN     -->
+  <!-- ============================================== -->
+  <div id="supplier-detail-modal" class="modal-overlay hidden">
+    <div class="modal-box large-modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="modal-supplier-name">Amazon Web Services (AWS)</h2>
+          <span class="badge badge-accent" id="modal-supplier-risk">Critical Risk Supplier</span>
+        </div>
+        <button class="btn-close-modal" onclick="closeSupplierModal()">&times;</button>
+      </div>
+      <div class="modal-tabs">
+        <button id="modal-tab-assessment" class="modal-tab-btn active" onclick="switchModalTab('assessment')">Control Obligations Mapping</button>
+        <button id="modal-tab-history" class="modal-tab-btn" onclick="switchModalTab('history')">Actions & Audit History</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Modal Tab: Assessment Mapping -->
+        <div id="modal-view-assessment" class="modal-tab-view active">
+          <div class="compliance-summary-bar">
+            <div class="summary-metric">
+              <span class="label">Compliance Score</span>
+              <h3 id="modal-compliance-score">80%</h3>
+            </div>
+            <div class="summary-metric">
+              <span class="label">Assessed Under</span>
+              <h3 id="modal-sco-version">CV Framework</h3>
+            </div>
+            <div class="summary-metric">
+              <span class="label">Met Controls</span>
+              <h3 id="modal-met-controls">4 / 5</h3>
+            </div>
+            <div class="summary-metric">
+              <span class="label">Pending Review / Gaps</span>
+              <h3 id="modal-unmet-controls">1</h3>
+            </div>
+          </div>
+
+          <div class="obligation-details-list mt-4" id="modal-obligations-list">
+            <!-- Dynamically populated in app.js -->
+          </div>
+        </div>
+
+        <!-- Modal Tab: Audit History -->
+        <div id="modal-view-history" class="modal-tab-view">
+          <h3>Communication and Action Audit Logs</h3>
+          <p class="panel-subtitle">Chronological record of risk actions, supplier responses, and evidence updates</p>
+          <div class="audit-history-list mt-3" id="modal-audit-history-container">
+            <!-- Dynamically populated in app.js -->
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeSupplierModal()">Close Assessment</button>
+        <button class="btn btn-primary" id="modal-btn-action" onclick="triggerModalAction()">Generate Action Follow-up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL: RISK MANAGER DRAFT FOLLOWUP EMAIL        -->
+  <!-- ============================================== -->
+  <div id="followup-draft-modal" class="modal-overlay hidden">
+    <div class="modal-box medium-modal">
+      <div class="modal-header">
+        <h2>AI Draft Supplier Follow-up</h2>
+        <button class="btn-close-modal" onclick="closeFollowupModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3 text-secondary text-sm">The AI Risk Manager has drafted a communication quoting the exact control gap and relevant Cypher Vantage module. You can edit this before sending.</p>
+        
+        <div class="form-group">
+          <label for="draft-email-to">To (Supplier Compliance Contact)</label>
+          <input type="text" id="draft-email-to" class="text-input mt-1" value="compliance@aws.amazon.com">
+        </div>
+
+        <div class="form-group mt-3">
+          <label for="draft-email-subject">Subject</label>
+          <input type="text" id="draft-email-subject" class="text-input mt-1" value="Cypher Vantage Control Obligation Compliance Action Required">
+        </div>
+
+        <div class="form-group mt-3">
+          <label for="draft-email-body">Email Body</label>
+          <textarea id="draft-email-body" class="textarea-input mt-1" rows="12">
+Dear AWS Compliance Team,
+
+Our ongoing assurance program has reviewed your compliance data against the Cypher Vantage Control Framework.
+
+We identified a gap in the following control requirement:
+Domain: Recovery Planning (Section 13.0)
+Requirement: Supplier must provide evidence of annual disaster recovery and business resilience testing relevant to systems hosting Cypher Vantage tenant data.
+
+Gap details: Your uploaded Disaster Recovery Test Plan dates back to 2024. We require evidence of your calendar year 2025/2026 DR testing execution summary.
+
+Please respond to this request and upload the updated documentation through the Cypher Vantage Supplier Portal as soon as possible.
+
+Regards,
+Sarah Jenkins
+Third-Party Risk Assurance, Cypher Vantage Team
+          </textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeFollowupModal()">Cancel</button>
+        <button class="btn btn-primary" id="btn-send-draft-email" onclick="sendFollowupEmail()">Send Follow-up</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

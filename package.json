@@ -1,0 +1,14 @@
+{
+  "name": "cypher-vantage-tprm",
+  "version": "1.0.0",
+  "description": "Cypher Vantage Third-Party Risk Management System with simulated AI Agents and Supplier Portal.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "author": "Antigravity",
+  "license": "ISC"
+}
