@@ -107,6 +107,12 @@
               AI Advisor Chat
             </a>
           </li>
+          <li>
+            <a href="#" id="nav-manager-obligations" class="nav-item" onclick="switchTab('manager-obligations')">
+              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
+              Control Modules Reference
+            </a>
+          </li>
         </ul>
 
         <!-- Supplier Navigation -->
@@ -529,6 +535,43 @@
       </section>
 
       <!-- ============================================== -->
+      <!-- VIEW: RISK MANAGER CONTROL MODULES             -->
+      <!-- ============================================== -->
+      <section id="view-manager-obligations" class="content-pane">
+        <div class="view-header">
+          <h2>Cypher Vantage Reference Control Modules</h2>
+          <p>Browse the 15 Reference Control Modules (Criteria derived from global compliance standards)</p>
+        </div>
+
+        <div class="sco-references-layout">
+          <!-- Accordion of Sections -->
+          <div class="dashboard-card main-panel">
+            <h3>Control Modules Accordion</h3>
+            <p class="panel-subtitle">Review targeted domains under contract</p>
+            
+            <div class="accordion mt-3" id="sco-accordion-container-manager">
+              <!-- Dynamically populated in app.js -->
+            </div>
+          </div>
+
+          <div class="dashboard-card side-panel">
+            <h3>Support & Guidelines</h3>
+            <p class="panel-subtitle">Need help understanding these obligations?</p>
+            <div class="faq-box mt-3">
+              <div class="faq-item">
+                <h5>How are these modules mapped?</h5>
+                <p>These 15 reference modules are auto-mapped by Cypher Vantage AI agents against supplier SOC 2, ISO, and other public security assets.</p>
+              </div>
+              <div class="faq-item mt-3">
+                <h5>Source of obligations?</h5>
+                <p>Derived from gold-standard industry regulatory frameworks including EU DORA, PCIDSS, UK PRA SS2/21, and GDPR.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
       <!-- VIEW: SUPPLIER PORTAL VIEW                     -->
       <!-- ============================================== -->
       <section id="view-supplier-dashboard" class="content-pane">
@@ -627,7 +670,7 @@
             <h3>Control Modules Accordion</h3>
             <p class="panel-subtitle">Review targeted domains under contract</p>
             
-            <div class="accordion mt-3" id="sco-accordion-container">
+            <div class="accordion mt-3" id="sco-accordion-container-supplier">
               <!-- Dynamically populated in app.js -->
             </div>
           </div>

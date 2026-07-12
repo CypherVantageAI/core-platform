@@ -239,6 +239,8 @@ window.switchTab = function(tabId) {
     renderSuppliersTable();
   } else if (tabId === 'manager-actions') {
     renderManagerActions();
+  } else if (tabId === 'manager-obligations') {
+    renderSCOAccordion();
   } else if (tabId === 'supplier-dashboard') {
     renderSupplierPortalDashboard();
   } else if (tabId === 'supplier-evidence') {
@@ -1210,30 +1212,34 @@ const scoContent = [
 ];
 
 function renderSCOAccordion() {
-  const container = document.getElementById('sco-accordion-container');
-  container.innerHTML = '';
+  const containers = ['sco-accordion-container-manager', 'sco-accordion-container-supplier'];
+  containers.forEach(id => {
+    const container = document.getElementById(id);
+    if (!container) return;
+    container.innerHTML = '';
 
-  scoContent.forEach((sco, idx) => {
-    const item = document.createElement('div');
-    item.className = `accordion-item ${idx === 0 ? 'active' : ''}`;
-    
-    const itemsList = sco.items.map(it => `<li>${it}</li>`).join('');
+    scoContent.forEach((sco, idx) => {
+      const item = document.createElement('div');
+      item.className = `accordion-item ${idx === 0 ? 'active' : ''}`;
+      
+      const itemsList = sco.items.map(it => `<li>${it}</li>`).join('');
 
-    item.innerHTML = `
-      <button class="accordion-trigger" onclick="toggleAccordion(event)">
-        <h4>${sco.section}</h4>
-        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" fill="currentColor"/></svg>
-      </button>
-      <div class="accordion-content" style="${idx === 0 ? 'max-height: 500px;' : ''}">
-        <div class="accordion-body">
-          <p>${sco.content}</p>
-          <ul>
-            ${itemsList}
-          </ul>
+      item.innerHTML = `
+        <button class="accordion-trigger" onclick="toggleAccordion(event)">
+          <h4>${sco.section}</h4>
+          <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" fill="currentColor"/></svg>
+        </button>
+        <div class="accordion-content" style="${idx === 0 ? 'max-height: 500px;' : ''}">
+          <div class="accordion-body">
+            <p>${sco.content}</p>
+            <ul>
+              ${itemsList}
+            </ul>
+          </div>
         </div>
-      </div>
-    `;
-    container.appendChild(item);
+      `;
+      container.appendChild(item);
+    });
   });
 }
 
@@ -1243,13 +1249,13 @@ window.toggleAccordion = function(e) {
   
   document.querySelectorAll('.accordion-item').forEach(el => {
     el.classList.remove('active');
-    el.querySelector('.accordion-content').style.max-height = '0';
+    el.querySelector('.accordion-content').style.maxHeight = '0';
   });
 
   if (!isActive) {
     item.classList.add('active');
     const content = item.querySelector('.accordion-content');
-    content.style.max-height = '500px';
+    content.style.maxHeight = '500px';
   }
 };
 
