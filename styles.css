@@ -1850,7 +1850,153 @@ body.dark-mode {
 }
 
 .verify-badge.unverified {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-muted);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   Collapsible Sidebar, Accessibility & Mobile Portrait Layout Rules
+   ========================================================================== */
+
+/* Sidebar Toggle & Hamburger Button */
+.sidebar-toggle-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-speed);
+  margin-right: 8px;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-violet);
+}
+
+.sidebar-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-violet);
+  outline-offset: 2px;
+}
+
+/* Sidebar overlay backdrop for mobile menu */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 98;
+  transition: opacity var(--transition-speed);
+}
+
+.sidebar-overlay.hidden {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Desktop Collapsed Sidebar overrides */
+.app-sidebar {
+  transition: width var(--transition-speed) ease-in-out;
+}
+
+.app-sidebar.collapsed {
+  width: 76px;
+}
+
+.app-sidebar.collapsed .nav-item span {
+  display: none;
+}
+
+.app-sidebar.collapsed .nav-section {
+  display: none;
+}
+
+.app-sidebar.collapsed .badge {
+  display: none;
+}
+
+.app-sidebar.collapsed .sidebar-footer {
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.app-sidebar.collapsed .sidebar-footer .user-avatar-sm {
+  margin: 0;
+}
+
+.app-sidebar.collapsed .sidebar-footer div:not(.user-avatar-sm) {
+  display: none;
+}
+
+/* Accessibility Focus Ring and High Contrast Outlines */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-cyan) !important;
+  outline-offset: 3px !important;
+}
+
+/* Responsive Overrides (Collapsible Sidebar for mobile / portrait) */
+@media (max-width: 992px) {
+  .app-sidebar {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    bottom: 0;
+    z-index: 99;
+    transform: translateX(-100%);
+    transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    background-color: var(--bg-secondary);
+  }
+  
+  .app-sidebar.active {
+    transform: translateX(0);
+  }
+  
+  /* Make sure main content takes full screen when sidebar is fixed */
+  .content-workspace {
+    padding: 16px !important;
+  }
+}
+
+/* Portrait Mobile Sizing Adjustments */
+@media (max-width: 768px) {
+  .header-controls .user-badge {
+    display: none; /* Hide user avatar on tablet/mobile to save header space */
+  }
+}
+
+@media (max-width: 576px) {
+  .app-header {
+    padding: 0 12px;
+  }
+  
+  .header-controls {
+    gap: 8px;
+  }
+  
+  .persona-toggle-container {
+    display: none; /* Hide toggle label and persona buttons to fit brand text */
+  }
+  
+  .brand-text h1 {
+    font-size: 16px;
+  }
+  
+  .brand-text span {
+    font-size: 8px;
+  }
 }

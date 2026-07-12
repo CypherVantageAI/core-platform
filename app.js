@@ -2107,7 +2107,49 @@ window.simulateTampering = function(docName) {
 };
 
 // --------------------------------------------------------------------------
-// 19. INITIALIZATION
+// 19. COLLAPSIBLE SIDEBAR TOGGLING LOGIC
+// --------------------------------------------------------------------------
+window.toggleSidebar = function() {
+  const sidebar = document.querySelector('.app-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const toggleBtn = document.getElementById('sidebar-toggle');
+  
+  if (!sidebar) return;
+
+  const isMobile = window.innerWidth <= 992;
+
+  if (isMobile) {
+    // Mobile slide-out toggle
+    sidebar.classList.toggle('active');
+    if (overlay) {
+      overlay.classList.toggle('hidden');
+    }
+    const isActive = sidebar.classList.contains('active');
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+    }
+  } else {
+    // Desktop layout collapse toggle
+    sidebar.classList.toggle('collapsed');
+    const nowCollapsed = sidebar.classList.contains('collapsed');
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-expanded', nowCollapsed ? 'false' : 'true');
+    }
+  }
+};
+
+window.addEventListener('resize', () => {
+  const sidebar = document.querySelector('.app-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (!sidebar) return;
+  if (window.innerWidth > 992) {
+    sidebar.classList.remove('active');
+    if (overlay) overlay.classList.add('hidden');
+  }
+});
+
+// --------------------------------------------------------------------------
+// 20. INITIALIZATION
 // --------------------------------------------------------------------------
 window.onload = function() {
   renderDashboard();
