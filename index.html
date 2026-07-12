@@ -460,9 +460,23 @@
           
           <div class="attack-surface-grid mt-3">
             <!-- Asset Checklist -->
-            <div class="surface-panel p-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--border-radius-md);">
-              <h4 style="color: var(--color-cyan); font-size: 0.95rem; font-weight: 600;">Monitored Public Assets</h4>
-              <div class="asset-list mt-3" id="surface-assets-list">
+             <div class="surface-panel p-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--border-radius-md); display: flex; flex-direction: column;">
+              <h4 style="color: var(--color-cyan); font-size: 0.95rem; font-weight: 600;">Monitored Scan Targets</h4>
+              
+              <!-- Custom Target Input Form -->
+              <div class="mt-2" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <input type="text" id="custom-target-url" placeholder="e.g. internal.aws-dev.net" class="search-input" style="flex: 1; font-size: 0.78rem; padding: 6px 10px; margin: 0; min-width: 150px;">
+                <select id="custom-target-type" class="dropdown-control" style="font-size: 0.78rem; padding: 6px; margin: 0; min-width: 100px; background: #0f1016;">
+                  <option value="Primary Domain">Domain</option>
+                  <option value="API Gateway">API Host</option>
+                  <option value="VPN Endpoint">VPN Gate</option>
+                  <option value="Internal Host">Internal Host</option>
+                </select>
+                <button class="btn btn-primary" style="font-size: 0.75rem; padding: 6px 12px;" onclick="addCustomScanTarget()">Add</button>
+              </div>
+              <button class="btn btn-secondary w-full mt-2" style="font-size: 0.75rem; padding: 6px; border: 1px dashed rgba(255,255,255,0.15);" onclick="discoverInternalEndpoints()">Discover Internal Endpoints</button>
+              
+              <div class="asset-list mt-3" id="surface-assets-list" style="flex: 1; overflow-y: auto; max-height: 220px;">
                 <!-- Dynamically updated -->
               </div>
             </div>

@@ -179,6 +179,45 @@ Third-Party Risk Assurance, Cypher Vantage Team`,
       emailDraft: '',
       responseMessage: '',
       responseAttachment: ''
+    },
+    {
+      id: 'act-003',
+      supplierId: 'infosys',
+      domain: 'ICT Security',
+      controlId: 'c5.3',
+      title: 'Missing Monthly Vulnerability Scan Evidence',
+      gapDetails: 'Infosys_Cyber_Policy_2025.pdf states that vulnerability scans are conducted quarterly. Cypher Vantage Cyber Security module requires monthly scanning on systems accessing tenant networks.',
+      status: 'Open Gap',
+      dateCreated: '2026-07-04',
+      emailDraft: '',
+      responseMessage: '',
+      responseAttachment: ''
+    },
+    {
+      id: 'act-004',
+      supplierId: 'infosys',
+      domain: 'Technology Risk',
+      controlId: 'c14.1',
+      title: 'Missing Subcontractor Evaluation Audits',
+      gapDetails: 'No active subcontractor evaluation process exists. Technology Risk Technical module requires annual audits of key subcontractors handling downstream API services.',
+      status: 'Open Gap',
+      dateCreated: '2026-07-04',
+      emailDraft: '',
+      responseMessage: '',
+      responseAttachment: ''
+    },
+    {
+      id: 'act-005',
+      supplierId: 'acme',
+      domain: 'ICT Security',
+      controlId: 'c5.3',
+      title: 'Subcontractor Security Evaluation Gap',
+      gapDetails: 'Acme Services has not submitted contract sign-offs or NDAs for subcontractors. Section 14.0 requires all downstream sub-processors to be bound by equivalent security guidelines.',
+      status: 'Open Gap',
+      dateCreated: '2026-07-05',
+      emailDraft: '',
+      responseMessage: '',
+      responseAttachment: ''
     }
   ],
 
@@ -329,18 +368,14 @@ function renderDashboard() {
   const totalCount = suppliersList.length;
   
   let totalScoreSum = 0;
-  let gapCount = 0;
-  let awaitingResponseCount = 0;
-  
   suppliersList.forEach(s => {
     totalScoreSum += s.complianceScore;
-    if (s.status === 'Awaiting Response') awaitingResponseCount++;
-    s.assessments.forEach(a => {
-      if (a.status === 'Gap') gapCount++;
-    });
   });
 
   const avgCompliance = Math.round(totalScoreSum / totalCount);
+  
+  const gapCount = state.actions.filter(a => a.status === 'Open Gap').length;
+  const awaitingResponseCount = state.actions.filter(a => a.status === 'Awaiting Response').length;
   
   document.getElementById('stat-total-suppliers').innerText = totalCount;
   document.getElementById('stat-compliance-avg').innerText = `${avgCompliance}%`;
@@ -1617,6 +1652,130 @@ window.initAttackSurfaceView = function(supplierId) {
       <span class="terminal-placeholder">Select a supplier above and click "Initiate External Port & SSL Scan" to run real-time footprint discovery.</span>
     `;
   }
+};
+
+window.addCustomScanTarget = function() {
+  const supplierId = document.getElementById('collector-target-supplier').value;
+  const urlInput = document.getElementById('custom-target-url');
+  const typeSelect = document.getElementById('custom-target-type');
+  
+  if (!urlInput || !urlInput.value.trim()) {
+    alert('Please enter a target URL or IP address.');
+    return;
+  }
+  
+  const url = urlInput.value.trim();
+  const type = typeSelect.value;
+  const data = supplierSurfaceData[supplierId];
+  
+  if (data) {
+    if (data.assets.some(a => a.name.toLowerCase() === url.toLowerCase())) {
+      alert('Target already exists in the scan inventory.');
+      return;
+    }
+    
+    let status = 'Secure';
+    if (url.includes('insecure') || url.includes('dev') || url.includes('staging') || url.includes('vulnerable')) {
+      status = 'Vulnerable';
+    }
+    
+    data.assets.push({
+      name: url,
+      type: type,
+      status: status
+    });
+    
+    initAttackSurfaceView(supplierId);
+    urlInput.value = '';
+    showNotification(`Added scan target: ${url} (${type})`);
+  }
+};
+
+window.discoverInternalEndpoints = function() {
+  const supplierId = document.getElementById('collector-target-supplier').value;
+  const data = supplierSurfaceData[supplierId];
+  if (!data) return;
+
+  const statusBadge = document.getElementById('surface-scan-status');
+  if (statusBadge) {
+    statusBadge.innerText = 'Discovering';
+    statusBadge.className = 'terminal-badge running';
+  }
+
+  const logBody = document.getElementById('surface-scan-logs');
+  if (logBody) {
+    logBody.innerHTML = '';
+  }
+
+  const logs = [
+    { text: '[SYSTEM] Initiating internal subnetwork discovery scan...', delay: 100 },
+    { text: '[SYSTEM] Scanning local subnet mask 10.140.0.0/16 via VPN router...', delay: 400 },
+    { text: `[DISCOVERY] Requesting DNS zone transfers for internal zone *.${supplierId}-local.net...`, delay: 800 },
+    { text: '[DISCOVERY] Checking routing tables and active IP leases...', delay: 1200 }
+  ];
+
+  const privateEndpoints = {
+    aws: [
+      { name: 'internal-auth.aws.net', type: 'VPN Endpoint', status: 'Secure' },
+      { name: 'api-staging.aws-internal.net', type: 'Internal Host', status: 'Secure' }
+    ],
+    salesforce: [
+      { name: 'prod-sandbox.salesforce.net', type: 'API Gateway', status: 'Secure' },
+      { name: 'int-vpn.salesforce-private.org', type: 'VPN Endpoint', status: 'Secure' }
+    ],
+    infosys: [
+      { name: 'dev-db.infosys-corp.internal', type: 'Internal Host', status: 'Vulnerable' },
+      { name: 'corp-vpn.infosys.internal', type: 'VPN Endpoint', status: 'Secure' }
+    ],
+    slack: [
+      { name: 'api-internal-teams.slack.net', type: 'API Gateway', status: 'Secure' },
+      { name: 'slack-stage-portal.net', type: 'Internal Host', status: 'Secure' }
+    ],
+    acme: [
+      { name: 'acme-intranet.local', type: 'Internal Host', status: 'Vulnerable' }
+    ]
+  };
+
+  const listToDiscover = privateEndpoints[supplierId] || [];
+
+  listToDiscover.forEach((ep, idx) => {
+    const delay = 1600 + (idx * 600);
+    logs.push({
+      text: `[DISCOVERY] Found active node: <b>${ep.name}</b> (${ep.type}) - Status: ${ep.status}`,
+      delay: delay,
+      callback: () => {
+        if (!data.assets.some(a => a.name === ep.name)) {
+          data.assets.push(ep);
+          initAttackSurfaceView(supplierId);
+        }
+      }
+    });
+  });
+
+  logs.push({
+    text: `[COMPLETE] Discovery complete. Found ${listToDiscover.length} internal corporate scan targets. Added to target list.`,
+    delay: 1600 + (listToDiscover.length * 600) + 300,
+    callback: () => {
+      if (statusBadge) {
+        statusBadge.innerText = 'Idle';
+        statusBadge.className = 'terminal-badge';
+      }
+      showNotification(`Discovered ${listToDiscover.length} internal interfaces.`);
+    }
+  });
+
+  logs.forEach(line => {
+    setTimeout(() => {
+      if (logBody) {
+        const p = document.createElement('p');
+        p.className = 'term-line-info';
+        p.innerHTML = `<span class="term-line-time">${new Date().toTimeString().slice(0, 8)}</span> ${line.text}`;
+        logBody.appendChild(p);
+        logBody.scrollTop = logBody.scrollHeight;
+      }
+      if (line.callback) line.callback();
+    }, line.delay);
+  });
 };
 
 window.runAttackSurfaceScan = function() {
