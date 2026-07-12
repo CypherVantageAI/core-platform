@@ -115,6 +115,15 @@
             </a>
           </li>
           <li>
+            <a href="#" id="nav-manager-ai-risk" class="nav-item" onclick="switchTab('manager-ai-risk')">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span>AI Risk Governance</span>
+              <span class="badge badge-accent">New</span>
+            </a>
+          </li>
+          <li>
             <a href="#" id="nav-manager-obligations" class="nav-item" onclick="switchTab('manager-obligations')">
               <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
               <span>Control Modules Reference</span>
@@ -145,14 +154,16 @@
             </a>
           </li>
         </ul>
-
       <!-- Sidebar Footer -->
       <div class="sidebar-footer">
         <div class="footer-status">
           <div class="status-indicator online"></div>
           <span>CV Session: Secure</span>
         </div>
-        <div class="regulatory-seal">
+        <button class="btn btn-secondary w-full mt-2" style="font-size: 0.72rem; padding: 4px; border: 1px dashed rgba(239,68,68,0.3); color: var(--color-danger); background: rgba(239,68,68,0.05);" onclick="resetDatabase()">
+          Reset Local Database
+        </button>
+        <div class="regulatory-seal mt-2">
           <span>Cypher Vantage Core</span>
           <small>15 Reference Control Modules</small>
         </div>
@@ -507,6 +518,109 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: RISK MANAGER AI RISK GOVERNANCE          -->
+      <!-- ============================================== -->
+      <section id="view-manager-ai-risk" class="content-pane">
+        <div class="view-header">
+          <h2>AI Risk Governance Suite</h2>
+          <p>Audit third-party LLM integrations, classify EU AI Act regulatory risks, and simulate adversarial security testing</p>
+        </div>
+
+        <div class="dashboard-panels">
+          
+          <!-- Left Panel: DLP Gateway & Prompt Sanitizer -->
+          <div class="dashboard-card main-panel">
+            <h3>LLM DLP Data Leakage Gateway</h3>
+            <p class="panel-subtitle">Real-time prompt sanitization proxy strips out corporate secrets and PII before routing to third-party endpoints</p>
+            
+            <div class="form-group mt-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--border-radius-md); padding: 16px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 600;">Outbound DLP Sanitization Proxy</span>
+                <label class="switch-toggle" style="position: relative; display: inline-block; width: 44px; height: 22px;">
+                  <input type="checkbox" id="dlp-toggle" checked style="opacity: 0; width: 0; height: 0;" onchange="toggleDlpProxy()">
+                  <span class="slider-toggle-round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .3s; border-radius: 22px;"></span>
+                </label>
+              </div>
+              <p class="text-xs text-muted mt-1">If enabled, API keys, passwords, credentials, emails, and credit card numbers are scrubbed.</p>
+            </div>
+
+            <div class="mt-4">
+              <h4>DLP Outbound Prompt Tester</h4>
+              <div style="display: flex; flex-direction: column; gap: var(--spacing-sm); margin-top: 10px;">
+                <textarea id="dlp-prompt-input" class="textarea-input" placeholder="Type a prompt containing PII or secrets (e.g. My staging DB password is admin_pass123. Email me at sarah@cv.com)" rows="3" oninput="testDlpSanitizer()"></textarea>
+                <div style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: var(--border-radius-sm); font-family: monospace; font-size: 0.82rem; min-height: 50px;">
+                  <span class="text-xs text-muted block" style="font-family: var(--font-body); margin-bottom: 4px;">Redacted Payload routed to Vendor API:</span>
+                  <div id="dlp-prompt-output" style="color: var(--color-cyan);">[No input entered]</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Automated Adversarial Pentesting -->
+            <div class="mt-5" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+              <h3>Adversarial Agent Pentester</h3>
+              <p class="panel-subtitle">Simulate prompt-injection attacks on integrated third-party AI assistants to audit structural vulnerabilities</p>
+              
+              <div style="display: flex; gap: var(--spacing-sm); margin-top: 15px; flex-wrap: wrap;">
+                <select id="pentest-target" class="dropdown-control" style="margin: 0; flex: 1; min-width: 150px;">
+                  <option value="aws-assistant">AWS Support Agent (Integrated)</option>
+                  <option value="slack-helper">Slack Productivity Bot (Integrated)</option>
+                  <option value="infosys-db-bot">Infosys Database Assistant (Integrated)</option>
+                </select>
+                <button class="btn btn-primary" onclick="runAdversarialTest()">Launch Prompt Injection Audit</button>
+              </div>
+
+              <div class="terminal-card mt-3" style="min-height: 180px;">
+                <div class="terminal-header" style="padding: 8px 12px; background: rgba(0,0,0,0.3);">
+                  <span class="terminal-title" style="font-size: 0.75rem;">ADVERSARIAL ATTACK SIMULATION</span>
+                  <span class="terminal-badge" id="pentest-status">Idle</span>
+                </div>
+                <div class="terminal-body" id="pentest-logs" style="height: 140px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; color: #f43f5e;">
+                  <span class="terminal-placeholder">Select an integrated assistant above and click "Launch Prompt Injection Audit" to test boundary controls.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Panel: EU AI Act Risk Calculator -->
+          <div class="dashboard-card side-panel">
+            <h3>EU AI Act Compliance Assessor</h3>
+            <p class="panel-subtitle">Classify third-party models into legal risk tiers under the EU AI Act framework</p>
+            
+            <div class="form-group mt-3">
+              <label for="ai-purpose">System Purpose</label>
+              <select id="ai-purpose" class="dropdown-control mt-1" onchange="assessAiActCompliance()">
+                <option value="minimal">General chatbot, Spam filter, Translation tool</option>
+                <option value="transparency">Customer-facing LLM Assistant, synthetic media creator</option>
+                <option value="high">CV parsing, credit scoring, employee vetting, critical infrastructure</option>
+                <option value="prohibited">Social scoring, biometric categorization, subliminal influence</option>
+              </select>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--border-radius-md); padding: 16px; margin-top: 20px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="text-muted text-xs">Calculated Tier:</span>
+                <span class="badge badge-success" id="ai-act-tier" style="font-weight: 700;">Minimal Risk</span>
+              </div>
+              
+              <div class="mt-3">
+                <h5 style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">Compliance Requirements:</h5>
+                <ul id="ai-act-requirements" style="padding-left: 16px; margin-top: 6px; font-size: 0.82rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
+                  <li>- No mandatory compliance obligations under EU AI Act.</li>
+                  <li>- Code of conduct recommended.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="quick-contact-box mt-4">
+              <h4>Audit Guidance</h4>
+              <p class="text-xs text-secondary mt-1">If a vendor deploys a high-risk AI system, a conformity assessment, risk registry entry, and post-market tracking plan must be registered in the Cypher Vantage ledger.</p>
+            </div>
+          </div>
+
         </div>
       </section>
 
