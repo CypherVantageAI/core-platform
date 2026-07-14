@@ -532,6 +532,11 @@ body.dark-mode {
   border-color: var(--border-color-focus);
 }
 
+.dropdown-control option {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
 .search-input {
   width: 220px;
 }

@@ -658,7 +658,12 @@
                     <option value="ibs">Important Business Services (IBS)</option>
                     <option value="cis">Critical Internal Services (CIS)</option>
                   </select>
-                  <button class="btn btn-secondary btn-sm" onclick="triggerDrillSimulation()">Simulate Geopolitical/Natural Crisis</button>
+                  <select id="crisis-scenario-select" class="dropdown-control select-sm" onchange="onCrisisScenarioChange(this.value)">
+                    <option value="none">No Simulation Currently Running</option>
+                    <option value="apac-outage">Simulate: APAC Power Outage (DORA Art. 11)</option>
+                    <option value="na-wildfire">Simulate: Oregon Wildfires (US-West Node)</option>
+                    <option value="emea-grid">Simulate: EMEA Energy Grid Outage (Frankfurt Node)</option>
+                  </select>
                 </div>
               </div>
               

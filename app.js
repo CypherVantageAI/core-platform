@@ -439,13 +439,34 @@ window.loadState = function() {
                       name: 'London',
                       threatLevel: 'Nominal',
                       threatColor: 'green',
-                      systems: [],
-                      personnel: [
-                        { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London Office', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
-                      ],
-                      hotspots: [
-                        { type: 'Regulatory Review', desc: 'UK PRA operational resilience review window open' }
-                      ]
+                      subdivisions: {
+                        'london-north': {
+                          name: 'North London (Primary Office)',
+                          threatLevel: 'Nominal',
+                          threatColor: 'green',
+                          systems: [],
+                          personnel: [
+                            { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London North Office', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
+                          ],
+                          hotspots: [
+                            { type: 'Regulatory Review', desc: 'UK PRA operational resilience review window open' }
+                          ]
+                        },
+                        'london-se': {
+                          name: 'SouthEast London (DR Backup Site)',
+                          threatLevel: 'Nominal',
+                          threatColor: 'green',
+                          systems: [
+                            { name: 'AWS London Edge (CIS Auth Relay)', status: 'Active', serviceType: 'cis', description: 'Local OAuth validation node' }
+                          ],
+                          personnel: [
+                            { name: 'Alan Turing', role: 'Security Analyst', location: 'London SE Recovery Hub', contact: 'a.turing@cyphervantage.com', status: 'On Duty' }
+                          ],
+                          hotspots: [
+                            { type: 'Power Alert', desc: 'Grid maintenance scheduled for SouthEast London zone' }
+                          ]
+                        }
+                      }
                     }
                   }
                 }
@@ -2542,6 +2563,8 @@ function getNodeFromPath(path) {
       curr = curr.states[key];
     } else if (curr.cities && curr.cities[key]) {
       curr = curr.cities[key];
+    } else if (curr.subdivisions && curr.subdivisions[key]) {
+      curr = curr.subdivisions[key];
     } else {
       break;
     }
@@ -2574,6 +2597,9 @@ function aggregateResilienceData(node) {
     if (curr.cities) {
       Object.values(curr.cities).forEach(traverse);
     }
+    if (curr.subdivisions) {
+      Object.values(curr.subdivisions).forEach(traverse);
+    }
   }
 
   traverse(node);
@@ -2584,49 +2610,124 @@ function getSubLocations(node) {
   if (node.countries) return Object.keys(node.countries).map(k => ({ key: k, name: node.countries[k].name, type: 'Country' }));
   if (node.states) return Object.keys(node.states).map(k => ({ key: k, name: node.states[k].name, type: 'State' }));
   if (node.cities) return Object.keys(node.cities).map(k => ({ key: k, name: node.cities[k].name, type: 'City' }));
+  if (node.subdivisions) return Object.keys(node.subdivisions).map(k => ({ key: k, name: node.subdivisions[k].name, type: 'Sub-division' }));
   return [];
 }
+
+const pinCoordinates = {
+  na: { left: '25%', top: '40%', label: 'North America' },
+  eu: { left: '51%', top: '36%', label: 'Europe' },
+  apac: { left: '78%', top: '62%', label: 'Asia-Pacific' },
+  us: { left: '23%', top: '38%', label: 'United States' },
+  de: { left: '52%', top: '35%', label: 'Germany' },
+  uk: { left: '48%', top: '31%', label: 'United Kingdom' },
+  in: { left: '72%', top: '56%', label: 'India' },
+  sg: { left: '78%', top: '62%', label: 'Singapore' },
+  va: { left: '27%', top: '43%', label: 'Virginia' },
+  or: { left: '17%', top: '34%', label: 'Oregon' },
+  hesse: { left: '52%', top: '35%', label: 'Hesse' },
+  england: { left: '48%', top: '31%', label: 'England' },
+  karnataka: { left: '72%', top: '56%', label: 'Karnataka' },
+  central: { left: '78%', top: '62%', label: 'Central Region' },
+  ashburn: { left: '27%', top: '43%', label: 'Ashburn' },
+  boardman: { left: '17%', top: '34%', label: 'Boardman' },
+  frankfurt: { left: '52%', top: '35%', label: 'Frankfurt' },
+  london: { left: '48%', top: '31%', label: 'London' },
+  bangalore: { left: '72%', top: '56%', label: 'Bangalore' },
+  jurong: { left: '78%', top: '62%', label: 'Jurong' },
+  'london-north': { left: '47.5%', top: '29%', label: 'North London' },
+  'london-se': { left: '48.5%', top: '32%', label: 'SouthEast London' }
+};
 
 window.renderResilienceDashboard = function() {
   const path = state.resilience.currentPath || ['Global'];
   const currentNode = getNodeFromPath(path);
   const filterType = state.resilience.filterType || 'all';
 
-  // Render Map pins based on state
-  const pins = {
-    na: document.getElementById('pin-na'),
-    eu: document.getElementById('pin-eu'),
-    apac: document.getElementById('pin-apac')
-  };
+  // Render Map pins dynamically based on current path and zoom level
+  const mapGrid = document.getElementById('resilience-world-map');
+  if (mapGrid) {
+    // Clear any existing pins (keep the SVG connector path elements)
+    mapGrid.querySelectorAll('.map-node-pin').forEach(el => el.remove());
 
-  // Set active class on active pin based on selected region
-  const selectedRegion = state.resilience.selectedRegion || 'na';
-  Object.keys(pins).forEach(key => {
-    const pin = pins[key];
-    if (pin) {
-      if (key === selectedRegion) {
-        pin.classList.add('active');
-      } else {
-        pin.classList.remove('active');
-      }
-
-      // Dynamic pin colors depending on active drill or threat levels
-      pin.className = `map-node-pin ${key}-pin`;
-      
-      let threatLevel = state.resilience.regions[key].threatLevel;
-      if (state.resilience.activeDrill && state.resilience.activeDrill === 'apac-outage' && key === 'apac') {
-        pin.classList.add('hotspot-active'); // Red pulse
-      } else if (state.resilience.activeDrill && state.resilience.activeDrill === 'na-wildfire' && key === 'na') {
-        pin.classList.add('hotspot-active'); // Red pulse
-      } else if (threatLevel === 'High') {
-        pin.classList.add('hotspot-active');
-      } else if (threatLevel === 'Moderate') {
-        pin.classList.add('hotspot-warning');
-      } else {
-        pin.classList.add('status-nominal');
-      }
+    // Determine what pins to show: children of the current node, or the node itself if at leaf
+    const children = getSubLocations(currentNode);
+    let pinsToShow = [];
+    if (children.length > 0) {
+      pinsToShow = children.map(c => c.key);
+    } else {
+      pinsToShow = [path[path.length - 1]];
     }
-  });
+
+    pinsToShow.forEach(key => {
+      const coord = pinCoordinates[key];
+      if (!coord) return;
+
+      const pinEl = document.createElement('div');
+      pinEl.className = `map-node-pin ${key}-pin`;
+      pinEl.style.left = coord.left;
+      pinEl.style.top = coord.top;
+
+      let threatLevel = 'Nominal';
+      let nodeData = null;
+
+      // Find node data
+      if (currentNode[key]) nodeData = currentNode[key];
+      else if (currentNode.countries && currentNode.countries[key]) nodeData = currentNode.countries[key];
+      else if (currentNode.states && currentNode.states[key]) nodeData = currentNode.states[key];
+      else if (currentNode.cities && currentNode.cities[key]) nodeData = currentNode.cities[key];
+      else if (currentNode.subdivisions && currentNode.subdivisions[key]) nodeData = currentNode.subdivisions[key];
+      else nodeData = currentNode;
+
+      if (nodeData) {
+        threatLevel = nodeData.threatLevel || 'Nominal';
+      }
+
+      // Check active simulation overrides
+      if (state.resilience.activeDrill === 'apac-outage' && (key === 'apac' || key === 'sg' || key === 'central' || key === 'jurong' || key === 'in' || key === 'karnataka' || key === 'bangalore')) {
+        pinEl.classList.add('hotspot-active');
+      } else if (state.resilience.activeDrill === 'na-wildfire' && (key === 'na' || key === 'us' || key === 'or' || key === 'boardman')) {
+        pinEl.classList.add('hotspot-active');
+      } else if (state.resilience.activeDrill === 'emea-grid' && (key === 'eu' || key === 'de' || key === 'hesse' || key === 'frankfurt')) {
+        pinEl.classList.add('hotspot-active');
+      } else if (state.resilience.tlptActive) {
+        if (state.resilience.selectedScenario === 'ransomware' && (key === 'na' || key === 'us' || key === 'or' || key === 'boardman')) {
+          pinEl.classList.add('hotspot-active');
+        } else if (state.resilience.selectedScenario === 'supplychain' && (key === 'apac' || key === 'in' || key === 'karnataka' || key === 'bangalore')) {
+          pinEl.classList.add('hotspot-active');
+        } else if (state.resilience.selectedScenario === 'ddos' && (key === 'apac' || key === 'sg' || key === 'central' || key === 'jurong')) {
+          pinEl.classList.add('hotspot-active');
+        } else if (state.resilience.selectedScenario === 'insider' && (key === 'eu' || key === 'de' || key === 'hesse' || key === 'frankfurt')) {
+          pinEl.classList.add('hotspot-active');
+        }
+      } else if (threatLevel === 'High') {
+        pinEl.classList.add('hotspot-active');
+      } else if (threatLevel === 'Moderate') {
+        pinEl.classList.add('hotspot-warning');
+      } else {
+        pinEl.classList.add('status-nominal');
+      }
+
+      // Click callback
+      if (children.length > 0) {
+        pinEl.onclick = () => drillResilienceDown(key);
+        pinEl.style.cursor = 'pointer';
+      }
+
+      pinEl.innerHTML = `
+        <span class="pulse-ring"></span>
+        <span class="pin-dot"></span>
+        <span class="pin-label">${coord.label}</span>
+      `;
+      mapGrid.appendChild(pinEl);
+    });
+  }
+
+  // Sync crisis dropdown UI state
+  const crisisSelect = document.getElementById('crisis-scenario-select');
+  if (crisisSelect) {
+    crisisSelect.value = state.resilience.activeDrill || 'none';
+  }
 
   // Render DORA Compliance status tags based on actual supplier table metrics
   const testingPillarStatus = document.getElementById('pillar-status-testing');
@@ -2688,6 +2789,8 @@ window.renderResilienceDashboard = function() {
       else if (name === 'london') displayName = 'London';
       else if (name === 'bangalore') displayName = 'Bangalore';
       else if (name === 'jurong') displayName = 'Jurong';
+      else if (name === 'london-north') displayName = 'North London';
+      else if (name === 'london-se') displayName = 'SouthEast London';
 
       return `<span class="breadcrumb-item" style="cursor: pointer; text-decoration: underline;" onclick="navigateResilienceBreadcrumb(${index})">${displayName}</span>`;
     }).join(' <span style="color: var(--color-text-secondary); pointer-events: none;">&gt;</span> ');
@@ -2722,6 +2825,9 @@ window.renderResilienceDashboard = function() {
       } else if (state.resilience.activeDrill === 'na-wildfire' && sys.name.includes('Oregon')) {
         displayStatus = 'FAILING OVER (Drill)';
         statusClass = 'status-yellow';
+      } else if (state.resilience.activeDrill === 'emea-grid' && sys.name.includes('Frankfurt')) {
+        displayStatus = 'OFFLINE (Grid Failure)';
+        statusClass = 'status-red';
       } else if (state.resilience.tlptActive) {
         if (state.resilience.selectedScenario === 'ransomware' && sys.name.includes('Oregon')) {
           if (state.resilience.tlptPhase === 'exec') {
@@ -2795,6 +2901,10 @@ window.renderResilienceDashboard = function() {
       displayThreatLevel = 'CRITICAL DRILL';
       displayThreatColor = 'red';
       localHotspots.unshift({ type: 'Drill Simulation', desc: 'FAILOVER DRILL ACTIVE: Wildfire Emergency near Oregon AZ' });
+    } else if (state.resilience.activeDrill === 'emea-grid' && path.includes('eu')) {
+      displayThreatLevel = 'CRITICAL DRILL';
+      displayThreatColor = 'red';
+      localHotspots.unshift({ type: 'Drill Simulation', desc: 'FAILOVER DRILL ACTIVE: Geopolitical Power Grid Outage in Germany' });
     } else if (state.resilience.tlptActive) {
       if (state.resilience.selectedScenario === 'ransomware' && path.includes('na')) {
         displayThreatLevel = 'RED TEAM ATTACK';
@@ -2915,9 +3025,21 @@ window.filterResilienceMap = function(filterVal) {
   renderResilienceDashboard();
 };
 
-window.triggerDrillSimulation = function() {
-  const drills = ['apac-outage', 'na-wildfire'];
-  const chosen = drills[Math.floor(Math.random() * drills.length)];
+window.onCrisisScenarioChange = function(selectVal) {
+  if (selectVal === 'none') {
+    resetResilienceDrill();
+  } else {
+    triggerDrillSimulation(selectVal);
+  }
+};
+
+window.triggerDrillSimulation = function(scenario) {
+  let chosen = scenario;
+  if (!chosen) {
+    const drills = ['apac-outage', 'na-wildfire', 'emea-grid'];
+    chosen = drills[Math.floor(Math.random() * drills.length)];
+  }
+
   state.resilience.activeDrill = chosen;
   
   const banner = document.getElementById('drill-alert-banner');
@@ -2928,10 +3050,14 @@ window.triggerDrillSimulation = function() {
       bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Simulated regional power outage in APAC Node (Infosys database & Google Cloud SG). Verify automatic failover and offline notifications.`;
       state.resilience.selectedRegion = 'apac';
       state.resilience.currentPath = ['Global', 'apac'];
-    } else {
+    } else if (chosen === 'na-wildfire') {
       bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Wildfire threat near Oregon AZ (Azure US-West). Simulated failover testing of identity directories.`;
       state.resilience.selectedRegion = 'na';
       state.resilience.currentPath = ['Global', 'na', 'us', 'or'];
+    } else if (chosen === 'emea-grid') {
+      bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Geopolitical energy grid collapse simulated in Germany. Testing Frankfurt AWS clearing node failovers.`;
+      state.resilience.selectedRegion = 'eu';
+      state.resilience.currentPath = ['Global', 'eu', 'de', 'hesse', 'frankfurt'];
     }
   }
 
@@ -2950,6 +3076,12 @@ window.resetResilienceDrill = function() {
   const banner = document.getElementById('drill-alert-banner');
   if (banner) {
     banner.classList.add('hidden');
+  }
+
+  // Reset dropdown select state
+  const crisisSelect = document.getElementById('crisis-scenario-select');
+  if (crisisSelect) {
+    crisisSelect.value = 'none';
   }
 
   state.activityLog.unshift({
