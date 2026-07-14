@@ -101,8 +101,19 @@
           <li>
             <a href="#" id="nav-manager-suppliers" class="nav-item" onclick="switchTab('manager-suppliers')">
               <svg class="nav-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>
-              <span>Suppliers Directory</span>
+              <span>Nth-Party Suppliers</span>
             </a>
+            <ul class="nav-sub-list" style="list-style: none; padding-left: 32px; margin-top: 2px; margin-bottom: 4px;">
+              <li>
+                <a href="#" id="nav-manager-actions" class="nav-sub-item" onclick="switchTab('manager-actions'); event.stopPropagation();">
+                  <span style="display: flex; align-items: center; gap: 6px;">
+                    <svg class="nav-icon" style="width: 13px; height: 13px; margin: 0;" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5 13H7v-2h10v2zm0-4H7v-2h10v2zm-3-4H7V7h7v2z" fill="currentColor"/></svg>
+                    <span>Follow-up Actions</span>
+                  </span>
+                  <span id="badge-actions-count" class="badge badge-warning" style="font-size: 0.65rem; padding: 1px 4px; border-radius: 4px;">2</span>
+                </a>
+              </li>
+            </ul>
           </li>
           <li class="nav-section">ASSESSMENT & AI</li>
           <li>
@@ -110,13 +121,6 @@
               <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
               <span>AI Auto-Collector</span>
               <span class="badge badge-accent">Live</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" id="nav-manager-actions" class="nav-item" onclick="switchTab('manager-actions')">
-              <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5 13H7v-2h10v2zm0-4H7v-2h10v2zm-3-4H7V7h7v2z" fill="currentColor"/></svg>
-              <span>Follow-up Actions</span>
-              <span id="badge-actions-count" class="badge badge-warning">2</span>
             </a>
           </li>
           <li>
@@ -357,8 +361,8 @@
       <section id="view-manager-suppliers" class="content-pane">
         <div class="view-header flex-header">
           <div>
-            <h2>Suppliers Compliance Directory</h2>
-            <p>Track assessment status, active gaps, and document validation results for third-party entities</p>
+            <h2>Nth-Party Suppliers Compliance Directory</h2>
+            <p>Track assessment status, active gaps, sub-contractor details, and document validation results for third-party and Nth-party entities</p>
           </div>
           <div class="filter-controls">
             <input type="text" id="supplier-search-input" placeholder="Search suppliers..." class="search-input" onkeyup="filterSuppliersTable()">
@@ -1153,6 +1157,10 @@
               <span class="label">Pending Review / Gaps</span>
               <h3 id="modal-unmet-controls">1</h3>
             </div>
+          </div>
+          <div id="modal-subcontractors-container" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 8px 12px; border-radius: var(--border-radius-sm); margin-bottom: 15px; font-size: 0.78rem; display: flex; align-items: center; justify-content: space-between;">
+            <span><strong>Nth-Party Sub-contractors:</strong></span>
+            <span id="modal-subcontractors-list" style="color: var(--color-cyan); font-weight: 600;">Cloudflare, Equinix</span>
           </div>
 
           <div class="obligation-details-list mt-4" id="modal-obligations-list">

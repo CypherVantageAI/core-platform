@@ -85,6 +85,7 @@ let state = {
       contactName: 'David Vance',
       contactEmail: 'compliance@aws.amazon.com',
       avatar: 'AWS',
+      subcontractors: ['Cloudflare (Edge CDN)', 'Equinix (Colocation)'],
       documents: [
         { name: 'AWS_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-02-10', scanned: '2026-07-01', status: 'Valid' },
         { name: 'ISO_27001_Certificate_AWS.pdf', type: 'ISO Certificate', date: '2024-11-05', scanned: '2026-07-01', status: 'Valid' },
@@ -113,6 +114,7 @@ let state = {
       contactName: 'Elena Rostova',
       contactEmail: 'security@salesforce.com',
       avatar: 'SF',
+      subcontractors: ['AWS (Hosting Infrastructure)', 'Twilio (SMS Gateway)'],
       documents: [
         { name: 'SFDC_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-03-01', scanned: '2026-07-02', status: 'Valid' },
         { name: 'Salesforce_BCP_ExecSummary_2025.pdf', type: 'Resilience Evidence', date: '2025-04-10', scanned: '2026-07-02', status: 'Valid' }
@@ -138,6 +140,7 @@ let state = {
       contactName: 'Rajesh Kumar',
       contactEmail: 'compliance_team@infosys.com',
       avatar: 'INF',
+      subcontractors: ['Wipro Ltd (Systems Integration)', 'TATA Consultancy (Operations)'],
       documents: [
         { name: 'Infosys_Cyber_Policy_2025.pdf', type: 'Policy Document', date: '2025-01-15', scanned: '2026-07-03', status: 'Valid' }
       ],
@@ -162,6 +165,7 @@ let state = {
       contactName: 'Marcus Aurelius',
       contactEmail: 'compliance@slack.com',
       avatar: 'SL',
+      subcontractors: ['AWS (Hosting Infrastructure)', 'Fastly (Edge Delivery)'],
       documents: [
         { name: 'Slack_SOC_3_Report_2025.pdf', type: 'SOC 2/3 Report', date: '2025-02-15', scanned: '2026-07-04', status: 'Valid' },
         { name: 'Slack_BCP_Failover_2025.pdf', type: 'Resilience Evidence', date: '2025-05-20', scanned: '2026-07-04', status: 'Valid' }
@@ -187,6 +191,7 @@ let state = {
       contactName: 'Wile E. Coyote',
       contactEmail: 'wecoyote@acme.com',
       avatar: 'AC',
+      subcontractors: ['DigitalOcean (Hosting)', 'Stripe (Payments Processing)'],
       documents: [
         { name: 'Acme_Security_Framework_v2.pdf', type: 'Policy Document', date: '2024-08-11', scanned: '2026-07-05', status: 'Valid' },
         { name: 'Acme_BCP_TestDoc_2025.pdf', type: 'Resilience Evidence', date: '2025-06-01', scanned: '2026-07-05', status: 'Valid' }
@@ -571,12 +576,12 @@ window.switchTab = function(tabId) {
     targetPane.classList.add('active');
   }
 
-  // Deactivate all nav items
-  document.querySelectorAll('.nav-item').forEach(item => {
+  // Deactivate all nav items and sub-items
+  document.querySelectorAll('.nav-item, .nav-sub-item').forEach(item => {
     item.classList.remove('active');
   });
 
-  // Activate matching nav item
+  // Activate matching nav item or sub-item
   const activeNav = document.getElementById(`nav-${tabId}`);
   if (activeNav) {
     activeNav.classList.add('active');
@@ -739,7 +744,10 @@ function renderSuppliersTable() {
           <div class="user-avatar-sm" style="background: var(--gradient-accent)">${s.avatar}</div>
           <div>
             <span class="table-supplier-name">${s.name}</span>
-            <small class="block text-muted">${s.contactEmail}</small>
+            <small class="block text-muted" style="font-size: 0.72rem;">${s.contactEmail}</small>
+            <div style="margin-top: 4px; font-size: 0.68rem; color: var(--color-cyan);">
+              <span style="opacity: 0.65; color: var(--text-secondary);">Sub-contractors:</span> ${s.subcontractors ? s.subcontractors.join(', ') : 'None'}
+            </div>
           </div>
         </div>
       </td>
@@ -797,6 +805,11 @@ window.openSupplierModal = function(supplierId) {
   const totalCount = s.assessments.length;
   document.getElementById('modal-met-controls').innerText = `${metCount} / ${totalCount}`;
   document.getElementById('modal-unmet-controls').innerText = totalCount - metCount;
+
+  const subList = document.getElementById('modal-subcontractors-list');
+  if (subList) {
+    subList.innerText = s.subcontractors ? s.subcontractors.join(', ') : 'None';
+  }
 
   // Toggle modal button depending on status
   const btnAction = document.getElementById('modal-btn-action');
