@@ -1,7 +1,7 @@
 {
   "name": "cypher-vantage-op-resilience",
   "version": "1.0.0",
-  "description": "Cypher Vantage Third-Party Risk Management System with simulated AI Agents and Supplier Portal.",
+  "description": "Cypher Vantage is an Operational Resilience and Third-Party Supplier Risk Management System with simulated AI Agents and Supplier Access Portal for issue remediation tracking.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
