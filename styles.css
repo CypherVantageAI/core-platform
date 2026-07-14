@@ -2582,4 +2582,22 @@ textarea:focus-visible {
   background: rgba(6, 182, 212, 0.05);
 }
 
+/* Simulation Scanner and Loader Animations */
+@keyframes scanEffect {
+  0% { top: 0%; opacity: 0.1; }
+  50% { opacity: 1; }
+  100% { top: 100%; opacity: 0.1; }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spinSlow 0.8s linear infinite;
+  transform-origin: center;
+}
+
+
 

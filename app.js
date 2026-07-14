@@ -2721,14 +2721,8 @@ window.renderResilienceDashboard = function() {
     // Clear any existing pins (keep the SVG connector path elements)
     mapGrid.querySelectorAll('.map-node-pin').forEach(el => el.remove());
 
-    // Determine what pins to show: children of the current node, or the node itself if at leaf
-    const children = getSubLocations(currentNode);
-    let pinsToShow = [];
-    if (children.length > 0) {
-      pinsToShow = children.map(c => c.key);
-    } else {
-      pinsToShow = [path[path.length - 1]];
-    }
+    // Map always shows all regions
+    const pinsToShow = ['na', 'eu', 'apac'];
 
     pinsToShow.forEach(key => {
       const coord = pinCoordinates[key];
@@ -2740,15 +2734,7 @@ window.renderResilienceDashboard = function() {
       pinEl.style.top = coord.top;
 
       let threatLevel = 'Nominal';
-      let nodeData = null;
-
-      // Find node data
-      if (currentNode[key]) nodeData = currentNode[key];
-      else if (currentNode.countries && currentNode.countries[key]) nodeData = currentNode.countries[key];
-      else if (currentNode.states && currentNode.states[key]) nodeData = currentNode.states[key];
-      else if (currentNode.cities && currentNode.cities[key]) nodeData = currentNode.cities[key];
-      else if (currentNode.subdivisions && currentNode.subdivisions[key]) nodeData = currentNode.subdivisions[key];
-      else nodeData = currentNode;
+      let nodeData = state.resilience.hierarchy[key];
 
       if (nodeData) {
         threatLevel = nodeData.threatLevel || 'Nominal';
@@ -2788,20 +2774,19 @@ window.renderResilienceDashboard = function() {
         pinEl.classList.add('status-nominal');
       }
 
-      // Click callback: Drill down if children are available, otherwise select/focus leaf node
+      // Clicking the pin sets the current path to this region to focus the detail card
       pinEl.onclick = () => {
-        if (children.length > 0 && key !== path[path.length - 1]) {
-          drillResilienceDown(key);
-        } else {
-          // Leaf node select: push to path if not already there to update detail card on the right
-          if (path[path.length - 1] !== key) {
-            state.resilience.currentPath.push(key);
-            saveState();
-            renderResilienceDashboard();
-          }
-        }
+        state.resilience.currentPath = ['Global', key];
+        state.resilience.selectedRegion = key;
+        saveState();
+        renderResilienceDashboard();
       };
       pinEl.style.cursor = 'pointer';
+
+      // Highlight active region pin
+      if (path.includes(key)) {
+        pinEl.classList.add('active');
+      }
 
       pinEl.innerHTML = `
         <span class="pulse-ring"></span>
@@ -2812,10 +2797,13 @@ window.renderResilienceDashboard = function() {
     });
   }
 
-  // Sync crisis dropdown UI state
-  const crisisSelect = document.getElementById('crisis-scenario-select');
-  if (crisisSelect) {
-    crisisSelect.value = state.resilience.activeDrill || 'none';
+  // Sync custom simulation select UI states
+  const locSelect = document.getElementById('simulation-location-select');
+  const threatSelect = document.getElementById('simulation-threat-select');
+  const currentDrill = state.resilience.activeDrill;
+  if (locSelect && threatSelect && currentDrill && currentDrill.isCustom) {
+    locSelect.value = currentDrill.location;
+    threatSelect.value = currentDrill.threat;
   }
 
   // Render DORA Compliance status tags based on actual supplier table metrics
@@ -2908,7 +2896,19 @@ window.renderResilienceDashboard = function() {
       let displayStatus = sys.status || 'Active';
       let statusClass = 'status-green';
 
-      if (state.resilience.activeDrill === 'apac-outage' && (sys.name.includes('IN-South') || sys.name.includes('SG'))) {
+      const currentDrill = state.resilience.activeDrill;
+      if (currentDrill && typeof currentDrill === 'object' && currentDrill.isCustom && isSystemAffectedByCustomDrill(sys, currentDrill)) {
+        const threatNames = {
+          grid: 'Grid Failure',
+          wildfire: 'Wildfire Outage',
+          ddos: 'DDoS Outage',
+          fibercut: 'Fiber Cut Outage',
+          ransomware: 'Ransomware Outage',
+          tlpt: 'TLPT Simulated Compromise'
+        };
+        displayStatus = `OFFLINE (${threatNames[currentDrill.threat] || 'Simulated Threat'})`;
+        statusClass = 'status-red';
+      } else if (state.resilience.activeDrill === 'apac-outage' && (sys.name.includes('IN-South') || sys.name.includes('SG'))) {
         displayStatus = 'OFFLINE (Rerouting...)';
         statusClass = 'status-red';
       } else if (state.resilience.activeDrill === 'na-wildfire' && sys.name.includes('Oregon')) {
@@ -3114,50 +3114,129 @@ window.filterResilienceMap = function(filterVal) {
   renderResilienceDashboard();
 };
 
-window.onCrisisScenarioChange = function(selectVal) {
-  if (selectVal === 'none') {
-    resetResilienceDrill();
-  } else {
-    triggerDrillSimulation(selectVal);
+function isSystemAffectedByCustomDrill(sys, drill) {
+  if (!drill || !drill.isCustom) return false;
+  const loc = drill.location;
+  if (loc === 'na') {
+    return sys.name.includes('us-east-1a') || sys.name.includes('Oregon');
   }
-};
+  if (loc === 'eu') {
+    return sys.name.includes('Frankfurt') || sys.name.includes('London');
+  }
+  if (loc === 'apac') {
+    return sys.name.includes('IN-South') || sys.name.includes('SG');
+  }
+  if (loc === 'ashburn' && sys.name.includes('us-east-1a')) return true;
+  if (loc === 'boardman' && sys.name.includes('Oregon')) return true;
+  if (loc === 'frankfurt' && sys.name.includes('Frankfurt')) return true;
+  if (loc === 'london' && sys.name.includes('London')) return true;
+  if (loc === 'bangalore' && sys.name.includes('IN-South')) return true;
+  if (loc === 'jurong' && sys.name.includes('SG')) return true;
+  return false;
+}
 
-window.triggerDrillSimulation = function(scenario) {
-  let chosen = scenario;
-  if (!chosen) {
-    const drills = ['apac-outage', 'na-wildfire', 'emea-grid'];
-    chosen = drills[Math.floor(Math.random() * drills.length)];
+window.runCustomSimulation = function() {
+  const locSelect = document.getElementById('simulation-location-select');
+  const threatSelect = document.getElementById('simulation-threat-select');
+  if (!locSelect || !threatSelect) return;
+
+  const location = locSelect.value;
+  const threat = threatSelect.value;
+
+  // Show dynamic loader overlay
+  const overlay = document.getElementById('simulation-loader-overlay');
+  const overlayText = document.getElementById('simulation-loader-text');
+  if (overlay && overlayText) {
+    overlayText.innerText = `Calibrating simulation parameters for ${location.toUpperCase()} node - [${threat.toUpperCase()}] threat...`;
+    overlay.classList.remove('hidden');
+    overlay.style.opacity = '1';
   }
 
-  state.resilience.activeDrill = chosen;
-  
-  const banner = document.getElementById('drill-alert-banner');
-  const bannerText = document.getElementById('drill-alert-text');
-  if (banner && bannerText) {
-    banner.classList.remove('hidden');
-    if (chosen === 'apac-outage') {
-      bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Simulated regional power outage in APAC Node (Infosys database & Google Cloud SG). Verify automatic failover and offline notifications.`;
-      state.resilience.selectedRegion = 'apac';
-      state.resilience.currentPath = ['Global', 'apac'];
-    } else if (chosen === 'na-wildfire') {
-      bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Wildfire threat near Oregon AZ (Azure US-West). Simulated failover testing of identity directories.`;
-      state.resilience.selectedRegion = 'na';
-      state.resilience.currentPath = ['Global', 'na', 'us', 'or'];
-    } else if (chosen === 'emea-grid') {
-      bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Geopolitical energy grid collapse simulated in Germany. Testing Frankfurt AWS clearing node failovers.`;
-      state.resilience.selectedRegion = 'eu';
-      state.resilience.currentPath = ['Global', 'eu', 'de', 'hesse', 'frankfurt'];
+  // Disable simulation button temporarily
+  const btn = document.getElementById('btn-run-simulation');
+  if (btn) btn.disabled = true;
+
+  // Simulate progress / calculation (1.5 seconds)
+  setTimeout(() => {
+    // Hide overlay
+    if (overlay) {
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.classList.add('hidden'), 300);
     }
-  }
+    if (btn) btn.disabled = false;
 
-  state.activityLog.unshift({
-    time: 'Just Now',
-    text: `⚠️ <b>DORA Drill Started:</b> Activated simulated resilience threat <b>[${chosen.toUpperCase()}]</b>. Verifying failover integrity.`
-  });
+    // Set custom drill simulation state
+    state.resilience.activeDrill = {
+      isCustom: true,
+      location: location,
+      threat: threat
+    };
 
-  saveState();
-  renderResilienceDashboard();
-  renderDashboard();
+    // Construct user-friendly location and threat names
+    const locationNames = {
+      na: 'North America (Region)',
+      eu: 'Europe (Region)',
+      apac: 'Asia-Pacific (Region)',
+      ashburn: 'Ashburn DC (Virginia)',
+      boardman: 'Boardman DC (Oregon)',
+      frankfurt: 'Frankfurt DC (Germany)',
+      london: 'London Hub (UK)',
+      bangalore: 'Bangalore Hub (India)',
+      jurong: 'Jurong DC (Singapore)'
+    };
+    const threatNames = {
+      grid: 'Power Grid Failure',
+      wildfire: 'Wildfire Emergency',
+      ddos: 'Volumetric DDoS Attack',
+      fibercut: 'Fiber-Optic Cable Cut',
+      ransomware: 'Ransomware Encryption',
+      tlpt: 'TIBER-EU Red Team Test'
+    };
+
+    const locationName = locationNames[location] || location.toUpperCase();
+    const threatName = threatNames[threat] || threat.toUpperCase();
+
+    // Show banner details
+    const banner = document.getElementById('drill-alert-banner');
+    const bannerText = document.getElementById('drill-alert-text');
+    if (banner && bannerText) {
+      banner.classList.remove('hidden');
+      bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Simulated <strong>${threatName}</strong> on <strong>${locationName}</strong>. Mapped systems status updated automatically.`;
+    }
+
+    // Auto focus detail panel on simulated location
+    if (location === 'na' || location === 'eu' || location === 'apac') {
+      state.resilience.currentPath = ['Global', location];
+      state.resilience.selectedRegion = location;
+    } else if (location === 'ashburn') {
+      state.resilience.currentPath = ['Global', 'na', 'us', 'va', 'ashburn'];
+      state.resilience.selectedRegion = 'na';
+    } else if (location === 'boardman') {
+      state.resilience.currentPath = ['Global', 'na', 'us', 'or', 'boardman'];
+      state.resilience.selectedRegion = 'na';
+    } else if (location === 'frankfurt') {
+      state.resilience.currentPath = ['Global', 'eu', 'de', 'hesse', 'frankfurt'];
+      state.resilience.selectedRegion = 'eu';
+    } else if (location === 'london') {
+      state.resilience.currentPath = ['Global', 'eu', 'uk', 'england', 'london'];
+      state.resilience.selectedRegion = 'eu';
+    } else if (location === 'bangalore') {
+      state.resilience.currentPath = ['Global', 'apac', 'in', 'karnataka', 'bangalore'];
+      state.resilience.selectedRegion = 'apac';
+    } else if (location === 'jurong') {
+      state.resilience.currentPath = ['Global', 'apac', 'sg', 'central', 'jurong'];
+      state.resilience.selectedRegion = 'apac';
+    }
+
+    state.activityLog.unshift({
+      time: 'Just Now',
+      text: `⚠️ <b>DORA Custom Simulation:</b> Triggered <b>[${threatName}]</b> at <b>[${locationName}]</b>. Verifying resilience compliance.`
+    });
+
+    saveState();
+    renderResilienceDashboard();
+    renderDashboard();
+  }, 1500);
 };
 
 window.resetResilienceDrill = function() {
@@ -3167,11 +3246,11 @@ window.resetResilienceDrill = function() {
     banner.classList.add('hidden');
   }
 
-  // Reset dropdown select state
-  const crisisSelect = document.getElementById('crisis-scenario-select');
-  if (crisisSelect) {
-    crisisSelect.value = 'none';
-  }
+  // Reset custom controls if they exist
+  const locationSelect = document.getElementById('simulation-location-select');
+  const threatSelect = document.getElementById('simulation-threat-select');
+  if (locationSelect) locationSelect.value = 'na';
+  if (threatSelect) threatSelect.value = 'grid';
 
   state.activityLog.unshift({
     time: 'Just Now',

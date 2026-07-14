@@ -657,23 +657,53 @@
             <div class="dashboard-card map-card">
               <div class="card-header-resilience">
                 <h3>Global Service Infrastructure & Threat Tracker</h3>
-                <div class="map-actions">
+                <div class="map-actions" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                   <select id="map-filter-service" class="dropdown-control select-sm" onchange="filterResilienceMap(this.value)">
                     <option value="all">All Services (IBS & CIS)</option>
                     <option value="ibs">Important Business Services (IBS)</option>
                     <option value="cis">Critical Internal Services (CIS)</option>
                   </select>
-                  <select id="crisis-scenario-select" class="dropdown-control select-sm" onchange="onCrisisScenarioChange(this.value)">
-                    <option value="none">No Simulation Currently Running</option>
-                    <option value="apac-outage">Simulate: APAC Power Outage (DORA Art. 11)</option>
-                    <option value="na-wildfire">Simulate: Oregon Wildfires (US-West Node)</option>
-                    <option value="emea-grid">Simulate: EMEA Energy Grid Outage (Frankfurt Node)</option>
-                  </select>
+                  <div style="display: flex; gap: 4px; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 2px 6px; border-radius: var(--border-radius-sm);">
+                    <span style="font-size: 0.68rem; opacity: 0.7; font-weight: 600; text-transform: uppercase; color: var(--color-cyan);">Drill Config:</span>
+                    <select id="simulation-location-select" class="dropdown-control select-sm" style="border: none; background: transparent; padding-right: 15px; color: var(--color-text);">
+                      <option value="na">North America (Region)</option>
+                      <option value="eu">Europe (Region)</option>
+                      <option value="apac">Asia-Pacific (Region)</option>
+                      <option value="ashburn">Ashburn DC (Virginia)</option>
+                      <option value="boardman">Boardman DC (Oregon)</option>
+                      <option value="frankfurt">Frankfurt DC (Germany)</option>
+                      <option value="london">London Hub (UK)</option>
+                      <option value="bangalore">Bangalore Hub (India)</option>
+                      <option value="jurong">Jurong DC (Singapore)</option>
+                    </select>
+                    <select id="simulation-threat-select" class="dropdown-control select-sm" style="border: none; background: transparent; padding-right: 15px; color: var(--color-text);">
+                      <option value="grid">Power Grid Failure (DORA Art. 11)</option>
+                      <option value="wildfire">Wildfire Emergency</option>
+                      <option value="ddos">Volumetric DDoS Attack</option>
+                      <option value="fibercut">Fiber-Optic Cable Cut</option>
+                      <option value="ransomware">Ransomware Encryption</option>
+                      <option value="tlpt">TIBER-EU Red Team Test</option>
+                    </select>
+                    <button class="btn btn-primary" id="btn-run-simulation" onclick="runCustomSimulation()" style="padding: 4px 10px; font-size: 0.68rem; height: 24px; display: flex; align-items: center; gap: 4px; border-radius: 4px; line-height: 1;">
+                      ⚡ Simulate
+                    </button>
+                  </div>
                 </div>
               </div>
               
               <!-- Map Container -->
-              <div class="world-map-wrapper">
+              <div class="world-map-wrapper" style="position: relative;">
+                <!-- Simulation Loader Overlay -->
+                <div id="simulation-loader-overlay" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 12, 29, 0.85); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: var(--border-radius-lg); backdrop-filter: blur(4px); transition: opacity 0.3s ease;">
+                  <div class="scanner-line" style="position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--color-cyan), transparent); animation: scanEffect 1.5s infinite linear;"></div>
+                  <div style="font-weight: 700; color: var(--color-cyan); font-size: 0.95rem; margin-bottom: 8px; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
+                    <svg class="animate-spin" style="width: 18px; height: 18px; color: var(--color-cyan);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"></circle>
+                    </svg>
+                    <span>CALCULATING BLAST RADIUS & DORA IMPACT...</span>
+                  </div>
+                  <p id="simulation-loader-text" style="font-size: 0.72rem; color: var(--text-secondary); margin: 0;"></p>
+                </div>
                 <div class="world-map-grid" id="resilience-world-map">
                   <!-- Visual Connection SVG -->
                   <svg class="map-connections" viewBox="0 0 800 400" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
