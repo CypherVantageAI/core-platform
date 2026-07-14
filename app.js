@@ -85,6 +85,8 @@ let state = {
       contactName: 'David Vance',
       contactEmail: 'compliance@aws.amazon.com',
       avatar: 'AWS',
+      primarySupportLocation: 'Seattle, WA (USA)',
+      secondarySupportLocation: 'Frankfurt, Germany',
       subcontractors: ['Cloudflare (Edge CDN)', 'Equinix (Colocation)'],
       documents: [
         { name: 'AWS_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-02-10', scanned: '2026-07-01', status: 'Valid' },
@@ -114,6 +116,8 @@ let state = {
       contactName: 'Elena Rostova',
       contactEmail: 'security@salesforce.com',
       avatar: 'SF',
+      primarySupportLocation: 'San Francisco, CA (USA)',
+      secondarySupportLocation: 'Dublin, Ireland',
       subcontractors: ['AWS (Hosting Infrastructure)', 'Twilio (SMS Gateway)'],
       documents: [
         { name: 'SFDC_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-03-01', scanned: '2026-07-02', status: 'Valid' },
@@ -130,6 +134,33 @@ let state = {
         { type: 'evidence-uploaded', title: 'SOC 2 & BCP Documents Scanned', body: 'AI Auto-Collector successfully scanned Salesforce files. 100% compliance verified.', user: 'AI Risk Officer', date: '2026-07-02 11:45' }
       ]
     },
+    'servicenow': {
+      id: 'servicenow',
+      name: 'ServiceNow Inc.',
+      riskTier: 'High',
+      scoVersion: 'CV Framework',
+      complianceScore: 90,
+      status: 'Compliant',
+      contactName: 'John Miller',
+      contactEmail: 'governance@servicenow.com',
+      avatar: 'SN',
+      primarySupportLocation: 'Santa Clara, CA (USA)',
+      secondarySupportLocation: 'Munich, Germany',
+      subcontractors: ['Wrangu (Privacy Compliance)', 'Microsoft Azure (Hosting)'],
+      documents: [
+        { name: 'ServiceNow_SOC_2_Report.pdf', type: 'SOC 2 Report', date: '2025-04-10', scanned: '2026-07-06', status: 'Valid' }
+      ],
+      assessments: [
+        { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'ServiceNow_SOC_2_Report.pdf', snippet: 'MFA is validated and enforced across all administrative accounts on customer instances (Page 14).' },
+        { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Met', document: 'ServiceNow_SOC_2_Report.pdf', snippet: 'Data stored in customer databases is encrypted at rest using AES-256 bit encryption keys (Page 22).' },
+        { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Met', document: 'ServiceNow_SOC_2_Report.pdf', snippet: 'Disaster recovery and high-availability database failover tests successfully completed in March 2025.' },
+        { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Met', document: 'ServiceNow_SOC_2_Report.pdf', snippet: 'ServiceNow conducts security assurance mapping for sub-processors including Wrangu compliance assessments (Page 31).' },
+        { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Gap', document: 'None', snippet: 'Exemption logged; ServiceNow does not process client payment data directly.' }
+      ],
+      history: [
+        { type: 'evidence-uploaded', title: 'SOC 2 Analysis Verified', body: 'AI Auto-Collector successfully scanned ServiceNow evidence document.', user: 'AI Risk Officer', date: '2026-07-06 10:45' }
+      ]
+    },
     'infosys': {
       id: 'infosys',
       name: 'Infosys Limited',
@@ -140,6 +171,8 @@ let state = {
       contactName: 'Rajesh Kumar',
       contactEmail: 'compliance_team@infosys.com',
       avatar: 'INF',
+      primarySupportLocation: 'Bangalore (India)',
+      secondarySupportLocation: 'London, United Kingdom',
       subcontractors: ['Wipro Ltd (Systems Integration)', 'TATA Consultancy (Operations)'],
       documents: [
         { name: 'Infosys_Cyber_Policy_2025.pdf', type: 'Policy Document', date: '2025-01-15', scanned: '2026-07-03', status: 'Valid' }
@@ -165,6 +198,8 @@ let state = {
       contactName: 'Marcus Aurelius',
       contactEmail: 'compliance@slack.com',
       avatar: 'SL',
+      primarySupportLocation: 'San Francisco, CA (USA)',
+      secondarySupportLocation: 'Melbourne, Australia',
       subcontractors: ['AWS (Hosting Infrastructure)', 'Fastly (Edge Delivery)'],
       documents: [
         { name: 'Slack_SOC_3_Report_2025.pdf', type: 'SOC 2/3 Report', date: '2025-02-15', scanned: '2026-07-04', status: 'Valid' },
@@ -191,7 +226,9 @@ let state = {
       contactName: 'Wile E. Coyote',
       contactEmail: 'wecoyote@acme.com',
       avatar: 'AC',
-      subcontractors: ['DigitalOcean (Hosting)', 'Stripe (Payments Processing)'],
+      primarySupportLocation: 'Phoenix, AZ (USA)',
+      secondarySupportLocation: 'Singapore',
+      subcontractors: [],
       documents: [
         { name: 'Acme_Security_Framework_v2.pdf', type: 'Policy Document', date: '2024-08-11', scanned: '2026-07-05', status: 'Valid' },
         { name: 'Acme_BCP_TestDoc_2025.pdf', type: 'Resilience Evidence', date: '2025-06-01', scanned: '2026-07-05', status: 'Valid' }
@@ -341,8 +378,12 @@ window.loadState = function() {
         na: { name: 'North America Hub', threatLevel: 'Moderate', threatColor: 'orange' },
         eu: { name: 'Europe Operations', threatLevel: 'Nominal', threatColor: 'green' },
         apac: { name: 'Asia-Pacific Centre', threatLevel: 'High', threatColor: 'red' }
-      },
-      hierarchy: {
+      }
+    };
+  }
+
+  // Force load fresh mock hierarchy tree to ensure latest coordinates and structures are used
+  state.resilience.hierarchy = {
         na: {
           name: 'North America',
           threatLevel: 'Moderate',
@@ -540,10 +581,8 @@ window.loadState = function() {
             }
           }
         }
-      }
+      };
     };
-  }
-};
 loadState();
 
 // --------------------------------------------------------------------------
@@ -745,14 +784,26 @@ function renderSuppliersTable() {
           <div>
             <span class="table-supplier-name">${s.name}</span>
             <small class="block text-muted" style="font-size: 0.72rem;">${s.contactEmail}</small>
-            <div style="margin-top: 4px; font-size: 0.68rem; color: var(--color-cyan);">
-              <span style="opacity: 0.65; color: var(--text-secondary);">Sub-contractors:</span> ${s.subcontractors ? s.subcontractors.join(', ') : 'None'}
-            </div>
+            ${s.subcontractors && s.subcontractors.length > 0 ? `
+              <div style="margin-top: 4px;">
+                <span class="collapsible-trigger" style="font-size: 0.7rem; color: var(--color-cyan); cursor: pointer; text-decoration: underline;" onclick="toggleSubcontractorRow('${s.id}')">
+                  📋 Sub-contractors (${s.subcontractors.length}) ▾
+                </span>
+                <div id="subcontractors-list-${s.id}" class="subcontractors-collapse hidden" style="margin-top: 4px; font-size: 0.68rem; color: var(--text-secondary); background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 4px; border-left: 2px solid var(--color-cyan);">
+                  ${s.subcontractors.map(sub => `• ${sub}`).join('<br>')}
+                </div>
+              </div>
+            ` : `
+              <div style="margin-top: 4px; font-size: 0.68rem; color: var(--color-text-secondary); opacity: 0.5;">
+                Sub-contractors: None
+              </div>
+            `}
           </div>
         </div>
       </td>
       <td><span class="badge ${s.riskTier === 'Critical' ? 'badge-danger' : s.riskTier === 'High' ? 'badge-warning' : 'badge-accent'}">${s.riskTier}</span></td>
-      <td><span class="text-secondary">${s.scoVersion}</span></td>
+      <td><span class="text-secondary" style="font-size: 0.78rem;">${s.primarySupportLocation || 'N/A'}</span></td>
+      <td><span class="text-secondary" style="font-size: 0.78rem;">${s.secondarySupportLocation || 'N/A'}</span></td>
       <td><span class="table-score ${s.complianceScore === 100 ? 'text-success' : s.complianceScore >= 75 ? 'text-accent' : 'text-danger'}">${s.complianceScore}%</span></td>
       <td><span class="text-secondary font-semibold">${gapCount} Gaps</span></td>
       <td><span class="badge ${statusClass}">${s.status}</span></td>
@@ -763,6 +814,13 @@ function renderSuppliersTable() {
     tbody.appendChild(tr);
   });
 }
+
+window.toggleSubcontractorRow = function(id) {
+  const el = document.getElementById(`subcontractors-list-${id}`);
+  if (el) {
+    el.classList.toggle('hidden');
+  }
+};
 
 window.filterSuppliersTable = function() {
   const query = document.getElementById('supplier-search-input').value.toLowerCase();
@@ -2696,6 +2754,15 @@ window.renderResilienceDashboard = function() {
         threatLevel = nodeData.threatLevel || 'Nominal';
       }
 
+      // Filter pins dynamically by service type (ibs / cis)
+      if (filterType !== 'all') {
+        const aggregatedPin = aggregateResilienceData(nodeData || currentNode);
+        const hasMatchingSystems = aggregatedPin.systems.some(sys => sys.serviceType === filterType);
+        if (!hasMatchingSystems) {
+          return; // Skip rendering this pin on the map
+        }
+      }
+
       // Check active simulation overrides
       if (state.resilience.activeDrill === 'apac-outage' && (key === 'apac' || key === 'sg' || key === 'central' || key === 'jurong' || key === 'in' || key === 'karnataka' || key === 'bangalore')) {
         pinEl.classList.add('hotspot-active');
@@ -2721,11 +2788,20 @@ window.renderResilienceDashboard = function() {
         pinEl.classList.add('status-nominal');
       }
 
-      // Click callback
-      if (children.length > 0) {
-        pinEl.onclick = () => drillResilienceDown(key);
-        pinEl.style.cursor = 'pointer';
-      }
+      // Click callback: Drill down if children are available, otherwise select/focus leaf node
+      pinEl.onclick = () => {
+        if (children.length > 0 && key !== path[path.length - 1]) {
+          drillResilienceDown(key);
+        } else {
+          // Leaf node select: push to path if not already there to update detail card on the right
+          if (path[path.length - 1] !== key) {
+            state.resilience.currentPath.push(key);
+            saveState();
+            renderResilienceDashboard();
+          }
+        }
+      };
+      pinEl.style.cursor = 'pointer';
 
       pinEl.innerHTML = `
         <span class="pulse-ring"></span>
