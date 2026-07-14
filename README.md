@@ -1,20 +1,20 @@
-# Cypher Vantage - Third-Party Risk & Compliance Platform
+# Cypher Vantage - Operational Resilience & DORA Compliance Platform
 
 <p align="center">
   <img src="CypherVantage-AI.png" alt="Cypher Vantage Logo" width="160" height="160">
 </p>
 
 <p align="center">
-  <strong>Autonomous Third-Party Risk Management (TPRM), Cryptographic Ledger Audit, and AI Governance Gateway.</strong>
+  <strong>Autonomous Operational Resilience Management, Threat-Led Penetration Testing (TIBER-EU / TLPT), and Third-Party Risk Management (TPRM).</strong>
 </p>
 
 ---
 
 ## 🎯 Overview
 
-**Cypher Vantage** is an advanced Third-Party Risk Management (TPRM) platform designed to automate compliance collection, map external attack surfaces, audit document integrity via cryptography, and govern artificial intelligence vendor integrations.
+**Cypher Vantage** is an enterprise-grade Operational Resilience Management platform designed to map critical business services to technical infrastructure, track active threat hotspots, automate compliance with regulations like EU DORA and UK PRA, and run Threat-Led Penetration Testing (TLPT) simulations in accordance with the TIBER-EU framework.
 
-This repository hosts the **Cypher Vantage Core Platform Interface**, a highly interactive dashboard showcasing both Risk Manager assurance views and Supplier evidence submission portals.
+This repository hosts the **Cypher Vantage Core Platform Interface**, a highly interactive dashboard showcasing both Risk Manager assurance views and Supplier evidence portals.
 
 🌐 **[Live Demo on GitHub Pages](https://cyphervantageai.github.io/core-platform/)**
 
@@ -22,31 +22,42 @@ This repository hosts the **Cypher Vantage Core Platform Interface**, a highly i
 
 ## ✨ Core Features
 
-### 🤖 1. AI Auto-Collector & Evidence Parsing
+### 🌐 1. Operational Resilience & DORA Dashboard
+- **Nested Geographic Hotspot Drill-Down**: Clickable breadcrumb path (`Global > Region > Country > State > City`) mapping data centers, availability zones, and key personnel locations.
+- **IBS & CIS Dependency Mapping**: Groups technical systems by external-facing **Important Business Services (IBS)** and internal-facing **Critical Internal Services (CIS)**.
+- **Compliance Alignment**: Directly traces platform controls to the **5 Core Pillars** of the EU Digital Operational Resilience Act (DORA).
+- **Incident & Hotspot Simulator**: Real-time alerts for geopolitical stress and natural disasters with live failover verification logs.
+
+### ⚔️ 2. TIBER-EU / Threat-Led Penetration Testing (TLPT)
+- **Phase Tracker**: Visualizes red-team progress through TIBER-EU phases (Prep & Scope ➡️ Threat Intel ➡️ Red Team Exec ➡️ Closure & Replay).
+- **Attack Permutation Simulator**: Launches red-teaming scenarios (Ransomware on Identity Gateways, Supply Chain Hijack, DDoS volumetric flooding, rogue administrator privilege escalation) with interactive terminal logs.
+- **Resiliency Defenses**: Visually demonstrates automated container isolation and backup directory failovers in response to active attacks.
+
+### 🤖 3. AI Auto-Collector & Evidence Parsing (TPRM)
 - Automated scanning of uploaded supplier compliance documents (SOC 2, ISO 27001).
 - Extracts and parses control obligations and flags compliance gaps (e.g., outdated failover drill logs).
 - Allows Risk Managers to dispatch dynamic questionnaires targeting specific control modules.
 
-### 📊 2. Intelligent Risk Scoring Models
+### 📊 4. Intelligent Risk Scoring Models
 - Dynamic risk weight calculators enabling managers to customize metrics for **ICT Security**, **Operational Resilience**, and **Governance**.
 - Automatically computes tailored adjusted risk tiers (Low, Medium, High) based on real-time vendor compliance stats.
 
-### 🗺️ 3. Continuous Attack Surface Mapping
+### 🗺️ 5. Continuous Attack Surface Mapping
 - Real-time 360-degree digital footprint scans of external domains, VPN endpoints, and API gateways.
 - **Subnet Node Discovery**: Simulates secure scans of internal VPN subnetworks to map private corporate interfaces.
 - Custom target configurations to manually add new assets to active port scanning inventories.
 
-### 🔒 4. Cryptographic File Integrity Ledger
+### 🔒 6. Cryptographic File Integrity Ledger
 - Registers SHA-256 signatures of evidence documents in the secure Cypher Vantage ledger.
 - **Tampering Simulation**: Allows users to simulate document tampering and runs verification checks, raising alarms on hash mismatches.
 
-### 🛡️ 5. AI Risk Governance Suite (New)
+### 🛡️ 7. AI Audit Suite
 - **LLM DLP Gateway**: Outbound prompt proxy sanitization with real-time redaction of passwords, emails, credentials, and API keys.
 - **Adversarial Agent Pentester**: Terminal simulation running DAN jailbreaks and system-prompt extraction exploits to audit third-party bot robustness.
 - **EU AI Act Classifier**: Classifies vendor models into legal risk tiers (Minimal, Transparency, High, Prohibited) and lists mandatory requirements.
 
-### 💾 6. Client-Side Database Persistence
-- Implements browser `localStorage` state persistence. All uploaded files, custom audit states, dispatched tasks, scan records, and security toggles persist across page refreshes.
+### 💾 8. Client-Side Database Persistence
+- Implements browser `localStorage` state persistence. All uploaded files, custom audit states, dispatched tasks, scan records, resilience configurations, and security toggles persist across page refreshes.
 - Quick **Reset Local Database** option in the sidebar footer to restore default demo configurations.
 
 ---

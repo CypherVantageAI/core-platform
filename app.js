@@ -322,6 +322,201 @@ window.loadState = function() {
   if (!state.supplierSurfaceData) {
     state.supplierSurfaceData = JSON.parse(JSON.stringify(supplierSurfaceData));
   }
+  if (!state.resilience) {
+    state.resilience = {
+      selectedRegion: 'na',
+      activeDrill: null,
+      filterType: 'all',
+      currentPath: ['Global'],
+      selectedScenario: 'ransomware',
+      tlptPhase: 'prep',
+      tlptLogs: [],
+      tlptActive: false,
+      regions: {
+        na: { name: 'North America Hub', threatLevel: 'Moderate', threatColor: 'orange' },
+        eu: { name: 'Europe Operations', threatLevel: 'Nominal', threatColor: 'green' },
+        apac: { name: 'Asia-Pacific Centre', threatLevel: 'High', threatColor: 'red' }
+      },
+      hierarchy: {
+        na: {
+          name: 'North America',
+          threatLevel: 'Moderate',
+          threatColor: 'orange',
+          countries: {
+            us: {
+              name: 'United States',
+              threatLevel: 'Moderate',
+              threatColor: 'orange',
+              states: {
+                va: {
+                  name: 'Virginia',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  cities: {
+                    ashburn: {
+                      name: 'Ashburn (Data Center)',
+                      threatLevel: 'Nominal',
+                      threatColor: 'green',
+                      systems: [
+                        { name: 'AWS us-east-1a (IBS Payments)', status: 'Active', serviceType: 'ibs', description: 'Core retail payment processing gateway' }
+                      ],
+                      personnel: [
+                        { name: 'David Vance', role: 'AWS Support Lead', location: 'Seattle/Ashburn', contact: 'd.vance@aws.com', status: 'On Duty' }
+                      ],
+                      hotspots: [
+                        { type: 'Grid Strain', desc: 'Summer heatwave warning on Northern Virginia power grids' }
+                      ]
+                    }
+                  }
+                },
+                or: {
+                  name: 'Oregon',
+                  threatLevel: 'Moderate',
+                  threatColor: 'orange',
+                  cities: {
+                    boardman: {
+                      name: 'Boardman (Data Center)',
+                      threatLevel: 'Moderate',
+                      threatColor: 'orange',
+                      systems: [
+                        { name: 'Azure US-West-2 (CIS Identity Services)', status: 'Active', serviceType: 'cis', description: 'Active Directory & token authorization service' }
+                      ],
+                      personnel: [
+                        { name: 'Emma Watson', role: 'Azure Ops Lead', location: 'Portland/Boardman', contact: 'e.watson@azure.com', status: 'On Duty' }
+                      ],
+                      hotspots: [
+                        { type: 'Weather', desc: 'Wildfire alert issued near Columbia River Basin' }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        eu: {
+          name: 'Europe',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          countries: {
+            de: {
+              name: 'Germany',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              states: {
+                hesse: {
+                  name: 'Hesse',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  cities: {
+                    frankfurt: {
+                      name: 'Frankfurt (Data Center)',
+                      threatLevel: 'Nominal',
+                      threatColor: 'green',
+                      systems: [
+                        { name: 'AWS eu-central-1 (IBS Clearing Portal)', status: 'Active', serviceType: 'ibs', description: 'Clearing and settlement portal' }
+                      ],
+                      personnel: [
+                        { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London/Frankfurt', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
+                      ],
+                      hotspots: []
+                    }
+                  }
+                }
+              }
+            },
+            uk: {
+              name: 'United Kingdom',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              states: {
+                england: {
+                  name: 'England',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  cities: {
+                    london: {
+                      name: 'London',
+                      threatLevel: 'Nominal',
+                      threatColor: 'green',
+                      systems: [],
+                      personnel: [
+                        { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London Office', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
+                      ],
+                      hotspots: [
+                        { type: 'Regulatory Review', desc: 'UK PRA operational resilience review window open' }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        apac: {
+          name: 'Asia-Pacific',
+          threatLevel: 'High',
+          threatColor: 'red',
+          countries: {
+            in: {
+              name: 'India',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              states: {
+                karnataka: {
+                  name: 'Karnataka',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  cities: {
+                    bangalore: {
+                      name: 'Bangalore (Support Hub)',
+                      threatLevel: 'Nominal',
+                      threatColor: 'green',
+                      systems: [
+                        { name: 'Infosys IN-South (CIS Core Database Ledger)', status: 'Active', serviceType: 'cis', description: 'Transactional database replica' }
+                      ],
+                      personnel: [
+                        { name: 'Rajesh Kumar', role: 'Disaster Recovery Lead', location: 'Bangalore Office', contact: 'r.kumar@infosys.com', status: 'On Duty' }
+                      ],
+                      hotspots: []
+                    }
+                  }
+                }
+              }
+            },
+            sg: {
+              name: 'Singapore',
+              threatLevel: 'High',
+              threatColor: 'red',
+              states: {
+                central: {
+                  name: 'Central Region',
+                  threatLevel: 'High',
+                  threatColor: 'red',
+                  cities: {
+                    jurong: {
+                      name: 'Jurong (Data Center)',
+                      threatLevel: 'High',
+                      threatColor: 'red',
+                      systems: [
+                        { name: 'Google Cloud SG (CIS API Gateway Routing)', status: 'Warning', serviceType: 'cis', description: 'APAC API proxy and router' }
+                      ],
+                      personnel: [
+                        { name: 'Mei Ling', role: 'SecOps Analyst', location: 'Singapore Office', contact: 'm.ling@gcp.com', status: 'On Duty' }
+                      ],
+                      hotspots: [
+                        { type: 'Weather', desc: 'Typhoon alert issued for Singapore/East Asia margins' }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  }
 };
 loadState();
 
@@ -382,6 +577,8 @@ window.switchTab = function(tabId) {
     }
     testDlpSanitizer();
     assessAiActCompliance();
+  } else if (tabId === 'manager-resilience') {
+    renderResilienceDashboard();
   } else if (tabId === 'supplier-dashboard') {
     renderSupplierPortalDashboard();
   } else if (tabId === 'supplier-evidence') {
@@ -2189,7 +2386,7 @@ window.addEventListener('resize', () => {
 });
 
 // --------------------------------------------------------------------------
-// 20. AI RISK GOVERNANCE CONTROLLERS
+// 20. AI AUDIT SUITE CONTROLLERS
 // --------------------------------------------------------------------------
 window.toggleDlpProxy = function() {
   const toggle = document.getElementById('dlp-toggle');
@@ -2331,7 +2528,609 @@ window.assessAiActCompliance = function() {
 };
 
 // --------------------------------------------------------------------------
-// 21. INITIALIZATION
+// 21. OPERATIONAL RESILIENCE & DORA CONTROLLERS
+// --------------------------------------------------------------------------
+function getNodeFromPath(path) {
+  let curr = state.resilience.hierarchy;
+  for (let i = 1; i < path.length; i++) {
+    const key = path[i];
+    if (curr[key]) {
+      curr = curr[key];
+    } else if (curr.countries && curr.countries[key]) {
+      curr = curr.countries[key];
+    } else if (curr.states && curr.states[key]) {
+      curr = curr.states[key];
+    } else if (curr.cities && curr.cities[key]) {
+      curr = curr.cities[key];
+    } else {
+      break;
+    }
+  }
+  return curr;
+}
+
+function aggregateResilienceData(node) {
+  let systems = [];
+  let personnel = [];
+  let hotspots = [];
+
+  function traverse(curr) {
+    if (curr.systems) {
+      systems = systems.concat(curr.systems);
+    }
+    if (curr.personnel) {
+      personnel = personnel.concat(curr.personnel);
+    }
+    if (curr.hotspots) {
+      hotspots = hotspots.concat(curr.hotspots);
+    }
+
+    if (curr.countries) {
+      Object.values(curr.countries).forEach(traverse);
+    }
+    if (curr.states) {
+      Object.values(curr.states).forEach(traverse);
+    }
+    if (curr.cities) {
+      Object.values(curr.cities).forEach(traverse);
+    }
+  }
+
+  traverse(node);
+  return { systems, personnel, hotspots };
+}
+
+function getSubLocations(node) {
+  if (node.countries) return Object.keys(node.countries).map(k => ({ key: k, name: node.countries[k].name, type: 'Country' }));
+  if (node.states) return Object.keys(node.states).map(k => ({ key: k, name: node.states[k].name, type: 'State' }));
+  if (node.cities) return Object.keys(node.cities).map(k => ({ key: k, name: node.cities[k].name, type: 'City' }));
+  return [];
+}
+
+window.renderResilienceDashboard = function() {
+  const path = state.resilience.currentPath || ['Global'];
+  const currentNode = getNodeFromPath(path);
+  const filterType = state.resilience.filterType || 'all';
+
+  // Render Map pins based on state
+  const pins = {
+    na: document.getElementById('pin-na'),
+    eu: document.getElementById('pin-eu'),
+    apac: document.getElementById('pin-apac')
+  };
+
+  // Set active class on active pin based on selected region
+  const selectedRegion = state.resilience.selectedRegion || 'na';
+  Object.keys(pins).forEach(key => {
+    const pin = pins[key];
+    if (pin) {
+      if (key === selectedRegion) {
+        pin.classList.add('active');
+      } else {
+        pin.classList.remove('active');
+      }
+
+      // Dynamic pin colors depending on active drill or threat levels
+      pin.className = `map-node-pin ${key}-pin`;
+      
+      let threatLevel = state.resilience.regions[key].threatLevel;
+      if (state.resilience.activeDrill && state.resilience.activeDrill === 'apac-outage' && key === 'apac') {
+        pin.classList.add('hotspot-active'); // Red pulse
+      } else if (state.resilience.activeDrill && state.resilience.activeDrill === 'na-wildfire' && key === 'na') {
+        pin.classList.add('hotspot-active'); // Red pulse
+      } else if (threatLevel === 'High') {
+        pin.classList.add('hotspot-active');
+      } else if (threatLevel === 'Moderate') {
+        pin.classList.add('hotspot-warning');
+      } else {
+        pin.classList.add('status-nominal');
+      }
+    }
+  });
+
+  // Render DORA Compliance status tags based on actual supplier table metrics
+  const testingPillarStatus = document.getElementById('pillar-status-testing');
+  if (testingPillarStatus) {
+    const aws = state.suppliers['aws'];
+    if (aws && aws.documents.some(doc => doc.type === 'Resilience Evidence' && doc.status === 'Outdated')) {
+      testingPillarStatus.className = 'pillar-status status-yellow';
+      testingPillarStatus.innerText = 'AWS DR Overdue';
+    } else {
+      testingPillarStatus.className = 'pillar-status status-green';
+      testingPillarStatus.innerText = '100% Verified';
+    }
+  }
+
+  const tpmPillarStatus = document.getElementById('pillar-status-tpm');
+  if (tpmPillarStatus) {
+    const infosys = state.suppliers['infosys'];
+    const hasInfosysGap = infosys && infosys.assessments.some(ass => ass.status === 'Gap');
+    if (hasInfosysGap) {
+      tpmPillarStatus.className = 'pillar-status status-red';
+      tpmPillarStatus.innerText = 'Infosys Control Gap';
+    } else {
+      tpmPillarStatus.className = 'pillar-status status-green';
+      tpmPillarStatus.innerText = '100% Compliant';
+    }
+  }
+
+  // Aggregate systems, personnel, hotspots from the current node
+  const aggregated = aggregateResilienceData(currentNode);
+  
+  // Filter systems by IBS / CIS
+  const filteredSystems = aggregated.systems.filter(sys => {
+    if (filterType === 'all') return true;
+    return sys.serviceType === filterType;
+  });
+
+  const detailCard = document.getElementById('resilience-detail-card');
+  if (detailCard) {
+    // Generate breadcrumbs HTML
+    const breadcrumbHtml = path.map((name, index) => {
+      let displayName = name;
+      if (name === 'na') displayName = 'North America';
+      else if (name === 'eu') displayName = 'Europe';
+      else if (name === 'apac') displayName = 'Asia-Pacific';
+      else if (name === 'us') displayName = 'United States';
+      else if (name === 'de') displayName = 'Germany';
+      else if (name === 'uk') displayName = 'United Kingdom';
+      else if (name === 'in') displayName = 'India';
+      else if (name === 'sg') displayName = 'Singapore';
+      else if (name === 'va') displayName = 'Virginia';
+      else if (name === 'or') displayName = 'Oregon';
+      else if (name === 'hesse') displayName = 'Hesse';
+      else if (name === 'england') displayName = 'England';
+      else if (name === 'karnataka') displayName = 'Karnataka';
+      else if (name === 'central') displayName = 'Central Region';
+      else if (name === 'ashburn') displayName = 'Ashburn';
+      else if (name === 'boardman') displayName = 'Boardman';
+      else if (name === 'frankfurt') displayName = 'Frankfurt';
+      else if (name === 'london') displayName = 'London';
+      else if (name === 'bangalore') displayName = 'Bangalore';
+      else if (name === 'jurong') displayName = 'Jurong';
+
+      return `<span class="breadcrumb-item" style="cursor: pointer; text-decoration: underline;" onclick="navigateResilienceBreadcrumb(${index})">${displayName}</span>`;
+    }).join(' <span style="color: var(--color-text-secondary); pointer-events: none;">&gt;</span> ');
+
+    // Generate sub-locations list
+    const subLocations = getSubLocations(currentNode);
+    let subLocationsHtml = '';
+    if (subLocations.length > 0) {
+      subLocationsHtml = `
+        <div class="resilience-detail-section" style="margin-bottom: 12px;">
+          <h4 style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 6px;">Drill Down Locations</h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            ${subLocations.map(loc => `
+              <button class="btn btn-secondary btn-sm" style="font-size: 0.7rem; padding: 3px 8px; display: flex; align-items: center; gap: 4px;" onclick="drillResilienceDown('${loc.key}')">
+                <span>📁 ${loc.name}</span>
+                <small style="opacity: 0.6; font-size: 0.58rem;">(${loc.type})</small>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Override system statuses based on drills and simulations
+    const finalSystemsHtml = filteredSystems.map(sys => {
+      let displayStatus = sys.status || 'Active';
+      let statusClass = 'status-green';
+
+      if (state.resilience.activeDrill === 'apac-outage' && (sys.name.includes('IN-South') || sys.name.includes('SG'))) {
+        displayStatus = 'OFFLINE (Rerouting...)';
+        statusClass = 'status-red';
+      } else if (state.resilience.activeDrill === 'na-wildfire' && sys.name.includes('Oregon')) {
+        displayStatus = 'FAILING OVER (Drill)';
+        statusClass = 'status-yellow';
+      } else if (state.resilience.tlptActive) {
+        if (state.resilience.selectedScenario === 'ransomware' && sys.name.includes('Oregon')) {
+          if (state.resilience.tlptPhase === 'exec') {
+            displayStatus = 'COMPROMISED (LockBit)';
+            statusClass = 'status-red';
+          } else if (state.resilience.tlptPhase === 'close') {
+            displayStatus = 'RECOVERY ACTIVE';
+            statusClass = 'status-yellow';
+          }
+        } else if (state.resilience.selectedScenario === 'supplychain' && sys.name.includes('IN-South')) {
+          if (state.resilience.tlptPhase === 'exec') {
+            displayStatus = 'MALICIOUS CORRUPTION';
+            statusClass = 'status-red';
+          } else if (state.resilience.tlptPhase === 'close') {
+            displayStatus = 'FAILOVER VERIFIED';
+            statusClass = 'status-green';
+          }
+        } else if (state.resilience.selectedScenario === 'ddos' && sys.name.includes('SG')) {
+          if (state.resilience.tlptPhase === 'exec') {
+            displayStatus = 'DDoS OUTAGE (10M pps)';
+            statusClass = 'status-red';
+          } else if (state.resilience.tlptPhase === 'close') {
+            displayStatus = 'MITIGATION ACTIVE';
+            statusClass = 'status-yellow';
+          }
+        } else if (state.resilience.selectedScenario === 'insider' && sys.name.includes('Frankfurt')) {
+          if (state.resilience.tlptPhase === 'exec') {
+            displayStatus = 'COMPROMISED (Rogue Admin)';
+            statusClass = 'status-red';
+          } else if (state.resilience.tlptPhase === 'close') {
+            displayStatus = 'CONTAINED & DEPLOYED';
+            statusClass = 'status-green';
+          }
+        }
+      }
+
+      if (displayStatus === 'Warning') {
+        statusClass = 'status-yellow';
+      }
+
+      const badgeClass = sys.serviceType === 'ibs' ? 'badge-accent' : 'badge-info';
+      const badgeText = sys.serviceType === 'ibs' ? 'IBS' : 'CIS';
+
+      return `
+        <div class="resilience-system-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 8px 10px; border-radius: var(--border-radius-sm); margin-bottom: 6px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <strong style="font-size: 0.82rem;">${sys.name}</strong>
+              <span class="badge ${badgeClass}" style="font-size: 0.6rem; padding: 1px 5px;">${badgeText}</span>
+            </div>
+            <span class="text-xs text-secondary" style="display: block; font-size: 0.72rem;">${sys.description || sys.type}</span>
+          </div>
+          <div class="resilience-system-status ${statusClass}" style="font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+            <span class="status-dot"></span>
+            <span>${displayStatus}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Generate Active Threats html
+    let localHotspots = [...aggregated.hotspots];
+    let displayThreatLevel = currentNode.threatLevel || 'Nominal';
+    let displayThreatColor = currentNode.threatColor || 'green';
+
+    if (state.resilience.activeDrill === 'apac-outage' && path.includes('apac')) {
+      displayThreatLevel = 'CRITICAL DRILL';
+      displayThreatColor = 'red';
+      localHotspots.unshift({ type: 'Drill Simulation', desc: 'FAILOVER DRILL ACTIVE: Total Primary Power Outage' });
+    } else if (state.resilience.activeDrill === 'na-wildfire' && path.includes('na')) {
+      displayThreatLevel = 'CRITICAL DRILL';
+      displayThreatColor = 'red';
+      localHotspots.unshift({ type: 'Drill Simulation', desc: 'FAILOVER DRILL ACTIVE: Wildfire Emergency near Oregon AZ' });
+    } else if (state.resilience.tlptActive) {
+      if (state.resilience.selectedScenario === 'ransomware' && path.includes('na')) {
+        displayThreatLevel = 'RED TEAM ATTACK';
+        displayThreatColor = 'red';
+        localHotspots.unshift({ type: 'TIBER-EU Red Team', desc: 'ACTIVE ATTACK: Active Directory Encryption Simulation' });
+      } else if (state.resilience.selectedScenario === 'supplychain' && path.includes('apac')) {
+        displayThreatLevel = 'RED TEAM ATTACK';
+        displayThreatColor = 'red';
+        localHotspots.unshift({ type: 'TIBER-EU Red Team', desc: 'ACTIVE ATTACK: Infosys Subprocessor API Compromise' });
+      } else if (state.resilience.selectedScenario === 'ddos' && path.includes('apac')) {
+        displayThreatLevel = 'RED TEAM ATTACK';
+        displayThreatColor = 'red';
+        localHotspots.unshift({ type: 'TIBER-EU Red Team', desc: 'ACTIVE ATTACK: Volumetric DDoS target Google Cloud SG' });
+      } else if (state.resilience.selectedScenario === 'insider' && path.includes('eu')) {
+        displayThreatLevel = 'RED TEAM ATTACK';
+        displayThreatColor = 'red';
+        localHotspots.unshift({ type: 'TIBER-EU Red Team', desc: 'ACTIVE ATTACK: Rogue Administrator on Clearing Gateways' });
+      }
+    }
+
+    let activeThreatsHtml = '';
+    if (localHotspots.length > 0) {
+      activeThreatsHtml = localHotspots.map(h => `
+        <div class="hotspot-alert-item" style="border-left: 3px solid var(--color-${displayThreatColor === 'green' ? 'success' : (displayThreatColor === 'orange' ? 'warning' : 'danger')}); padding-left: 8px; margin-top: 6px; font-size: 0.76rem;">
+          <strong>[${h.type}]</strong> ${h.desc}
+        </div>
+      `).join('');
+    } else {
+      activeThreatsHtml = '<p class="text-xs text-secondary">No active weather or geopolitical threats registered.</p>';
+    }
+
+    // Generate Personnel list
+    const uniquePersonnel = [];
+    const seenEmails = new Set();
+    aggregated.personnel.forEach(p => {
+      if (!seenEmails.has(p.contact)) {
+        seenEmails.add(p.contact);
+        uniquePersonnel.push(p);
+      }
+    });
+
+    const personnelHtml = uniquePersonnel.map(p => `
+      <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.01); border-bottom: 1px solid rgba(255,255,255,0.03); padding: 6px 0;">
+        <div>
+          <div style="font-weight: 600; font-size: 0.85rem;">${p.name}</div>
+          <div class="text-xs text-secondary" style="font-size: 0.72rem;">${p.role}</div>
+        </div>
+        <div class="text-right">
+          <span class="badge" style="font-size: 0.65rem; background: rgba(255,255,255,0.05);">${p.location}</span>
+          <div style="font-size: 0.68rem; color: var(--color-cyan); margin-top: 1px;">${p.contact}</div>
+        </div>
+      </div>
+    `).join('');
+
+    detailCard.innerHTML = `
+      <div id="resilience-breadcrumbs" style="display: flex; gap: 4px; align-items: center; font-size: 0.74rem; font-weight: 600; color: var(--color-cyan); margin-bottom: 10px; flex-wrap: wrap;">
+        ${breadcrumbHtml}
+      </div>
+
+      <h3 style="font-size: 1.15rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+        <span>${currentNode.name || 'Global Operations'}</span>
+        ${path.length > 1 ? `<button class="btn btn-secondary btn-sm" style="font-size: 0.68rem; padding: 2px 8px; height: auto;" onclick="navigateResilienceBreadcrumb(${path.length - 2})">↩ Back</button>` : ''}
+      </h3>
+      <p class="text-xs text-secondary" style="margin-bottom: var(--spacing-sm);">Detailed operational mapping of critical nodes</p>
+      
+      <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: var(--border-radius-md); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
+        <span style="font-size: 0.8rem;">Threat Index:</span>
+        <span class="badge badge-${displayThreatColor}" style="font-weight: 700; text-transform: uppercase; font-size: 0.68rem;">${displayThreatLevel}</span>
+      </div>
+
+      ${subLocationsHtml}
+
+      <div class="resilience-detail-section" style="margin-bottom: 12px;">
+        <h4 style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 4px;">Active Hotspots</h4>
+        <div class="resilience-hotspots-list">${activeThreatsHtml}</div>
+      </div>
+
+      <div class="resilience-detail-section" style="margin-bottom: 12px; flex: 1; overflow-y: auto; max-height: 180px;">
+        <h4 style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 4px; display: flex; justify-content: space-between;">
+          <span>Mapped Services & Systems</span>
+          <span style="font-size: 0.7rem; text-transform: none; color: var(--color-cyan);">${filteredSystems.length} Node(s)</span>
+        </h4>
+        <div class="resilience-systems-list">${finalSystemsHtml || '<p class="text-xs text-secondary">No systems mapped in this scope.</p>'}</div>
+      </div>
+
+      <div class="resilience-detail-section" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 4px;">
+        <h4 style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 4px;">Key Resiliency Personnel</h4>
+        <div class="resilience-personnel-list" style="max-height: 110px; overflow-y: auto;">${personnelHtml || '<p class="text-xs text-secondary">No personnel mapped in this scope.</p>'}</div>
+      </div>
+    `;
+  }
+};
+
+window.drillResilienceDown = function(key) {
+  if (state.resilience.currentPath.includes(key)) return;
+  state.resilience.currentPath.push(key);
+  if (state.resilience.currentPath.length === 2) {
+    state.resilience.selectedRegion = key;
+  }
+  saveState();
+  renderResilienceDashboard();
+};
+
+window.navigateResilienceBreadcrumb = function(index) {
+  state.resilience.currentPath = state.resilience.currentPath.slice(0, index + 1);
+  if (state.resilience.currentPath.length > 1) {
+    state.resilience.selectedRegion = state.resilience.currentPath[1];
+  } else {
+    state.resilience.selectedRegion = 'na'; // Default
+  }
+  saveState();
+  renderResilienceDashboard();
+};
+
+window.filterResilienceMap = function(filterVal) {
+  state.resilience.filterType = filterVal;
+  saveState();
+  renderResilienceDashboard();
+};
+
+window.triggerDrillSimulation = function() {
+  const drills = ['apac-outage', 'na-wildfire'];
+  const chosen = drills[Math.floor(Math.random() * drills.length)];
+  state.resilience.activeDrill = chosen;
+  
+  const banner = document.getElementById('drill-alert-banner');
+  const bannerText = document.getElementById('drill-alert-text');
+  if (banner && bannerText) {
+    banner.classList.remove('hidden');
+    if (chosen === 'apac-outage') {
+      bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Simulated regional power outage in APAC Node (Infosys database & Google Cloud SG). Verify automatic failover and offline notifications.`;
+      state.resilience.selectedRegion = 'apac';
+      state.resilience.currentPath = ['Global', 'apac'];
+    } else {
+      bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Wildfire threat near Oregon AZ (Azure US-West). Simulated failover testing of identity directories.`;
+      state.resilience.selectedRegion = 'na';
+      state.resilience.currentPath = ['Global', 'na', 'us', 'or'];
+    }
+  }
+
+  state.activityLog.unshift({
+    time: 'Just Now',
+    text: `⚠️ <b>DORA Drill Started:</b> Activated simulated resilience threat <b>[${chosen.toUpperCase()}]</b>. Verifying failover integrity.`
+  });
+
+  saveState();
+  renderResilienceDashboard();
+  renderDashboard();
+};
+
+window.resetResilienceDrill = function() {
+  state.resilience.activeDrill = null;
+  const banner = document.getElementById('drill-alert-banner');
+  if (banner) {
+    banner.classList.add('hidden');
+  }
+
+  state.activityLog.unshift({
+    time: 'Just Now',
+    text: `🟢 <b>DORA Drill Completed:</b> Simulated resilience threat cleared. Systems returned to nominal production mappings.`
+  });
+
+  saveState();
+  renderResilienceDashboard();
+  renderDashboard();
+};
+
+// --------------------------------------------------------------------------
+// TIBER-EU / TLPT RED-TEAM SIMULATION ENGINE
+// --------------------------------------------------------------------------
+let tlptTimeoutIds = [];
+
+window.startTlptSimulation = function() {
+  if (state.resilience.tlptActive) return;
+
+  const scenario = document.getElementById('tlpt-scenario').value;
+  state.resilience.selectedScenario = scenario;
+  state.resilience.tlptActive = true;
+  state.resilience.tlptLogs = [];
+  state.resilience.tlptPhase = 'prep';
+
+  // Toggle UI buttons
+  document.getElementById('btn-launch-tlpt').classList.add('hidden');
+  document.getElementById('btn-stop-tlpt').classList.remove('hidden');
+
+  const statusEl = document.getElementById('tlpt-status');
+  if (statusEl) {
+    statusEl.innerText = 'PREPARATION';
+    statusEl.className = 'terminal-badge running';
+  }
+
+  // Clear previous timeouts
+  tlptTimeoutIds.forEach(clearTimeout);
+  tlptTimeoutIds = [];
+
+  // Define steps based on scenario
+  let steps = [];
+
+  if (scenario === 'ransomware') {
+    steps = [
+      { phase: 'prep', text: '[TIBER-EU Scope] Initializing red-team assessment targeting Azure AD Identity Gateways in Boardman, Oregon (CIS). Scope signed off by Regulator.', delay: 500 },
+      { phase: 'intel', text: '[Threat Intel] CTI team profiles LockBit 3.0 ransomware strains. Mapping targeted phishing profiles of Oregon Azure systems personnel.', delay: 2500 },
+      { phase: 'exec', text: '[Exploitation] Spearphishing email delivered to Emma Watson (Azure Ops Lead). Harvesting login credentials and active MFA cookie.', delay: 5000 },
+      { phase: 'exec', text: '[Exploitation] Successful MFA session bypass. Red-team establishes persistence inside Azure AD network. Target: Azure US-West-2 set to COMPROMISED.', delay: 7500, systemUpdate: true },
+      { phase: 'exec', text: '[Lateral Movement] Accessing active directory schema. Deploying mock LockBit script. File storage encrypted. CIS Identity Services OFFLINE.', delay: 10000 },
+      { phase: 'exec', text: '[Resiliency Response] Automated DORA monitoring alerts raised. Incident Response Team activates failover playbook (DORA Article 11 compliant).', delay: 12500 },
+      { phase: 'exec', text: '[Resiliency Response] Failover completed. Identity routing successfully failed over to AWS us-east-1a (Ashburn, VA). Client requests processed successfully.', delay: 15000, systemUpdate: true },
+      { phase: 'close', text: '[Closure] Attack terminated. Red-team issues remediation list. Report generated and uploaded to Regulators (TIBER-EU certified).', delay: 18000 }
+    ];
+  } else if (scenario === 'supplychain') {
+    steps = [
+      { phase: 'prep', text: '[TIBER-EU Scope] Target: Infosys database cluster (CIS Core DB Ledger, Bangalore). Verification of downstream subprocessor controls (DORA Pillar 4).', delay: 500 },
+      { phase: 'intel', text: '[Threat Intel] Modeling APT41 software supply-chain poisoning attack patterns. Formulating scenario exploiting third-party contractor updates.', delay: 2500 },
+      { phase: 'exec', text: '[Exploitation] Compromising Infosys staging build server via vulnerable Open SSH port (identified by Auto-Collector scan). Injecting malicious script.', delay: 5000 },
+      { phase: 'exec', text: '[Exploitation] Malicious API package distributed via automated CI/CD pipeline. Infosys Core Database status: MALICIOUS CORRUPTION.', delay: 7500, systemUpdate: true },
+      { phase: 'exec', text: '[Resiliency Response] Database checksum mismatch alert raised. Cypher Vantage ledger blocks automated database writes to protect transaction integrity.', delay: 10000 },
+      { phase: 'exec', text: '[Resiliency Response] Activating database replica rollback. Restoring data states from immutable snapshots. Traffic rerouted to secondary secure node.', delay: 13000, systemUpdate: true },
+      { phase: 'close', text: '[Closure] Simulation completed. Security keys rolled back. 3 subcontractor audit deficiencies flagged for remediation.', delay: 16000 }
+    ];
+  } else if (scenario === 'ddos') {
+    steps = [
+      { phase: 'prep', text: '[TIBER-EU Scope] Target: Google Cloud SG (CIS API Gateway Routing, Jurong). Assessing volumetric DDoS resiliency and API throttle controls.', delay: 500 },
+      { phase: 'intel', text: '[Threat Intel] Formulating Mirai botnet volumetric DNS flood scenario. Scoping target IP range and traffic thresholds (10M pps target).', delay: 2500 },
+      { phase: 'exec', text: '[Exploitation] Launching volumetric UDP/DNS flood targeting Singapore Jurong AZ API gateways. Latency spikes from 12ms to 4500ms.', delay: 5000 },
+      { phase: 'exec', text: '[Exploitation] Rate-limiting threshold breached. API Gateway Routing status: DDoS OUTAGE.', delay: 7500, systemUpdate: true },
+      { phase: 'exec', text: '[Resiliency Response] Activating Cloudflare Magic Transit and BGP routing mitigation. Volumetric packets filtered at edge networks.', delay: 10000 },
+      { phase: 'exec', text: '[Resiliency Response] API Gateway status returned to nominal levels (MITIGATION ACTIVE). Latency stabilized at 22ms.', delay: 12500, systemUpdate: true },
+      { phase: 'close', text: '[Closure] Red-team logs packaged. Scrubbing efficiency verified at 99.8%. TIBER-EU test closure signed off.', delay: 15000 }
+    ];
+  } else { // insider
+    steps = [
+      { phase: 'prep', text: '[TIBER-EU Scope] Target: AWS Frankfurt Data Center (IBS Clearing Portal). Assessing internal access control enforcement and activity logs.', delay: 500 },
+      { phase: 'intel', text: '[Threat Intel] Modeling rogue employee threat vector. Designing scenarios for privilege escalation using unauthorized SSH key placement.', delay: 2500 },
+      { phase: 'exec', text: '[Exploitation] Rogue system administrator bypasses physical access logs. Installs backdoored script on AWS Frankfurt core clearing node.', delay: 5000 },
+      { phase: 'exec', text: '[Exploitation] Attempting rogue clearing injection. Internal API activity triggers anomaly alarm. System: AWS eu-central-1 compromised.', delay: 7500, systemUpdate: true },
+      { phase: 'exec', text: '[Resiliency Response] IAM gateway revokes rogue administrator credentials instantly. Automated container isolation blocks lateral clearing movement.', delay: 10000 },
+      { phase: 'exec', text: '[Resiliency Response] Isolated clearing node terminated and redeployed from clean gold image. Data integrity verified. IBS portal restored.', delay: 13000, systemUpdate: true },
+      { phase: 'close', text: '[Closure] Incident report dispatched to Compliance officers. Access policy changes enforced. TIBER-EU audit closed.', delay: 16000 }
+    ];
+  }
+
+  const consoleLogs = document.getElementById('tlpt-console-logs');
+  if (consoleLogs) consoleLogs.innerHTML = '';
+
+  steps.forEach(step => {
+    const tid = setTimeout(() => {
+      if (!state.resilience.tlptActive) return;
+
+      // Update Phase Tracker visually
+      state.resilience.tlptPhase = step.phase;
+      updateTlptTrackerUI(step.phase);
+
+      // Append Log
+      if (consoleLogs) {
+        const p = document.createElement('p');
+        p.style.margin = '4px 0';
+        p.style.borderBottom = '1px solid rgba(255,255,255,0.02)';
+        p.style.paddingBottom = '3px';
+
+        let color = '#38bdf8';
+        if (step.phase === 'exec') color = '#fb7185';
+        else if (step.phase === 'intel') color = '#fbbf24';
+        else if (step.phase === 'close') color = '#34d399';
+
+        p.innerHTML = `<span style="color: rgba(255,255,255,0.3);">${new Date().toTimeString().slice(0, 8)}</span> <span style="color: ${color};">${step.text}</span>`;
+        consoleLogs.appendChild(p);
+        consoleLogs.scrollTop = consoleLogs.scrollHeight;
+      }
+
+      if (step.systemUpdate) {
+        renderResilienceDashboard();
+      }
+
+      if (step.phase === 'close') {
+        const tEnd = setTimeout(() => {
+          stopTlptSimulation();
+        }, 3000);
+        tlptTimeoutIds.push(tEnd);
+      }
+    }, step.delay);
+    tlptTimeoutIds.push(tid);
+  });
+};
+
+window.stopTlptSimulation = function() {
+  state.resilience.tlptActive = false;
+  state.resilience.tlptPhase = 'prep';
+
+  // Clear pending timeouts
+  tlptTimeoutIds.forEach(clearTimeout);
+  tlptTimeoutIds = [];
+
+  const launchBtn = document.getElementById('btn-launch-tlpt');
+  const stopBtn = document.getElementById('btn-stop-tlpt');
+  if (launchBtn) launchBtn.classList.remove('hidden');
+  if (stopBtn) stopBtn.classList.add('hidden');
+
+  const statusEl = document.getElementById('tlpt-status');
+  if (statusEl) {
+    statusEl.innerText = 'IDLE';
+    statusEl.className = 'terminal-badge';
+  }
+
+  updateTlptTrackerUI('prep');
+  renderResilienceDashboard();
+};
+
+function updateTlptTrackerUI(phase) {
+  const steps = ['prep', 'intel', 'exec', 'close'];
+  steps.forEach(p => {
+    const el = document.getElementById(`phase-step-${p}`);
+    if (el) {
+      if (p === phase) {
+        el.classList.add('active');
+      } else {
+        el.classList.remove('active');
+      }
+    }
+  });
+
+  const statusEl = document.getElementById('tlpt-status');
+  if (statusEl) {
+    if (phase === 'prep') {
+      statusEl.innerText = 'PREPARATION';
+    } else if (phase === 'intel') {
+      statusEl.innerText = 'THREAT INTEL';
+    } else if (phase === 'exec') {
+      statusEl.innerText = 'RED TEAM EXEC';
+    } else if (phase === 'close') {
+      statusEl.innerText = 'CLOSURE';
+    }
+  }
+}
+
+// --------------------------------------------------------------------------
+// 22. INITIALIZATION
 // --------------------------------------------------------------------------
 window.onload = function() {
   // Load state from db
@@ -2343,5 +3142,23 @@ window.onload = function() {
   const defaultSupplier = document.getElementById('collector-target-supplier').value;
   if (defaultSupplier) {
     initAttackSurfaceView(defaultSupplier);
+  }
+
+  // Auto-initialize first region details panel on load
+  renderResilienceDashboard();
+  
+  // Show active drill banner if page is reloaded during simulation
+  if (state.resilience && state.resilience.activeDrill) {
+    const banner = document.getElementById('drill-alert-banner');
+    const bannerText = document.getElementById('drill-alert-text');
+    if (banner && bannerText) {
+      banner.classList.remove('hidden');
+      const chosen = state.resilience.activeDrill;
+      if (chosen === 'apac-outage') {
+        bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Simulated regional power outage in APAC Node (Infosys database & Google Cloud SG). Verify automatic failover and offline notifications.`;
+      } else {
+        bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Wildfire threat near Oregon AZ (Azure US-West). Simulated failover testing of identity directories.`;
+      }
+    }
   }
 };

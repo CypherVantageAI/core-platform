@@ -82,7 +82,18 @@
         <ul id="nav-group-manager" class="nav-list">
           <li class="nav-section">MANAGEMENT</li>
           <li>
-            <a href="#" id="nav-manager-dashboard" class="nav-item active" onclick="switchTab('manager-dashboard')">
+            <a href="#" id="nav-manager-resilience" class="nav-item active" onclick="switchTab('manager-resilience')">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                <path d="M2 12h20"></path>
+              </svg>
+              <span>Operational Resilience</span>
+              <span class="badge badge-accent">DORA</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" id="nav-manager-dashboard" class="nav-item" onclick="switchTab('manager-dashboard')">
               <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
               <span>Overview Dashboard</span>
             </a>
@@ -119,7 +130,7 @@
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
               </svg>
-              <span>AI Risk Governance</span>
+              <span>AI Audit Suite</span>
               <span class="badge badge-accent">New</span>
             </a>
           </li>
@@ -154,6 +165,7 @@
             </a>
           </li>
         </ul>
+      </nav>
       <!-- Sidebar Footer -->
       <div class="sidebar-footer">
         <div class="footer-status">
@@ -176,7 +188,7 @@
       <!-- ============================================== -->
       <!-- VIEW: RISK MANAGER DASHBOARD                   -->
       <!-- ============================================== -->
-      <section id="view-manager-dashboard" class="content-pane active">
+      <section id="view-manager-dashboard" class="content-pane">
         <div class="view-header">
           <h2>Overview Dashboard</h2>
           <p>Real-time analytics and global compliance overview across vendor domains</p>
@@ -522,11 +534,11 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- VIEW: RISK MANAGER AI RISK GOVERNANCE          -->
+      <!-- VIEW: RISK MANAGER AI AUDIT SUITE              -->
       <!-- ============================================== -->
       <section id="view-manager-ai-risk" class="content-pane">
         <div class="view-header">
-          <h2>AI Risk Governance Suite</h2>
+          <h2>AI Audit Suite</h2>
           <p>Audit third-party LLM integrations, classify EU AI Act regulatory risks, and simulate adversarial security testing</p>
         </div>
 
@@ -621,6 +633,219 @@
             </div>
           </div>
 
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: RISK MANAGER OPERATIONAL RESILIENCE      -->
+      <!-- ============================================== -->
+      <section id="view-manager-resilience" class="content-pane active">
+        <div class="view-header">
+          <h2>Operational Resilience & DORA Compliance Portal</h2>
+          <p>Prioritize business resilience: Map systems, data centers, and availability zones to Important Business Services (IBS) and Critical Internal Services (CIS), track global threat hotspots, and initiate TIBER-EU Threat-Led Penetration Testing (TLPT)</p>
+        </div>
+
+        <div class="resilience-dashboard-grid">
+          <!-- Top Row: Global Map & Regional Details -->
+          <div class="resilience-row">
+            <!-- Global Map Card -->
+            <div class="dashboard-card map-card">
+              <div class="card-header-resilience">
+                <h3>Global Service Infrastructure & Threat Tracker</h3>
+                <div class="map-actions">
+                  <select id="map-filter-service" class="dropdown-control select-sm" onchange="filterResilienceMap(this.value)">
+                    <option value="all">All Services (IBS & CIS)</option>
+                    <option value="ibs">Important Business Services (IBS)</option>
+                    <option value="cis">Critical Internal Services (CIS)</option>
+                  </select>
+                  <button class="btn btn-secondary btn-sm" onclick="triggerDrillSimulation()">Simulate Geopolitical/Natural Crisis</button>
+                </div>
+              </div>
+              
+              <!-- Map Container -->
+              <div class="world-map-wrapper">
+                <div class="world-map-grid" id="resilience-world-map">
+                  <!-- North America Node -->
+                  <div class="map-node-pin na-pin hotspot-active" id="pin-na" onclick="drillResilienceDown('na')">
+                    <span class="pulse-ring"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-label">North America</span>
+                  </div>
+                  <!-- Europe Node -->
+                  <div class="map-node-pin eu-pin status-nominal" id="pin-eu" onclick="drillResilienceDown('eu')">
+                    <span class="pulse-ring"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-label">Europe</span>
+                  </div>
+                  <!-- Asia-Pacific Node -->
+                  <div class="map-node-pin apac-pin hotspot-warning" id="pin-apac" onclick="drillResilienceDown('apac')">
+                    <span class="pulse-ring"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-label">Asia-Pacific</span>
+                  </div>
+
+                  <!-- Visual Connection SVG -->
+                  <svg class="map-connections" viewBox="0 0 800 400" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+                    <!-- Line US-East to Europe -->
+                    <path d="M 220 180 Q 380 150 510 180" class="connection-line" id="line-na-eu" />
+                    <!-- Line Europe to APAC -->
+                    <path d="M 510 180 Q 580 240 650 250" class="connection-line" id="line-eu-apac" />
+                    <!-- Line US-East to APAC -->
+                    <path d="M 220 180 Q 430 270 650 250" class="connection-line dashed" id="line-na-apac" />
+                  </svg>
+                </div>
+                
+                <!-- Active Drill Alert Banner -->
+                <div class="drill-alert-banner hidden" id="drill-alert-banner">
+                  <div class="drill-alert-icon">⚡</div>
+                  <div class="drill-alert-text" id="drill-alert-text">
+                    <strong>ACTIVE DRILL:</strong> Simulated regional power outage in APAC Node. Verifying failover routing to EU-Central.
+                  </div>
+                  <button class="btn btn-close-drill" onclick="resetResilienceDrill()">Reset Drill</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Region Detail Info Card -->
+            <div class="dashboard-card info-card" id="resilience-detail-card" style="display: flex; flex-direction: column; min-height: 460px;">
+              <!-- Dynamically populated in app.js -->
+            </div>
+          </div>
+
+          <!-- Bottom Row: DORA Compliance Pillars & TIBER red team -->
+          <div class="resilience-row">
+            <!-- TIBER-EU / TLPT Console -->
+            <div class="dashboard-card tlpt-card" style="flex: 1.2; min-width: 420px; display: flex; flex-direction: column;">
+              <div class="card-header-resilience">
+                <h3>TIBER-EU / Threat-Led Penetration Testing (TLPT) Simulator</h3>
+                <span class="badge badge-accent" style="font-size: 0.65rem;">Article 26 DORA</span>
+              </div>
+              
+              <!-- TIBER Phase Progress Tracker -->
+              <div class="tlpt-phase-tracker" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md); background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: var(--border-radius-sm); border: 1px solid rgba(255,255,255,0.03);">
+                <div class="phase-step active" id="phase-step-prep">
+                  <div class="step-num">1</div>
+                  <div class="step-text">Prep & Scope</div>
+                </div>
+                <div class="phase-arrow">➔</div>
+                <div class="phase-step" id="phase-step-intel">
+                  <div class="step-num">2</div>
+                  <div class="step-text">Threat Intel (CTI)</div>
+                </div>
+                <div class="phase-arrow">➔</div>
+                <div class="phase-step" id="phase-step-exec">
+                  <div class="step-num">3</div>
+                  <div class="step-text">Red Team Exec</div>
+                </div>
+                <div class="phase-arrow">➔</div>
+                <div class="phase-step" id="phase-step-close">
+                  <div class="step-num">4</div>
+                  <div class="step-text">Closure & Replay</div>
+                </div>
+              </div>
+
+              <!-- Simulation Settings -->
+              <div style="display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 160px;">
+                  <label class="text-xs text-secondary" style="display: block; margin-bottom: 4px;">Target Scenarios</label>
+                  <select id="tlpt-scenario" class="dropdown-control select-sm" style="width: 100%; margin: 0;">
+                    <option value="ransomware">Ransomware on CIS Identity Gateway</option>
+                    <option value="supplychain">Supply Chain Poisoning (Infosys API Hack)</option>
+                    <option value="ddos">Distributed DDoS + DNS Spoofing</option>
+                    <option value="insider">Malicious Insider Privilege Escalation</option>
+                  </select>
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: var(--spacing-sm);">
+                  <button class="btn btn-primary btn-sm" id="btn-launch-tlpt" onclick="startTlptSimulation()">Launch TIBER-EU Red Team</button>
+                  <button class="btn btn-secondary btn-sm hidden" id="btn-stop-tlpt" onclick="stopTlptSimulation()" style="border-color: var(--color-danger); color: var(--color-danger); background: rgba(239, 68, 68, 0.05); margin: 0;">Abort Test</button>
+                </div>
+              </div>
+
+              <!-- Terminal Output Console -->
+              <div class="terminal-card" style="flex: 1; min-height: 180px; display: flex; flex-direction: column;">
+                <div class="terminal-header" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(0,0,0,0.3);">
+                  <span class="terminal-title" style="font-size: 0.72rem; letter-spacing: 0.05em; color: var(--color-cyan); font-weight: 600;">RED-TEAM SIMULATOR CONSOLE</span>
+                  <span class="terminal-badge" id="tlpt-status" style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">IDLE</span>
+                </div>
+                <div class="terminal-body" id="tlpt-console-logs" style="flex: 1; height: 160px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; color: #38bdf8; padding: var(--spacing-sm); line-height: 1.4; background: rgba(0,0,0,0.25);">
+                  <span style="color: var(--color-text-secondary);">Select a threat scenario above and click "Launch TIBER-EU Red Team" to perform a Threat-Led Penetration Test.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- DORA Compliance Pillars Card -->
+            <div class="dashboard-card dora-pillars-card" style="flex: 1; min-width: 320px;">
+              <h3>DORA Compliance Integration Framework</h3>
+              <p class="panel-subtitle" style="margin-bottom: var(--spacing-md);">Trace Cypher Vantage compliance modules to the 5 Core Pillars of the EU Digital Operational Resilience Act (DORA)</p>
+              
+              <div class="dora-pillars-grid" style="display: grid; grid-template-columns: 1fr; gap: var(--spacing-sm);">
+                <!-- Pillar 1 -->
+                <div class="dora-pillar-item" id="pillar-ict-risk" style="padding: 10px 14px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="pillar-number" style="margin-bottom: 0;">PILLAR 1</div>
+                    <div class="pillar-status status-green" style="position: static; padding: 1px 6px; font-size: 0.6rem;">95% Aligned</div>
+                  </div>
+                  <h4 style="font-size: 0.8rem; margin: 4px 0;">ICT Risk Management</h4>
+                  <p class="pillar-desc" style="font-size: 0.7rem; margin-bottom: 4px; line-height: 1.3;">Identify and mitigate ICT threats across vendor networks.</p>
+                  <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
+                    <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Sec 5.0 (Cyber)</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Sec 3.0 (Data)</span></div>
+                  </div>
+                </div>
+                
+                <!-- Pillar 2 -->
+                <div class="dora-pillar-item" id="pillar-incident" style="padding: 10px 14px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="pillar-number" style="margin-bottom: 0;">PILLAR 2</div>
+                    <div class="pillar-status status-green" style="position: static; padding: 1px 6px; font-size: 0.6rem;">100% Aligned</div>
+                  </div>
+                  <h4 style="font-size: 0.8rem; margin: 4px 0;">Incident Management</h4>
+                  <p class="pillar-desc" style="font-size: 0.7rem; margin-bottom: 4px; line-height: 1.3;">Record, classify, and report major ICT-related incidents.</p>
+                  <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
+                    <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Action Center Logs</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Auto-Collector</span></div>
+                  </div>
+                </div>
+
+                <!-- Pillar 3 -->
+                <div class="dora-pillar-item" id="pillar-testing" style="padding: 10px 14px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="pillar-number" style="margin-bottom: 0;">PILLAR 3</div>
+                    <div class="pillar-status status-yellow" id="pillar-status-testing" style="position: static; padding: 1px 6px; font-size: 0.6rem;">AWS Overdue</div>
+                  </div>
+                  <h4 style="font-size: 0.8rem; margin: 4px 0;">Operational Resilience Testing</h4>
+                  <p class="pillar-desc" style="font-size: 0.7rem; margin-bottom: 4px; line-height: 1.3;">Threat-led penetration testing (TLPT) & annual regional drills.</p>
+                  <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
+                    <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Sec 13.0 (Recovery)</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">TIBER-EU Tests</span></div>
+                  </div>
+                </div>
+
+                <!-- Pillar 4 -->
+                <div class="dora-pillar-item" id="pillar-third-party" style="padding: 10px 14px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="pillar-number" style="margin-bottom: 0;">PILLAR 4</div>
+                    <div class="pillar-status status-red" id="pillar-status-tpm" style="position: static; padding: 1px 6px; font-size: 0.6rem;">Infosys Gap</div>
+                  </div>
+                  <h4 style="font-size: 0.8rem; margin: 4px 0;">Third-Party Risk Management</h4>
+                  <p class="pillar-desc" style="font-size: 0.7rem; margin-bottom: 4px; line-height: 1.3;">Register of information & critical subcontractor auditing.</p>
+                  <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
+                    <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Sec 14.0 (Tech Risk)</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Subcontractors</span></div>
+                  </div>
+                </div>
+
+                <!-- Pillar 5 -->
+                <div class="dora-pillar-item" id="pillar-sharing" style="padding: 10px 14px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="pillar-number" style="margin-bottom: 0;">PILLAR 5</div>
+                    <div class="pillar-status status-green" style="position: static; padding: 1px 6px; font-size: 0.6rem;">100% Aligned</div>
+                  </div>
+                  <h4 style="font-size: 0.8rem; margin: 4px 0;">Information Sharing</h4>
+                  <p class="pillar-desc" style="font-size: 0.7rem; margin-bottom: 4px; line-height: 1.3;">Mechanism to securely share vulnerability intelligence.</p>
+                  <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
+                    <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Advisor Chat</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Threat Intelligence</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

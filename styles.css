@@ -2008,7 +2008,7 @@ textarea:focus-visible {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Switch Toggle slider styles for AI Risk Governance DLP proxy */
+/* Switch Toggle slider styles for AI Audit Suite DLP proxy */
 .switch-toggle {
   position: relative;
   display: inline-block;
@@ -2055,3 +2055,504 @@ textarea:focus-visible {
 .switch-toggle input:checked + .slider-toggle-round:before {
   transform: translateX(22px);
 }
+
+/* ==========================================================================
+   22. OPERATIONAL RESILIENCE & DORA DASHBOARD
+   ========================================================================== */
+.resilience-dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.resilience-row {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.resilience-row .map-card {
+  flex: 1.7;
+  min-width: 450px;
+}
+
+.resilience-row .info-card {
+  flex: 1.3;
+  min-width: 320px;
+  min-height: 480px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.card-header-resilience {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.map-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.select-sm {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
+  height: auto;
+  margin: 0;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+
+/* World Map Cyber Grid */
+.world-map-wrapper {
+  position: relative;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.world-map-grid {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  background-color: #0b0f19;
+  background-image: radial-gradient(rgba(139, 92, 246, 0.15) 1px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+/* Map Pins */
+.map-node-pin {
+  position: absolute;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.map-node-pin:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+  z-index: 5;
+}
+
+.map-node-pin.na-pin {
+  left: 25%;
+  top: 40%;
+}
+
+.map-node-pin.eu-pin {
+  left: 51%;
+  top: 36%;
+}
+
+.map-node-pin.apac-pin {
+  left: 78%;
+  top: 62%;
+}
+
+.pin-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--color-cyan);
+  border: 2px solid var(--color-bg);
+  box-shadow: 0 0 10px var(--color-cyan);
+  transition: background-color 0.3s;
+}
+
+.pin-label {
+  margin-top: var(--spacing-xs);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text);
+  background: rgba(0, 0, 0, 0.75);
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+.map-node-pin.active .pin-label {
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.2);
+}
+
+/* Pulse Rings */
+.pulse-ring {
+  position: absolute;
+  top: 0px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  animation: pulse-ring-glow 1.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  pointer-events: none;
+}
+
+/* Node States */
+.status-nominal .pin-dot {
+  background-color: var(--color-success);
+  box-shadow: 0 0 10px var(--color-success);
+}
+.status-nominal .pulse-ring {
+  border: 3px solid rgba(16, 185, 129, 0.4);
+}
+
+.hotspot-warning .pin-dot {
+  background-color: var(--color-warning);
+  box-shadow: 0 0 10px var(--color-warning);
+}
+.hotspot-warning .pulse-ring {
+  border: 3px solid rgba(245, 158, 11, 0.4);
+}
+
+.hotspot-active .pin-dot {
+  background-color: var(--color-danger);
+  box-shadow: 0 0 10px var(--color-danger);
+  animation: pin-dot-critical 0.9s ease infinite alternate;
+}
+.hotspot-active .pulse-ring {
+  border: 3px solid rgba(239, 68, 68, 0.6);
+  animation: pulse-ring-glow 1.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+@keyframes pulse-ring-glow {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(3.5);
+    opacity: 0;
+  }
+}
+
+@keyframes pin-dot-critical {
+  from {
+    filter: brightness(1);
+    box-shadow: 0 0 10px var(--color-danger);
+  }
+  to {
+    filter: brightness(1.4);
+    box-shadow: 0 0 20px var(--color-danger);
+  }
+}
+
+/* Connecting Lines */
+.map-connections {
+  pointer-events: none;
+}
+
+.connection-line {
+  fill: none;
+  stroke: rgba(139, 92, 246, 0.25);
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+}
+
+.connection-line.dashed {
+  stroke-dasharray: 6,6;
+}
+
+/* Active simulation fiber flow anim */
+.map-node-pin.active ~ svg .connection-line {
+  stroke: var(--color-cyan);
+  stroke-width: 2px;
+  opacity: 0.6;
+}
+
+/* Active Drill banner */
+.drill-alert-banner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slide-up-resilience 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.drill-alert-icon {
+  font-size: 1.2rem;
+  animation: pulse-ring-glow 1s infinite alternate;
+}
+
+.drill-alert-text {
+  font-size: 0.82rem;
+  flex: 1;
+  letter-spacing: 0.01em;
+}
+
+.btn-close-drill {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: white;
+  padding: 4px 12px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.72rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-close-drill:hover {
+  background: white;
+  color: var(--color-danger);
+}
+
+@keyframes slide-up-resilience {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Details Elements */
+.hotspot-alert-item {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 8px 12px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.78rem;
+  margin-top: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.resilience-system-status .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.resilience-system-status.status-green .status-dot { background-color: var(--color-success); box-shadow: 0 0 6px var(--color-success); }
+.resilience-system-status.status-yellow .status-dot { background-color: var(--color-warning); box-shadow: 0 0 6px var(--color-warning); }
+.resilience-system-status.status-red .status-dot { background-color: var(--color-danger); box-shadow: 0 0 6px var(--color-danger); }
+
+/* DORA Compliance Pillars grid */
+.dora-pillars-card {
+  padding: var(--spacing-lg);
+}
+
+.dora-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.dora-pillar-item {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+.dora-pillar-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.pillar-number {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--color-cyan);
+  letter-spacing: 0.08em;
+  margin-bottom: var(--spacing-xs);
+}
+
+.dora-pillar-item h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text);
+  line-height: 1.25;
+}
+
+.pillar-desc {
+  font-size: 0.76rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  margin-bottom: var(--spacing-md);
+  flex: 1;
+}
+
+.pillar-mapping {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  padding-top: var(--spacing-sm);
+}
+
+.pillar-mapping .label {
+  font-size: 0.68rem;
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.pillar-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pillar-tags .tag {
+  font-size: 0.62rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.pillar-status {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  text-transform: uppercase;
+}
+
+.pillar-status.status-green {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.pillar-status.status-yellow {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  animation: pulse-yellow-glow 1.5s infinite alternate;
+}
+
+.pillar-status.status-red {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  animation: pulse-red-glow 1.5s infinite alternate;
+}
+
+@keyframes pulse-yellow-glow {
+  from { box-shadow: 0 0 4px rgba(245, 158, 11, 0.1); }
+  to { box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+}
+
+@keyframes pulse-red-glow {
+  from { box-shadow: 0 0 4px rgba(239, 68, 68, 0.1); }
+  to { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+}
+
+/* TIBER-EU / TLPT Phase Tracker Styles */
+.tlpt-phase-tracker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px 14px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.phase-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.phase-step.active {
+  opacity: 1;
+}
+
+.phase-step .step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--color-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  transition: all 0.3s ease;
+}
+
+.phase-step.active .step-num {
+  background: linear-gradient(135deg, var(--color-cyan) 0%, #8b5cf6 100%);
+  border-color: var(--color-cyan);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+  color: white;
+}
+
+.phase-step .step-text {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  transition: all 0.3s ease;
+}
+
+.phase-step.active .step-text {
+  color: var(--color-cyan);
+  text-shadow: 0 0 5px rgba(6, 182, 212, 0.15);
+}
+
+.phase-arrow {
+  color: var(--color-text-secondary);
+  opacity: 0.3;
+  font-size: 0.8rem;
+  margin: 0 4px;
+}
+
+/* Breadcrumb Styling */
+.breadcrumb-item {
+  color: var(--color-text-secondary);
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item:hover {
+  color: var(--color-cyan) !important;
+}
+
+.breadcrumb-item:last-child {
+  color: var(--color-cyan);
+  text-decoration: none !important;
+  pointer-events: none;
+}
+
