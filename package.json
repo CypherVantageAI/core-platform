@@ -1,5 +1,5 @@
 {
-  "name": "cypher-vantage-tprm",
+  "name": "cypher-vantage-op-resilience",
   "version": "1.0.0",
   "description": "Cypher Vantage Third-Party Risk Management System with simulated AI Agents and Supplier Portal.",
   "main": "server.js",
