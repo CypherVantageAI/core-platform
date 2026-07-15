@@ -381,7 +381,8 @@ window.loadState = function() {
       regions: {
         na: { name: 'North America Hub', threatLevel: 'Moderate', threatColor: 'orange' },
         eu: { name: 'Europe Operations', threatLevel: 'Nominal', threatColor: 'green' },
-        apac: { name: 'Asia-Pacific Centre', threatLevel: 'High', threatColor: 'red' }
+        apac: { name: 'Asia-Pacific Centre', threatLevel: 'High', threatColor: 'red' },
+        af: { name: 'Africa Operations', threatLevel: 'Nominal', threatColor: 'green' }
       }
     };
   }
@@ -955,6 +956,84 @@ window.loadState = function() {
                   ],
                   personnel: [
                     { name: 'Wong Ka-shing', role: 'Support Analyst', location: 'Hong Kong Office', contact: 'w.kashing@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    af: {
+      name: 'Africa',
+      threatLevel: 'Nominal',
+      threatColor: 'green',
+      countries: {
+        za: {
+          name: 'South Africa',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            gauteng: {
+              name: 'Gauteng',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                johannesburg: {
+                  name: 'Johannesburg Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'LSEG JSE Direct Connect (IBS JSE Link)', status: 'Active', serviceType: 'ibs', description: 'Johannesburg Stock Exchange dedicated gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Thabo Mbeki', role: 'Network Support', location: 'Johannesburg Office', contact: 't.mbeki@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            western_cape: {
+              name: 'Western Cape',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                capetown: {
+                  name: 'Cape Town Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'LSEG Cape Town DR Node (CIS CT Recovery)', status: 'Active', serviceType: 'cis', description: 'Secondary disaster recovery hub for South Africa operations' }
+                  ],
+                  personnel: [
+                    { name: 'Chloe van der Merwe', role: 'DR Coordinator', location: 'Cape Town Office', contact: 'c.vdmerwe@lseg.com', status: 'On Standby' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        ke: {
+          name: 'Kenya',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            nairobi_county: {
+              name: 'Nairobi Area',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                nairobi: {
+                  name: 'Nairobi Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'LSEG Nairobi Regional Hub (CIS NSE Feed)', status: 'Active', serviceType: 'cis', description: 'Nairobi Stock Exchange live ticker feed relay' }
+                  ],
+                  personnel: [
+                    { name: 'Amara Okechukwu', role: 'Security Analyst', location: 'Nairobi Office', contact: 'a.okechukwu@lseg.com', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -3075,7 +3154,8 @@ function aggregateResilienceData(node) {
   let personnel = [];
   let hotspots = [];
 
-  function traverse(curr) {
+  function traverse(curr, parentName = '') {
+    const nodeName = curr.name || parentName;
     if (curr.systems) {
       systems = systems.concat(curr.systems);
     }
@@ -3083,20 +3163,25 @@ function aggregateResilienceData(node) {
       personnel = personnel.concat(curr.personnel);
     }
     if (curr.hotspots) {
-      hotspots = hotspots.concat(curr.hotspots);
+      // Clone hotspots and attach location name
+      const localizedHotspots = curr.hotspots.map(h => ({
+        ...h,
+        locationName: nodeName
+      }));
+      hotspots = hotspots.concat(localizedHotspots);
     }
 
     if (curr.countries) {
-      Object.values(curr.countries).forEach(traverse);
+      Object.values(curr.countries).forEach(c => traverse(c, nodeName));
     }
     if (curr.states) {
-      Object.values(curr.states).forEach(traverse);
+      Object.values(curr.states).forEach(s => traverse(s, nodeName));
     }
     if (curr.cities) {
-      Object.values(curr.cities).forEach(traverse);
+      Object.values(curr.cities).forEach(c => traverse(c, nodeName));
     }
     if (curr.subdivisions) {
-      Object.values(curr.subdivisions).forEach(traverse);
+      Object.values(curr.subdivisions).forEach(s => traverse(s, nodeName));
     }
   }
 
@@ -3114,78 +3199,87 @@ function getSubLocations(node) {
 
 const pinCoordinates = {
   // Regions
-  na: { left: '25%', top: '40%', label: 'North America' },
-  eu: { left: '51%', top: '36%', label: 'Europe' },
-  apac: { left: '78%', top: '62%', label: 'Asia-Pacific' },
+  na: { left: '25%', top: '40%', label: 'North America', labelPosition: 'bottom' },
+  eu: { left: '51%', top: '36%', label: 'Europe', labelPosition: 'bottom' },
+  apac: { left: '78%', top: '62%', label: 'Asia-Pacific', labelPosition: 'bottom' },
+  af: { left: '46%', top: '65%', label: 'Africa', labelPosition: 'right' },
   
   // Countries
-  us: { left: '23%', top: '38%', label: 'United States' },
-  ca: { left: '20%', top: '30%', label: 'Canada' },
-  de: { left: '52%', top: '35%', label: 'Germany' },
-  uk: { left: '48%', top: '31%', label: 'United Kingdom' },
-  it: { left: '52%', top: '40%', label: 'Italy' },
-  ro: { left: '57%', top: '38%', label: 'Romania' },
-  pl: { left: '55%', top: '34%', label: 'Poland' },
-  in: { left: '72%', top: '56%', label: 'India' },
-  sg: { left: '78%', top: '62%', label: 'Singapore' },
-  lk: { left: '71%', top: '61%', label: 'Sri Lanka' },
-  my: { left: '77%', top: '60%', label: 'Malaysia' },
-  ph: { left: '82%', top: '59%', label: 'Philippines' },
-  jp: { left: '86%', top: '46%', label: 'Japan' },
-  hk: { left: '81%', top: '53%', label: 'Hong Kong' },
+  us: { left: '23%', top: '38%', label: 'United States', labelPosition: 'bottom' },
+  ca: { left: '20%', top: '30%', label: 'Canada', labelPosition: 'bottom' },
+  de: { left: '52%', top: '35%', label: 'Germany', labelPosition: 'bottom' },
+  uk: { left: '48%', top: '31%', label: 'United Kingdom', labelPosition: 'bottom' },
+  it: { left: '52%', top: '40%', label: 'Italy', labelPosition: 'bottom' },
+  ro: { left: '57%', top: '38%', label: 'Romania', labelPosition: 'bottom' },
+  pl: { left: '55%', top: '34%', label: 'Poland', labelPosition: 'bottom' },
+  in: { left: '72%', top: '56%', label: 'India', labelPosition: 'bottom' },
+  sg: { left: '78%', top: '62%', label: 'Singapore', labelPosition: 'top' },
+  lk: { left: '71%', top: '61%', label: 'Sri Lanka', labelPosition: 'bottom' },
+  my: { left: '77%', top: '60%', label: 'Malaysia', labelPosition: 'bottom' },
+  ph: { left: '82%', top: '59%', label: 'Philippines', labelPosition: 'bottom' },
+  jp: { left: '86%', top: '46%', label: 'Japan', labelPosition: 'bottom' },
+  hk: { left: '81%', top: '53%', label: 'Hong Kong', labelPosition: 'bottom' },
+  za: { left: '47%', top: '80%', label: 'South Africa', labelPosition: 'bottom' },
+  ke: { left: '52%', top: '66%', label: 'Kenya', labelPosition: 'right' },
   
   // States
-  va: { left: '27%', top: '43%', label: 'Virginia' },
-  or: { left: '17%', top: '34%', label: 'Oregon' },
-  ny_state: { left: '28%', top: '38%', label: 'New York' },
-  il_state: { left: '23%', top: '38%', label: 'Illinois' },
-  ca_state: { left: '15%', top: '40%', label: 'California' },
-  qc_state: { left: '22%', top: '32%', label: 'Quebec' },
-  hesse: { left: '52%', top: '35%', label: 'Hesse' },
-  england: { left: '48%', top: '31%', label: 'England' },
-  lombardy: { left: '52%', top: '40%', label: 'Lombardy' },
-  bucharest_state: { left: '58%', top: '39%', label: 'Bucharest Region' },
-  cluj_state: { left: '56%', top: '37%', label: 'Cluj Region' },
-  pomerania: { left: '55%', top: '33%', label: 'Pomerania' },
-  karnataka: { left: '72%', top: '57%', label: 'Karnataka' },
-  maharashtra: { left: '70%', top: '55%', label: 'Maharashtra' },
-  telangana: { left: '72%', top: '55%', label: 'Telangana' },
-  delhi_state: { left: '71%', top: '51%', label: 'Delhi NCR' },
-  central: { left: '78%', top: '62%', label: 'Central Region' },
-  western_province: { left: '71%', top: '61%', label: 'Western Province' },
-  penang_state: { left: '76%', top: '59%', label: 'Penang State' },
-  metro_manila: { left: '82%', top: '59%', label: 'Metro Manila' },
-  tokyo_state: { left: '86%', top: '46%', label: 'Tokyo Prefecture' },
-  hk_island: { left: '81%', top: '53%', label: 'Hong Kong Island' },
+  va: { left: '27%', top: '43%', label: 'Virginia', labelPosition: 'bottom' },
+  or: { left: '17%', top: '34%', label: 'Oregon', labelPosition: 'bottom' },
+  ny_state: { left: '28%', top: '38%', label: 'New York', labelPosition: 'bottom' },
+  il_state: { left: '23%', top: '38%', label: 'Illinois', labelPosition: 'bottom' },
+  ca_state: { left: '15%', top: '40%', label: 'California', labelPosition: 'bottom' },
+  qc_state: { left: '22%', top: '32%', label: 'Quebec', labelPosition: 'bottom' },
+  hesse: { left: '52%', top: '35%', label: 'Hesse', labelPosition: 'bottom' },
+  england: { left: '48%', top: '31%', label: 'England', labelPosition: 'bottom' },
+  lombardy: { left: '52%', top: '40%', label: 'Lombardy', labelPosition: 'bottom' },
+  bucharest_state: { left: '58%', top: '39%', label: 'Bucharest Region', labelPosition: 'bottom' },
+  cluj_state: { left: '56%', top: '37%', label: 'Cluj Region', labelPosition: 'bottom' },
+  pomerania: { left: '55%', top: '33%', label: 'Pomerania', labelPosition: 'bottom' },
+  karnataka: { left: '72%', top: '57%', label: 'Karnataka', labelPosition: 'bottom' },
+  maharashtra: { left: '70%', top: '55%', label: 'Maharashtra', labelPosition: 'bottom' },
+  telangana: { left: '72%', top: '55%', label: 'Telangana', labelPosition: 'bottom' },
+  delhi_state: { left: '71%', top: '51%', label: 'Delhi NCR', labelPosition: 'bottom' },
+  central: { left: '78%', top: '62%', label: 'Central Region', labelPosition: 'top' },
+  western_province: { left: '71%', top: '61%', label: 'Western Province', labelPosition: 'bottom' },
+  penang_state: { left: '76%', top: '59%', label: 'Penang State', labelPosition: 'bottom' },
+  metro_manila: { left: '82%', top: '59%', label: 'Metro Manila', labelPosition: 'bottom' },
+  tokyo_state: { left: '86%', top: '46%', label: 'Tokyo Prefecture', labelPosition: 'bottom' },
+  hk_island: { left: '81%', top: '53%', label: 'Hong Kong Island', labelPosition: 'bottom' },
+  gauteng: { left: '47%', top: '80%', label: 'Gauteng', labelPosition: 'bottom' },
+  western_cape: { left: '44%', top: '83%', label: 'Western Cape', labelPosition: 'left' },
+  nairobi_county: { left: '52%', top: '66%', label: 'Nairobi Area', labelPosition: 'right' },
   
   // Cities
-  ashburn: { left: '27%', top: '43%', label: 'Ashburn (DC)' },
-  boardman: { left: '17%', top: '34%', label: 'Boardman (DC)' },
-  newyork: { left: '28%', top: '38%', label: 'New York Office' },
-  chicago: { left: '23%', top: '38%', label: 'Chicago Office' },
-  sanfrancisco: { left: '15%', top: '40%', label: 'San Francisco Office' },
-  montreal: { left: '22%', top: '32%', label: 'Montreal Office' },
-  frankfurt: { left: '52%', top: '35%', label: 'Frankfurt (DC)' },
-  london: { left: '48%', top: '31%', label: 'London HQ' },
-  milan: { left: '52%', top: '40%', label: 'Milan Office' },
-  bucharest: { left: '58%', top: '39%', label: 'Bucharest Office' },
-  cluj: { left: '56%', top: '37%', label: 'Cluj Office' },
-  gdynia: { left: '55%', top: '33%', label: 'Gdynia Office' },
-  bangalore: { left: '72%', top: '57%', label: 'Bengaluru Hub' },
-  mumbai: { left: '70%', top: '55%', label: 'Mumbai Office' },
-  hyderabad: { left: '72%', top: '55%', label: 'Hyderabad Hub' },
-  delhi: { left: '71%', top: '51%', label: 'New Delhi Office' },
-  jurong: { left: '77%', top: '62%', label: 'Jurong (DC)' },
-  singapore_city: { left: '79%', top: '62%', label: 'Singapore Office' },
-  colombo: { left: '71%', top: '61%', label: 'Colombo Office' },
-  penang: { left: '76%', top: '59%', label: 'Penang Office' },
-  manila: { left: '82%', top: '59%', label: 'Manila Office' },
-  tokyo: { left: '86%', top: '46%', label: 'Tokyo Office' },
-  hongkong: { left: '81%', top: '53%', label: 'Hong Kong Office' },
+  ashburn: { left: '27%', top: '43%', label: 'Ashburn (DC)', labelPosition: 'right' },
+  boardman: { left: '17%', top: '34%', label: 'Boardman (DC)', labelPosition: 'left' },
+  newyork: { left: '28%', top: '38%', label: 'New York Office', labelPosition: 'bottom' },
+  chicago: { left: '23%', top: '38%', label: 'Chicago Office', labelPosition: 'bottom' },
+  sanfrancisco: { left: '15%', top: '40%', label: 'San Francisco Office', labelPosition: 'bottom' },
+  montreal: { left: '22%', top: '32%', label: 'Montreal Office', labelPosition: 'bottom' },
+  frankfurt: { left: '52%', top: '35%', label: 'Frankfurt (DC)', labelPosition: 'right' },
+  london: { left: '48%', top: '31%', label: 'London HQ', labelPosition: 'bottom' },
+  milan: { left: '52%', top: '40%', label: 'Milan Office', labelPosition: 'bottom' },
+  bucharest: { left: '58%', top: '39%', label: 'Bucharest Office', labelPosition: 'bottom' },
+  cluj: { left: '56%', top: '37%', label: 'Cluj Office', labelPosition: 'bottom' },
+  gdynia: { left: '55%', top: '33%', label: 'Gdynia Office', labelPosition: 'bottom' },
+  bangalore: { left: '72%', top: '57%', label: 'Bengaluru Hub', labelPosition: 'right' },
+  mumbai: { left: '70%', top: '55%', label: 'Mumbai Office', labelPosition: 'bottom' },
+  hyderabad: { left: '72%', top: '55%', label: 'Hyderabad Hub', labelPosition: 'bottom' },
+  delhi: { left: '71%', top: '51%', label: 'New Delhi Office', labelPosition: 'bottom' },
+  jurong: { left: '77%', top: '62%', label: 'Jurong (DC)', labelPosition: 'left' },
+  singapore_city: { left: '79%', top: '62%', label: 'Singapore Office', labelPosition: 'right' },
+  colombo: { left: '71%', top: '61%', label: 'Colombo Office', labelPosition: 'bottom' },
+  penang: { left: '76%', top: '59%', label: 'Penang Office', labelPosition: 'bottom' },
+  manila: { left: '82%', top: '59%', label: 'Manila Office', labelPosition: 'bottom' },
+  tokyo: { left: '86%', top: '46%', label: 'Tokyo Office', labelPosition: 'bottom' },
+  hongkong: { left: '81%', top: '53%', label: 'Hong Kong Office', labelPosition: 'bottom' },
+  johannesburg: { left: '47%', top: '80%', label: 'Johannesburg Office', labelPosition: 'bottom' },
+  capetown: { left: '44%', top: '83%', label: 'Cape Town Office', labelPosition: 'left' },
+  nairobi: { left: '52%', top: '66%', label: 'Nairobi Office', labelPosition: 'right' },
   
   // Subdivisions
-  'london-north': { left: '47.5%', top: '29%', label: 'North London' },
-  'london-se': { left: '48.5%', top: '32%', label: 'SouthEast London' }
+  'london-north': { left: '47.5%', top: '29%', label: 'North London', labelPosition: 'top' },
+  'london-se': { left: '48.5%', top: '32%', label: 'SouthEast London', labelPosition: 'bottom' }
 };
 
 window.renderResilienceDashboard = function() {
@@ -3218,6 +3312,10 @@ window.renderResilienceDashboard = function() {
         scale = 2.2;
         originX = '78%';
         originY = '62%';
+      } else if (activeRegion === 'af') {
+        scale = 2.2;
+        originX = '46%';
+        originY = '65%';
       }
       
       // Additional zoom for sub-locations
@@ -3321,10 +3419,28 @@ window.renderResilienceDashboard = function() {
         drillResilienceDown(key);
       };
 
+      const labelPos = coord.labelPosition || 'bottom';
+      pinEl.style.display = 'flex';
+      pinEl.style.alignItems = 'center';
+      
+      let labelMargin = 'margin-top: 6px;';
+      if (labelPos === 'top') {
+        pinEl.style.flexDirection = 'column-reverse';
+        labelMargin = 'margin-bottom: 6px; margin-top: 0;';
+      } else if (labelPos === 'left') {
+        pinEl.style.flexDirection = 'row-reverse';
+        labelMargin = 'margin-right: 6px; margin-top: 0;';
+      } else if (labelPos === 'right') {
+        pinEl.style.flexDirection = 'row';
+        labelMargin = 'margin-left: 6px; margin-top: 0;';
+      } else {
+        pinEl.style.flexDirection = 'column';
+      }
+
       pinEl.innerHTML = `
         <span class="pulse-ring"></span>
         <span class="pin-dot"></span>
-        <span class="pin-label">${coord.label}</span>
+        <span class="pin-label" style="${labelMargin}">${coord.label}</span>
       `;
       mapGrid.appendChild(pinEl);
     });
@@ -3382,6 +3498,7 @@ window.renderResilienceDashboard = function() {
       if (name === 'na') displayName = 'North America';
       else if (name === 'eu') displayName = 'Europe';
       else if (name === 'apac') displayName = 'Asia-Pacific';
+      else if (name === 'af') displayName = 'Africa';
       else if (name === 'us') displayName = 'United States';
       else if (name === 'ca') displayName = 'Canada';
       else if (name === 'de') displayName = 'Germany';
@@ -3396,6 +3513,8 @@ window.renderResilienceDashboard = function() {
       else if (name === 'ph') displayName = 'Philippines';
       else if (name === 'jp') displayName = 'Japan';
       else if (name === 'hk') displayName = 'Hong Kong';
+      else if (name === 'za') displayName = 'South Africa';
+      else if (name === 'ke') displayName = 'Kenya';
       else if (name === 'va') displayName = 'Virginia';
       else if (name === 'or') displayName = 'Oregon';
       else if (name === 'ny_state') displayName = 'New York';
@@ -3418,6 +3537,9 @@ window.renderResilienceDashboard = function() {
       else if (name === 'metro_manila') displayName = 'Metro Manila';
       else if (name === 'tokyo_state') displayName = 'Tokyo Prefecture';
       else if (name === 'hk_island') displayName = 'Hong Kong Island';
+      else if (name === 'gauteng') displayName = 'Gauteng';
+      else if (name === 'western_cape') displayName = 'Western Cape';
+      else if (name === 'nairobi_county') displayName = 'Nairobi Area';
       else if (name === 'ashburn') displayName = 'Ashburn';
       else if (name === 'boardman') displayName = 'Boardman';
       else if (name === 'newyork') displayName = 'New York';
@@ -3441,6 +3563,9 @@ window.renderResilienceDashboard = function() {
       else if (name === 'manila') displayName = 'Manila';
       else if (name === 'tokyo') displayName = 'Tokyo';
       else if (name === 'hongkong') displayName = 'Hong Kong';
+      else if (name === 'johannesburg') displayName = 'Johannesburg';
+      else if (name === 'capetown') displayName = 'Cape Town';
+      else if (name === 'nairobi') displayName = 'Nairobi';
       else if (name === 'london-north') displayName = 'North London';
       else if (name === 'london-se') displayName = 'SouthEast London';
 
@@ -3465,7 +3590,9 @@ window.renderResilienceDashboard = function() {
         my: '🇲🇾',
         ph: '🇵🇭',
         jp: '🇯🇵',
-        hk: '🇭🇰'
+        hk: '🇭🇰',
+        za: '🇿🇦',
+        ke: '🇰🇪'
       };
       subLocationsHtml = `
         <div class="resilience-detail-section" style="margin-bottom: 12px;">
@@ -3576,6 +3703,23 @@ window.renderResilienceDashboard = function() {
     let displayThreatLevel = currentNode.threatLevel || 'Nominal';
     let displayThreatColor = currentNode.threatColor || 'green';
 
+    if (path.length === 1) {
+      // Aggregate from regions
+      const regions = Object.values(state.resilience.hierarchy);
+      const hasHigh = regions.some(r => r.threatLevel === 'High');
+      const hasMod = regions.some(r => r.threatLevel === 'Moderate');
+      if (hasHigh) {
+        displayThreatLevel = 'High';
+        displayThreatColor = 'red';
+      } else if (hasMod) {
+        displayThreatLevel = 'Moderate';
+        displayThreatColor = 'orange';
+      } else {
+        displayThreatLevel = 'Nominal';
+        displayThreatColor = 'green';
+      }
+    }
+
     if (state.resilience.activeDrill === 'apac-outage' && path.includes('apac')) {
       displayThreatLevel = 'CRITICAL DRILL';
       displayThreatColor = 'red';
@@ -3610,11 +3754,15 @@ window.renderResilienceDashboard = function() {
 
     let activeThreatsHtml = '';
     if (localHotspots.length > 0) {
-      activeThreatsHtml = localHotspots.map(h => `
-        <div class="hotspot-alert-item" style="border-left: 3px solid var(--color-${displayThreatColor === 'green' ? 'success' : (displayThreatColor === 'orange' ? 'warning' : 'danger')}); padding-left: 8px; margin-top: 6px; font-size: 0.76rem;">
-          <strong>[${h.type}]</strong> ${h.desc}
-        </div>
-      `).join('');
+      activeThreatsHtml = localHotspots.map(h => {
+        const borderCol = displayThreatColor === 'green' ? 'success' : (displayThreatColor === 'orange' ? 'warning' : 'danger');
+        const locPrefix = h.locationName ? `<span style="color: var(--color-cyan); font-weight: 600;">${h.locationName}</span>: ` : '';
+        return `
+          <div class="hotspot-alert-item" style="border-left: 3px solid var(--color-${borderCol}); padding-left: 8px; margin-top: 6px; font-size: 0.76rem;">
+            ${locPrefix}<strong>[${h.type}]</strong> ${h.desc}
+          </div>
+        `;
+      }).join('');
     } else {
       activeThreatsHtml = '<p class="text-xs text-secondary">No active weather or geopolitical threats registered.</p>';
     }
@@ -3642,6 +3790,13 @@ window.renderResilienceDashboard = function() {
       </div>
     `).join('');
 
+    const badgeClassMap = {
+      green: 'success',
+      orange: 'warning',
+      red: 'danger'
+    };
+    const currentBadgeClass = badgeClassMap[displayThreatColor] || 'success';
+
     detailCard.innerHTML = `
       <div id="resilience-breadcrumbs" style="display: flex; gap: 4px; align-items: center; font-size: 0.74rem; font-weight: 600; color: var(--color-cyan); margin-bottom: 10px; flex-wrap: wrap;">
         ${breadcrumbHtml}
@@ -3655,7 +3810,7 @@ window.renderResilienceDashboard = function() {
       
       <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: var(--border-radius-md); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
         <span style="font-size: 0.8rem;">Threat Index:</span>
-        <span class="badge badge-${displayThreatColor}" style="font-weight: 700; text-transform: uppercase; font-size: 0.68rem;">${displayThreatLevel}</span>
+        <span class="badge badge-${currentBadgeClass}" style="font-weight: 700; text-transform: uppercase; font-size: 0.68rem;">${displayThreatLevel}</span>
       </div>
 
       ${subLocationsHtml}
