@@ -4043,10 +4043,15 @@ window.closeSystemDetailsModal = function() {
 };
 
 window.drillResilienceDown = function(key) {
-  if (state.resilience.currentPath.includes(key)) return;
-  state.resilience.currentPath.push(key);
-  if (state.resilience.currentPath.length === 2) {
+  if (['na', 'eu', 'apac', 'af'].includes(key)) {
+    state.resilience.currentPath = ['Global', key];
     state.resilience.selectedRegion = key;
+  } else {
+    if (state.resilience.currentPath.includes(key)) return;
+    state.resilience.currentPath.push(key);
+    if (state.resilience.currentPath.length === 2) {
+      state.resilience.selectedRegion = key;
+    }
   }
   saveState();
   renderResilienceDashboard();
