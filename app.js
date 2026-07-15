@@ -3739,7 +3739,7 @@ window.renderResilienceDashboard = function() {
       const badgeText = sys.serviceType === 'ibs' ? 'IBS' : 'CIS';
 
       return `
-        <div class="resilience-system-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 8px 10px; border-radius: var(--border-radius-sm); margin-bottom: 6px;">
+        <div class="resilience-system-item clickable-system" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 8px 10px; border-radius: var(--border-radius-sm); margin-bottom: 6px; transition: background-color 0.2s, border-color 0.2s;" onclick="showSystemDetails('${sys.name}')">
           <div>
             <div style="display: flex; align-items: center; gap: 8px;">
               <strong style="font-size: 0.82rem;">${sys.name}</strong>
@@ -3890,9 +3890,156 @@ window.renderResilienceDashboard = function() {
       systemsGrid.innerHTML = finalSystemsHtml || '<p class="text-xs text-secondary p-4 text-center col-span-full">No systems mapped in this scope.</p>';
     }
     if (systemsCount) {
-      systemsCount.innerText = `${filteredSystems.length} Node(s)`;
+      systemsCount.innerText = `${filteredSystems.length} Service(s)`;
     }
   }
+};
+
+window.showSystemDetails = function(sysName) {
+  // Find the system and its parent node in the hierarchy
+  let foundSystem = null;
+  let foundParentNode = null;
+
+  function search(curr) {
+    if (!curr) return;
+    if (curr.systems && curr.systems.some(s => s.name === sysName)) {
+      foundSystem = curr.systems.find(s => s.name === sysName);
+      foundParentNode = curr;
+      return;
+    }
+    if (curr === state.resilience.hierarchy) {
+      Object.values(curr).forEach(search);
+    } else {
+      if (curr.countries) Object.values(curr.countries).forEach(search);
+      if (curr.states) Object.values(curr.states).forEach(search);
+      if (curr.cities) Object.values(curr.cities).forEach(search);
+      if (curr.subdivisions) Object.values(curr.subdivisions).forEach(search);
+    }
+  }
+
+  search(state.resilience.hierarchy);
+
+  if (!foundSystem) return;
+
+  // Render modal content
+  const modal = document.getElementById('system-details-modal');
+  const title = document.getElementById('sys-modal-title');
+  const body = document.getElementById('sys-modal-body');
+  
+  if (!modal || !title || !body) return;
+
+  title.innerText = foundSystem.name;
+  
+  const badgeClass = foundSystem.serviceType === 'ibs' ? 'badge-accent' : 'badge-info';
+  const badgeText = foundSystem.serviceType === 'ibs' ? 'Important Business Service (IBS)' : 'Critical Internal Service (CIS)';
+  
+  // Personnel for this specific system
+  const personnel = foundParentNode.personnel || [];
+  const personnelHtml = personnel.map(p => `
+    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.01); border-bottom: 1px solid rgba(255,255,255,0.03); padding: 8px 0;">
+      <div>
+        <div style="font-weight: 600; font-size: 0.85rem; color: var(--color-cyan);">${p.name}</div>
+        <div class="text-xs text-secondary" style="font-size: 0.72rem;">${p.role}</div>
+      </div>
+      <div class="text-right">
+        <span class="badge" style="font-size: 0.65rem; background: rgba(255,255,255,0.05);">${p.location}</span>
+        <div style="font-size: 0.68rem; color: var(--text-secondary); margin-top: 1px;">${p.contact}</div>
+      </div>
+    </div>
+  `).join('') || '<p class="text-xs text-secondary">No resiliency personnel assigned directly to this service node.</p>';
+
+  // Determine current system status
+  let displayStatus = foundSystem.status || 'Active';
+  let statusClass = 'status-green';
+  const currentDrill = state.resilience.activeDrill;
+  if (currentDrill && typeof currentDrill === 'object' && currentDrill.isCustom && isSystemAffectedByCustomDrill(foundSystem, currentDrill)) {
+    const threatNames = {
+      grid: 'Grid Failure',
+      wildfire: 'Wildfire Outage',
+      ddos: 'DDoS Outage',
+      fibercut: 'Fiber Cut Outage',
+      ransomware: 'Ransomware Outage',
+      tlpt: 'TLPT Simulated Compromise'
+    };
+    displayStatus = `OFFLINE (${threatNames[currentDrill.threat] || 'Simulated Threat'})`;
+    statusClass = 'status-red';
+  } else if (state.resilience.activeDrill === 'apac-outage' && (foundSystem.name.includes('IN-South') || foundSystem.name.includes('SG'))) {
+    displayStatus = 'OFFLINE (Rerouting...)';
+    statusClass = 'status-red';
+  } else if (state.resilience.activeDrill === 'na-wildfire' && foundSystem.name.includes('Oregon')) {
+    displayStatus = 'FAILING OVER (Drill)';
+    statusClass = 'status-yellow';
+  } else if (state.resilience.activeDrill === 'emea-grid' && foundSystem.name.includes('Frankfurt')) {
+    displayStatus = 'OFFLINE (Grid Failure)';
+    statusClass = 'status-red';
+  } else if (state.resilience.tlptActive) {
+    if (state.resilience.selectedScenario === 'ransomware' && foundSystem.name.includes('Oregon')) {
+      if (state.resilience.tlptPhase === 'exec') {
+        displayStatus = 'COMPROMISED (LockBit)';
+        statusClass = 'status-red';
+      } else if (state.resilience.tlptPhase === 'close') {
+        displayStatus = 'RECOVERY ACTIVE';
+        statusClass = 'status-yellow';
+      }
+    } else if (state.resilience.selectedScenario === 'supplychain' && foundSystem.name.includes('IN-South')) {
+      if (state.resilience.tlptPhase === 'exec') {
+        displayStatus = 'MALICIOUS CORRUPTION';
+        statusClass = 'status-red';
+      } else if (state.resilience.tlptPhase === 'close') {
+        displayStatus = 'FAILOVER VERIFIED';
+        statusClass = 'status-green';
+      }
+    } else if (state.resilience.selectedScenario === 'ddos' && foundSystem.name.includes('SG')) {
+      if (state.resilience.tlptPhase === 'exec') {
+        displayStatus = 'DDoS OUTAGE (10M pps)';
+        statusClass = 'status-red';
+      } else if (state.resilience.tlptPhase === 'close') {
+        displayStatus = 'MITIGATION ACTIVE';
+        statusClass = 'status-yellow';
+      }
+    } else if (state.resilience.selectedScenario === 'insider' && foundSystem.name.includes('Frankfurt')) {
+      if (state.resilience.tlptPhase === 'exec') {
+        displayStatus = 'COMPROMISED (Rogue Admin)';
+        statusClass = 'status-red';
+      } else if (state.resilience.tlptPhase === 'close') {
+        displayStatus = 'CONTAINED & DEPLOYED';
+        statusClass = 'status-green';
+      }
+    }
+  }
+  if (displayStatus === 'Warning') {
+    statusClass = 'status-yellow';
+  }
+
+  body.innerHTML = `
+    <div style="margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <span class="badge ${badgeClass}" style="font-size: 0.72rem; padding: 2px 6px;">${badgeText}</span>
+        <div class="resilience-system-status ${statusClass}" style="font-size: 0.76rem; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+          <span class="status-dot"></span>
+          <span>${displayStatus}</span>
+        </div>
+      </div>
+      <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; margin: 4px 0;">${foundSystem.description || 'No system description provided.'}</p>
+      <div class="text-xs text-secondary" style="margin-top: 8px; font-size: 0.7rem;">
+        <strong>Host Infrastructure Location:</strong> ${foundParentNode.name || 'Unknown Node'}
+      </div>
+    </div>
+    
+    <div>
+      <h4 style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px;">Designated Resiliency Personnel</h4>
+      <div style="max-height: 200px; overflow-y: auto; padding-right: 4px;">
+        ${personnelHtml}
+      </div>
+    </div>
+  `;
+
+  modal.classList.remove('hidden');
+};
+
+window.closeSystemDetailsModal = function() {
+  const modal = document.getElementById('system-details-modal');
+  if (modal) modal.classList.add('hidden');
 };
 
 window.drillResilienceDown = function(key) {

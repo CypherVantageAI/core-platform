@@ -2080,6 +2080,15 @@ textarea:focus-visible {
 .resilience-row .map-card {
   flex: 1.7;
   min-width: 450px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.resilience-system-item.clickable-system:hover {
+  background: rgba(6, 182, 212, 0.08) !important;
+  border-color: rgba(6, 182, 212, 0.25) !important;
 }
 
 .resilience-row .info-card {

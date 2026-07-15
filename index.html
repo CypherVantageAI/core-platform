@@ -956,7 +956,7 @@
               <div class="map-systems-section" style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
                 <h4 style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
                   <span>Mapped Infrastructure Services & Systems</span>
-                  <span id="map-systems-count" style="font-size: 0.72rem; text-transform: none; color: var(--color-cyan); font-weight: 600;">0 Node(s)</span>
+                  <span id="map-systems-count" style="font-size: 0.72rem; text-transform: none; color: var(--color-cyan); font-weight: 600;">0 Service(s)</span>
                 </h4>
                 <div id="map-systems-grid" class="resilience-systems-grid">
                   <!-- Dynamically populated in app.js -->
@@ -1430,6 +1430,24 @@ Third-Party Risk Assurance, Cypher Vantage Team
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeFollowupModal()">Cancel</button>
         <button class="btn btn-primary" id="btn-send-draft-email" onclick="sendFollowupEmail()">Send Follow-up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RESILIENCE SYSTEM DETAILS & PERSONNEL      -->
+  <div id="system-details-modal" class="modal-overlay hidden" style="z-index: 1000;">
+    <div class="modal-box" style="max-width: 480px;">
+      <div class="modal-header">
+        <div style="display: flex; flex-direction: column;">
+          <h2 id="sys-modal-title" style="font-size: 1.2rem; font-family: var(--font-headings); font-weight: 700; color: var(--text-primary); margin: 0;">System Details</h2>
+        </div>
+        <button class="btn-close-modal" onclick="closeSystemDetailsModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="sys-modal-body">
+        <!-- Dynamically populated in app.js -->
+      </div>
+      <div class="modal-footer" style="padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 10px;">
+        <button class="btn btn-secondary" onclick="closeSystemDetailsModal()">Close Details</button>
       </div>
     </div>
   </div>
