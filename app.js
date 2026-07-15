@@ -3877,19 +3877,21 @@ window.renderResilienceDashboard = function() {
         <div class="resilience-hotspots-list">${activeThreatsHtml}</div>
       </div>
 
-      <div class="resilience-detail-section" style="margin-bottom: 12px; flex: 1; overflow-y: auto; max-height: 180px;">
-        <h4 style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 4px; display: flex; justify-content: space-between;">
-          <span>Mapped Services & Systems</span>
-          <span style="font-size: 0.7rem; text-transform: none; color: var(--color-cyan);">${filteredSystems.length} Node(s)</span>
-        </h4>
-        <div class="resilience-systems-list">${finalSystemsHtml || '<p class="text-xs text-secondary">No systems mapped in this scope.</p>'}</div>
-      </div>
-
       <div class="resilience-detail-section" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 4px;">
         <h4 style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 4px;">Key Resiliency Personnel</h4>
-        <div class="resilience-personnel-list" style="max-height: 110px; overflow-y: auto;">${personnelHtml || '<p class="text-xs text-secondary">No personnel mapped in this scope.</p>'}</div>
+        <div class="resilience-personnel-list" style="max-height: 140px; overflow-y: auto;">${personnelHtml || '<p class="text-xs text-secondary">No personnel mapped in this scope.</p>'}</div>
       </div>
     `;
+
+    // Populate systems grid below the map card dynamically
+    const systemsGrid = document.getElementById('map-systems-grid');
+    const systemsCount = document.getElementById('map-systems-count');
+    if (systemsGrid) {
+      systemsGrid.innerHTML = finalSystemsHtml || '<p class="text-xs text-secondary p-4 text-center col-span-full">No systems mapped in this scope.</p>';
+    }
+    if (systemsCount) {
+      systemsCount.innerText = `${filteredSystems.length} Node(s)`;
+    }
   }
 };
 

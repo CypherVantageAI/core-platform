@@ -2236,6 +2236,15 @@ textarea:focus-visible {
   transform: translateX(-50%) translateY(0);
 }
 
+.resilience-systems-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--spacing-sm);
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
 /* Pulse Rings */
 .pulse-ring {
   position: absolute;

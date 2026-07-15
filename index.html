@@ -951,6 +951,17 @@
                   <button class="btn btn-close-drill" onclick="resetResilienceDrill()">Reset Drill</button>
                 </div>
               </div>
+
+              <!-- Systems List Section (Utilizing empty space below map) -->
+              <div class="map-systems-section" style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
+                <h4 style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                  <span>Mapped Infrastructure Services & Systems</span>
+                  <span id="map-systems-count" style="font-size: 0.72rem; text-transform: none; color: var(--color-cyan); font-weight: 600;">0 Node(s)</span>
+                </h4>
+                <div id="map-systems-grid" class="resilience-systems-grid">
+                  <!-- Dynamically populated in app.js -->
+                </div>
+              </div>
             </div>
 
             <!-- Region Detail Info Card -->
