@@ -771,9 +771,9 @@
       <!-- VIEW: RISK MANAGER OPERATIONAL RESILIENCE      -->
       <!-- ============================================== -->
       <section id="view-manager-resilience" class="content-pane active">
-        <div class="view-header">
+        <div class="view-header" style="margin-bottom: 12px;">
           <h2>Operational Resilience & DORA Compliance Portal</h2>
-          <p>Prioritize business resilience: Map systems, data centers, and availability zones to Important Business Services (IBS) and Critical Internal Services (CIS), track global threat hotspots, and initiate TIBER-EU Threat-Led Penetration Testing (TLPT)</p>
+          <p style="font-size: 0.76rem; line-height: 1.4; color: var(--text-secondary); margin-top: 2px;">Prioritize business resilience: Map systems, data centers, and availability zones to Important Business Services (IBS) and Critical Internal Services (CIS), track global threat hotspots, and initiate TIBER-EU Threat-Led Penetration Testing (TLPT)</p>
         </div>
 
         <div class="resilience-dashboard-grid">
@@ -786,7 +786,7 @@
               
               <div class="dora-pillars-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-sm);">
                 <!-- Pillar 1 -->
-                <div class="dora-pillar-item" id="pillar-ict-risk" style="padding: 10px 14px;">
+                <div class="dora-pillar-item has-dora-tooltip" id="pillar-ict-risk" style="padding: 10px 14px;">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="pillar-number" style="margin-bottom: 0;">PILLAR 1</div>
                     <div class="pillar-status status-green" style="position: static; padding: 1px 6px; font-size: 0.6rem;">95% Aligned</div>
@@ -796,10 +796,11 @@
                   <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
                     <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Sec 5.0 (Cyber)</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Sec 3.0 (Data)</span></div>
                   </div>
+                  <div class="dora-tooltip" id="pillar-p1-tooltip"><strong>Active Gap:</strong> Infosys Staging Database Encryption Enforceability (Control 3.1) is missing AES-256 rest encryption verification.</div>
                 </div>
                 
                 <!-- Pillar 2 -->
-                <div class="dora-pillar-item" id="pillar-incident" style="padding: 10px 14px;">
+                <div class="dora-pillar-item has-dora-tooltip" id="pillar-incident" style="padding: 10px 14px;">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="pillar-number" style="margin-bottom: 0;">PILLAR 2</div>
                     <div class="pillar-status status-green" style="position: static; padding: 1px 6px; font-size: 0.6rem;">100% Aligned</div>
@@ -809,10 +810,11 @@
                   <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
                     <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Action Center Logs</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Auto-Collector</span></div>
                   </div>
+                  <div class="dora-tooltip"><strong>100% Aligned:</strong> All major ICT incident logging, tracking, and regulatory reporting procedures are fully active and compliant.</div>
                 </div>
 
                 <!-- Pillar 3 -->
-                <div class="dora-pillar-item" id="pillar-testing" style="padding: 10px 14px;">
+                <div class="dora-pillar-item has-dora-tooltip" id="pillar-testing" style="padding: 10px 14px;">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="pillar-number" style="margin-bottom: 0;">PILLAR 3</div>
                     <div class="pillar-status status-yellow" id="pillar-status-testing" style="position: static; padding: 1px 6px; font-size: 0.6rem;">80% Aligned</div>
@@ -822,10 +824,11 @@
                   <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
                     <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Sec 13.0 (Recovery)</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">TIBER-EU Tests</span></div>
                   </div>
+                  <div class="dora-tooltip" id="pillar-p3-tooltip"><strong>Active Gap:</strong> AWS Disaster Recovery summary (Control 4.2) is outdated (last tested October 2024). Annual test summary is overdue.</div>
                 </div>
 
                 <!-- Pillar 4 -->
-                <div class="dora-pillar-item" id="pillar-third-party" style="padding: 10px 14px;">
+                <div class="dora-pillar-item has-dora-tooltip" id="pillar-third-party" style="padding: 10px 14px;">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="pillar-number" style="margin-bottom: 0;">PILLAR 4</div>
                     <div class="pillar-status status-red" id="pillar-status-tpm" style="position: static; padding: 1px 6px; font-size: 0.6rem;">60% Aligned</div>
@@ -835,10 +838,11 @@
                   <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
                     <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Sec 14.0 (Tech Risk)</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Subcontractors</span></div>
                   </div>
+                  <div class="dora-tooltip" id="pillar-p4-tooltip"><strong>Active Gaps:</strong> Infosys Subcontractor evaluation audit (Control 5.3) is missing.</div>
                 </div>
 
                 <!-- Pillar 5 -->
-                <div class="dora-pillar-item" id="pillar-sharing" style="padding: 10px 14px;">
+                <div class="dora-pillar-item has-dora-tooltip" id="pillar-sharing" style="padding: 10px 14px;">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="pillar-number" style="margin-bottom: 0;">PILLAR 5</div>
                     <div class="pillar-status status-green" style="position: static; padding: 1px 6px; font-size: 0.6rem;">100% Aligned</div>
@@ -848,6 +852,7 @@
                   <div class="pillar-mapping" style="padding-top: 4px; margin-top: 4px;">
                     <div class="pillar-tags"><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Advisor Chat</span><span class="tag" style="font-size: 0.58rem; padding: 1px 4px;">Threat Intelligence</span></div>
                   </div>
+                  <div class="dora-tooltip"><strong>100% Aligned:</strong> Information sharing networks for active vulnerability intelligence and BGP routing threat indicators are enabled.</div>
                 </div>
               </div>
             </div>

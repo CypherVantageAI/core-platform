@@ -3497,6 +3497,47 @@ window.renderResilienceDashboard = function() {
     }
   }
 
+  // Update DORA compliance tooltips dynamically
+  const p1Tooltip = document.getElementById('pillar-p1-tooltip');
+  if (p1Tooltip) {
+    const infosys = state.suppliers['infosys'];
+    const encryptGap = infosys && infosys.assessments.find(a => a.id === 'c3.1' && a.status === 'Gap');
+    if (encryptGap) {
+      p1Tooltip.innerHTML = `<strong>Active Gap:</strong> Infosys Staging Database Encryption Enforceability (Control 3.1) is missing AES-256 rest encryption verification.`;
+    } else {
+      p1Tooltip.innerHTML = `<strong>100% Aligned:</strong> All ICT risk management controls are fully validated.`;
+    }
+  }
+
+  const p3Tooltip = document.getElementById('pillar-p3-tooltip');
+  if (p3Tooltip) {
+    const aws = state.suppliers['aws'];
+    const awsGap = aws && aws.documents.some(doc => doc.type === 'Resilience Evidence' && doc.status === 'Outdated');
+    if (awsGap) {
+      p3Tooltip.innerHTML = `<strong>Active Gap:</strong> AWS Disaster Recovery summary (Control 4.2) is outdated (last tested October 2024). Annual test summary is overdue.`;
+    } else {
+      p3Tooltip.innerHTML = `<strong>100% Aligned:</strong> Threat-led penetration testing and annual failover drills are fully verified.`;
+    }
+  }
+
+  const p4Tooltip = document.getElementById('pillar-p4-tooltip');
+  if (p4Tooltip) {
+    const infosys = state.suppliers['infosys'];
+    const infoSubGap = infosys && infosys.assessments.find(a => a.id === 'c5.3' && a.status === 'Gap');
+    const acme = state.suppliers['acme'];
+    const acmeSubGap = acme && acme.assessments.find(a => a.id === 'c5.3' && a.status === 'Gap');
+    
+    let gaps = [];
+    if (infoSubGap) gaps.push(`Infosys Subcontractor evaluation audit (Control 5.3) is missing.`);
+    if (acmeSubGap) gaps.push(`Acme Corp subcontractor evaluation sign-offs are missing.`);
+    
+    if (gaps.length > 0) {
+      p4Tooltip.innerHTML = `<strong>Active Gaps:</strong><ul style="margin: 4px 0 0 12px; padding: 0;">${gaps.map(g => `<li>${g}</li>`).join('')}</ul>`;
+    } else {
+      p4Tooltip.innerHTML = `<strong>100% Aligned:</strong> Critical subcontractor evaluation registries are fully audited.`;
+    }
+  }
+
   // Aggregate systems, personnel, hotspots from the current node
   const aggregated = aggregateResilienceData(currentNode);
   
