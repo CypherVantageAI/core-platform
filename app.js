@@ -384,204 +384,583 @@ window.loadState = function() {
 
   // Force load fresh mock hierarchy tree to ensure latest coordinates and structures are used
   state.resilience.hierarchy = {
-        na: {
-          name: 'North America',
+    na: {
+      name: 'North America',
+      threatLevel: 'Moderate',
+      threatColor: 'orange',
+      countries: {
+        us: {
+          name: 'United States',
           threatLevel: 'Moderate',
           threatColor: 'orange',
-          countries: {
-            us: {
-              name: 'United States',
+          states: {
+            va: {
+              name: 'Virginia',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                ashburn: {
+                  name: 'Ashburn (Data Center)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'AWS us-east-1a (IBS Payments)', status: 'Active', serviceType: 'ibs', description: 'Core retail payment processing gateway' }
+                  ],
+                  personnel: [
+                    { name: 'David Vance', role: 'AWS Support Lead', location: 'Seattle/Ashburn', contact: 'd.vance@aws.com', status: 'On Duty' }
+                  ],
+                  hotspots: [
+                    { type: 'Grid Strain', desc: 'Summer heatwave warning on Northern Virginia power grids' }
+                  ]
+                }
+              }
+            },
+            or: {
+              name: 'Oregon',
               threatLevel: 'Moderate',
               threatColor: 'orange',
-              states: {
-                va: {
-                  name: 'Virginia',
-                  threatLevel: 'Nominal',
-                  threatColor: 'green',
-                  cities: {
-                    ashburn: {
-                      name: 'Ashburn (Data Center)',
-                      threatLevel: 'Nominal',
-                      threatColor: 'green',
-                      systems: [
-                        { name: 'AWS us-east-1a (IBS Payments)', status: 'Active', serviceType: 'ibs', description: 'Core retail payment processing gateway' }
-                      ],
-                      personnel: [
-                        { name: 'David Vance', role: 'AWS Support Lead', location: 'Seattle/Ashburn', contact: 'd.vance@aws.com', status: 'On Duty' }
-                      ],
-                      hotspots: [
-                        { type: 'Grid Strain', desc: 'Summer heatwave warning on Northern Virginia power grids' }
-                      ]
-                    }
-                  }
-                },
-                or: {
-                  name: 'Oregon',
+              cities: {
+                boardman: {
+                  name: 'Boardman (Data Center)',
                   threatLevel: 'Moderate',
                   threatColor: 'orange',
-                  cities: {
-                    boardman: {
-                      name: 'Boardman (Data Center)',
-                      threatLevel: 'Moderate',
-                      threatColor: 'orange',
-                      systems: [
-                        { name: 'Azure US-West-2 (CIS Identity Services)', status: 'Active', serviceType: 'cis', description: 'Active Directory & token authorization service' }
-                      ],
-                      personnel: [
-                        { name: 'Emma Watson', role: 'Azure Ops Lead', location: 'Portland/Boardman', contact: 'e.watson@azure.com', status: 'On Duty' }
-                      ],
-                      hotspots: [
-                        { type: 'Weather', desc: 'Wildfire alert issued near Columbia River Basin' }
-                      ]
-                    }
-                  }
+                  systems: [
+                    { name: 'Azure US-West-2 (CIS Identity Services)', status: 'Active', serviceType: 'cis', description: 'Active Directory & token authorization service' }
+                  ],
+                  personnel: [
+                    { name: 'Emma Watson', role: 'Azure Ops Lead', location: 'Portland/Boardman', contact: 'e.watson@azure.com', status: 'On Duty' }
+                  ],
+                  hotspots: [
+                    { type: 'Weather', desc: 'Wildfire alert issued near Columbia River Basin' }
+                  ]
+                }
+              }
+            },
+            ny_state: {
+              name: 'New York',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                newyork: {
+                  name: 'New York (28 Liberty St Office)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'LSEG New York Hub (IBS Market Feeds)', status: 'Active', serviceType: 'ibs', description: 'Real-time ticker multicast feed routing' }
+                  ],
+                  personnel: [
+                    { name: 'James Carter', role: 'Infrastructure Director', location: 'New York Office', contact: 'j.carter@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            il_state: {
+              name: 'Illinois',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                chicago: {
+                  name: 'Chicago (Wacker Dr Office)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'LSEG Chicago Gateway (CIS Clearing Access)', status: 'Active', serviceType: 'cis', description: 'Derivative clearing transit proxy' }
+                  ],
+                  personnel: [
+                    { name: 'Linda Ross', role: 'Clearing Analyst', location: 'Chicago Office', contact: 'l.ross@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            ca_state: {
+              name: 'California',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                sanfrancisco: {
+                  name: 'San Francisco Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'FTSE Russell SF (IBS Index Calculation)', status: 'Active', serviceType: 'ibs', description: 'Real-time index updates engine' }
+                  ],
+                  personnel: [
+                    { name: 'Robert Chen', role: 'Data Engineer', location: 'San Francisco Office', contact: 'r.chen@ftserussell.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
                 }
               }
             }
           }
         },
-        eu: {
-          name: 'Europe',
+        ca: {
+          name: 'Canada',
           threatLevel: 'Nominal',
           threatColor: 'green',
-          countries: {
-            de: {
-              name: 'Germany',
+          states: {
+            qc_state: {
+              name: 'Quebec',
               threatLevel: 'Nominal',
               threatColor: 'green',
-              states: {
-                hesse: {
-                  name: 'Hesse',
+              cities: {
+                montreal: {
+                  name: 'Montreal Office',
                   threatLevel: 'Nominal',
                   threatColor: 'green',
-                  cities: {
-                    frankfurt: {
-                      name: 'Frankfurt (Data Center)',
-                      threatLevel: 'Nominal',
-                      threatColor: 'green',
-                      systems: [
-                        { name: 'AWS eu-central-1 (IBS Clearing Portal)', status: 'Active', serviceType: 'ibs', description: 'Clearing and settlement portal' }
-                      ],
-                      personnel: [
-                        { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London/Frankfurt', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
-                      ],
-                      hotspots: []
-                    }
-                  }
-                }
-              }
-            },
-            uk: {
-              name: 'United Kingdom',
-              threatLevel: 'Nominal',
-              threatColor: 'green',
-              states: {
-                england: {
-                  name: 'England',
-                  threatLevel: 'Nominal',
-                  threatColor: 'green',
-                  cities: {
-                    london: {
-                      name: 'London',
-                      threatLevel: 'Nominal',
-                      threatColor: 'green',
-                      subdivisions: {
-                        'london-north': {
-                          name: 'North London (Primary Office)',
-                          threatLevel: 'Nominal',
-                          threatColor: 'green',
-                          systems: [],
-                          personnel: [
-                            { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London North Office', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
-                          ],
-                          hotspots: [
-                            { type: 'Regulatory Review', desc: 'UK PRA operational resilience review window open' }
-                          ]
-                        },
-                        'london-se': {
-                          name: 'SouthEast London (DR Backup Site)',
-                          threatLevel: 'Nominal',
-                          threatColor: 'green',
-                          systems: [
-                            { name: 'AWS London Edge (CIS Auth Relay)', status: 'Active', serviceType: 'cis', description: 'Local OAuth validation node' }
-                          ],
-                          personnel: [
-                            { name: 'Alan Turing', role: 'Security Analyst', location: 'London SE Recovery Hub', contact: 'a.turing@cyphervantage.com', status: 'On Duty' }
-                          ],
-                          hotspots: [
-                            { type: 'Power Alert', desc: 'Grid maintenance scheduled for SouthEast London zone' }
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        apac: {
-          name: 'Asia-Pacific',
-          threatLevel: 'High',
-          threatColor: 'red',
-          countries: {
-            in: {
-              name: 'India',
-              threatLevel: 'Nominal',
-              threatColor: 'green',
-              states: {
-                karnataka: {
-                  name: 'Karnataka',
-                  threatLevel: 'Nominal',
-                  threatColor: 'green',
-                  cities: {
-                    bangalore: {
-                      name: 'Bangalore (Support Hub)',
-                      threatLevel: 'Nominal',
-                      threatColor: 'green',
-                      systems: [
-                        { name: 'Infosys IN-South (CIS Core Database Ledger)', status: 'Active', serviceType: 'cis', description: 'Transactional database replica' }
-                      ],
-                      personnel: [
-                        { name: 'Rajesh Kumar', role: 'Disaster Recovery Lead', location: 'Bangalore Office', contact: 'r.kumar@infosys.com', status: 'On Duty' }
-                      ],
-                      hotspots: []
-                    }
-                  }
-                }
-              }
-            },
-            sg: {
-              name: 'Singapore',
-              threatLevel: 'High',
-              threatColor: 'red',
-              states: {
-                central: {
-                  name: 'Central Region',
-                  threatLevel: 'High',
-                  threatColor: 'red',
-                  cities: {
-                    jurong: {
-                      name: 'Jurong (Data Center)',
-                      threatLevel: 'High',
-                      threatColor: 'red',
-                      systems: [
-                        { name: 'Google Cloud SG (CIS API Gateway Routing)', status: 'Warning', serviceType: 'cis', description: 'APAC API proxy and router' }
-                      ],
-                      personnel: [
-                        { name: 'Mei Ling', role: 'SecOps Analyst', location: 'Singapore Office', contact: 'm.ling@gcp.com', status: 'On Duty' }
-                      ],
-                      hotspots: [
-                        { type: 'Weather', desc: 'Typhoon alert issued for Singapore/East Asia margins' }
-                      ]
-                    }
-                  }
+                  systems: [
+                    { name: 'LSEG Montreal Node (CIS Data Delivery)', status: 'Active', serviceType: 'cis', description: 'Bulk file delivery proxy' }
+                  ],
+                  personnel: [
+                    { name: 'Marc Tremblay', role: 'Systems Engineer', location: 'Montreal Office', contact: 'm.tremblay@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
                 }
               }
             }
           }
         }
-      };
+      }
+    },
+    eu: {
+      name: 'Europe',
+      threatLevel: 'Nominal',
+      threatColor: 'green',
+      countries: {
+        de: {
+          name: 'Germany',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            hesse: {
+              name: 'Hesse',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                frankfurt: {
+                  name: 'Frankfurt (Data Center)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'AWS eu-central-1 (IBS Clearing Portal)', status: 'Active', serviceType: 'ibs', description: 'Clearing and settlement portal' }
+                  ],
+                  personnel: [
+                    { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London/Frankfurt', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        uk: {
+          name: 'United Kingdom',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            england: {
+              name: 'England',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                london: {
+                  name: 'London HQ (10 Paternoster Sq)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  subdivisions: {
+                    'london-north': {
+                      name: 'North London (Primary Office)',
+                      threatLevel: 'Nominal',
+                      threatColor: 'green',
+                      systems: [],
+                      personnel: [
+                        { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London North Office', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
+                      ],
+                      hotspots: [
+                        { type: 'Regulatory Review', desc: 'UK PRA operational resilience review window open' }
+                      ]
+                    },
+                    'london-se': {
+                      name: 'SouthEast London (DR Backup Site)',
+                      threatLevel: 'Nominal',
+                      threatColor: 'green',
+                      systems: [
+                        { name: 'AWS London Edge (CIS Auth Relay)', status: 'Active', serviceType: 'cis', description: 'Local OAuth validation node' }
+                      ],
+                      personnel: [
+                        { name: 'Alan Turing', role: 'Security Analyst', location: 'London SE Recovery Hub', contact: 'a.turing@cyphervantage.com', status: 'On Duty' }
+                      ],
+                      hotspots: [
+                        { type: 'Power Alert', desc: 'Grid maintenance scheduled for SouthEast London zone' }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        it: {
+          name: 'Italy',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            lombardy: {
+              name: 'Lombardy',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                milan: {
+                  name: 'Milan (Piazza degli Affari Office)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Borsa Italiana Transit Gateway (IBS Trade Entry)', status: 'Active', serviceType: 'ibs', description: 'Italian equity trade routing gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Giovanni Rossi', role: 'Network Specialist', location: 'Milan Office', contact: 'g.rossi@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        ro: {
+          name: 'Romania',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            bucharest_state: {
+              name: 'Bucharest Region',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                bucharest: {
+                  name: 'Bucharest Operations Centre',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Bucharest Shared Ops Hub (CIS Identity Audit)', status: 'Active', serviceType: 'cis', description: 'Access control compliance validation engine' }
+                  ],
+                  personnel: [
+                    { name: 'Andrei Popescu', role: 'Compliance Officer', location: 'Bucharest Office', contact: 'a.popescu@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            cluj_state: {
+              name: 'Cluj Region',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                cluj: {
+                  name: 'Cluj-Napoca Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Cluj Tech Center (CIS Patching Gateway)', status: 'Active', serviceType: 'cis', description: 'Automated software patching controller' }
+                  ],
+                  personnel: [
+                    { name: 'Elena Radu', role: 'DevOps Engineer', location: 'Cluj Office', contact: 'e.radu@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        pl: {
+          name: 'Poland',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            pomerania: {
+              name: 'Pomerania',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                gdynia: {
+                  name: 'Gdynia Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Gdynia Risk Hub (IBS Analytics Compute)', status: 'Active', serviceType: 'ibs', description: 'Calculates risk metrics for European markets' }
+                  ],
+                  personnel: [
+                    { name: 'Piotr Nowak', role: 'Risk Analyst', location: 'Gdynia Office', contact: 'p.nowak@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    apac: {
+      name: 'Asia-Pacific',
+      threatLevel: 'High',
+      threatColor: 'red',
+      countries: {
+        in: {
+          name: 'India',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            karnataka: {
+              name: 'Karnataka',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                bangalore: {
+                  name: 'Bengaluru Operations Hub',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Infosys Core DB Ledger (CIS Database Backup)', status: 'Active', serviceType: 'cis', description: 'Regulatory transaction audit log replica' }
+                  ],
+                  personnel: [
+                    { name: 'Rajesh Kumar', role: 'DB Administrator', location: 'Bangalore Office', contact: 'r.kumar@infosys.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            maharashtra: {
+              name: 'Maharashtra',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                mumbai: {
+                  name: 'Mumbai Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Mumbai Transit Access (IBS FX Feeds)', status: 'Active', serviceType: 'ibs', description: 'Rupee currency pricing relay' }
+                  ],
+                  personnel: [
+                    { name: 'Aditi Sharma', role: 'Support Lead', location: 'Mumbai Office', contact: 'a.sharma@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            telangana: {
+              name: 'Telangana',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                hyderabad: {
+                  name: 'Hyderabad Engineering Hub',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Hyderabad Dev Node (CIS Sandbox)', status: 'Active', serviceType: 'cis', description: 'Secure isolated staging gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Vikram Singh', role: 'SecOps Architect', location: 'Hyderabad Office', contact: 'v.singh@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            delhi_state: {
+              name: 'Delhi NCR',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                delhi: {
+                  name: 'New Delhi Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Delhi Client API Portal (IBS Data Hub)', status: 'Active', serviceType: 'ibs', description: 'Client access portal API gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Pooja Gupta', role: 'Client Manager', location: 'Delhi Office', contact: 'p.gupta@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        sg: {
+          name: 'Singapore',
+          threatLevel: 'High',
+          threatColor: 'red',
+          states: {
+            central: {
+              name: 'Central Region',
+              threatLevel: 'High',
+              threatColor: 'red',
+              cities: {
+                jurong: {
+                  name: 'Jurong (Data Center)',
+                  threatLevel: 'High',
+                  threatColor: 'red',
+                  systems: [
+                    { name: 'Google Cloud SG (CIS API Gateway Routing)', status: 'Warning', serviceType: 'cis', description: 'APAC API proxy and router' }
+                  ],
+                  personnel: [
+                    { name: 'Mei Ling', role: 'SecOps Analyst', location: 'Singapore Office', contact: 'm.ling@gcp.com', status: 'On Duty' }
+                  ],
+                  hotspots: [
+                    { type: 'Weather', desc: 'Typhoon alert issued for Singapore/East Asia margins' }
+                  ]
+                },
+                singapore_city: {
+                  name: 'Singapore City Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'FTSE SG Calculation Engine (IBS Straits Ticker)', status: 'Active', serviceType: 'ibs', description: 'Real-time calculation engine for index metrics' }
+                  ],
+                  personnel: [
+                    { name: 'Henry Tan', role: 'Support Lead', location: 'Singapore Office', contact: 'h.tan@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        lk: {
+          name: 'Sri Lanka',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            western_province: {
+              name: 'Western Province',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                colombo: {
+                  name: 'Colombo Technology Center',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Colombo Shared Services Node (CIS Network Transit)', status: 'Active', serviceType: 'cis', description: 'Global VPN authentication tunnel' }
+                  ],
+                  personnel: [
+                    { name: 'Ruwan Perera', role: 'Infrastructure Architect', location: 'Colombo Office', contact: 'r.perera@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        my: {
+          name: 'Malaysia',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            penang_state: {
+              name: 'Penang',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                penang: {
+                  name: 'Penang Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Penang Ops Node (CIS Support Routing)', status: 'Active', serviceType: 'cis', description: 'Support ticketing failover gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Fatimah Awang', role: 'Operations Lead', location: 'Penang Office', contact: 'f.awang@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        ph: {
+          name: 'Philippines',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            metro_manila: {
+              name: 'Metro Manila',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                manila: {
+                  name: 'Manila Shared Services Hub',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Manila Client Delivery Gateway (IBS Support Feeds)', status: 'Active', serviceType: 'ibs', description: 'Customer service desk feed manager' }
+                  ],
+                  personnel: [
+                    { name: 'Maria Santos', role: 'Support Analyst', location: 'Manila Office', contact: 'm.santos@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        jp: {
+          name: 'Japan',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            tokyo_state: {
+              name: 'Tokyo',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                tokyo: {
+                  name: 'Tokyo Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'LSEG Tokyo Trade Gateway (IBS TSE Gateway)', status: 'Active', serviceType: 'ibs', description: 'Tokyo stock trading access routing proxy' }
+                  ],
+                  personnel: [
+                    { name: 'Kenji Sato', role: 'Systems Lead', location: 'Tokyo Office', contact: 'k.sato@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        hk: {
+          name: 'Hong Kong',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            hk_island: {
+              name: 'Hong Kong Island',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                hongkong: {
+                  name: 'Hong Kong Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'LSEG HK Exchange Routing Node (IBS HKEX Transit)', status: 'Active', serviceType: 'ibs', description: 'Hong Kong Exchange direct connect interface' }
+                  ],
+                  personnel: [
+                    { name: 'Wong Ka-shing', role: 'Support Analyst', location: 'Hong Kong Office', contact: 'w.kashing@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  };
 
   if (!state.resilience.reports) {
     state.resilience.reports = [
@@ -2728,26 +3107,77 @@ function getSubLocations(node) {
 }
 
 const pinCoordinates = {
+  // Regions
   na: { left: '25%', top: '40%', label: 'North America' },
   eu: { left: '51%', top: '36%', label: 'Europe' },
   apac: { left: '78%', top: '62%', label: 'Asia-Pacific' },
+  
+  // Countries
   us: { left: '23%', top: '38%', label: 'United States' },
+  ca: { left: '20%', top: '30%', label: 'Canada' },
   de: { left: '52%', top: '35%', label: 'Germany' },
   uk: { left: '48%', top: '31%', label: 'United Kingdom' },
+  it: { left: '52%', top: '40%', label: 'Italy' },
+  ro: { left: '57%', top: '38%', label: 'Romania' },
+  pl: { left: '55%', top: '34%', label: 'Poland' },
   in: { left: '72%', top: '56%', label: 'India' },
   sg: { left: '78%', top: '62%', label: 'Singapore' },
+  lk: { left: '71%', top: '61%', label: 'Sri Lanka' },
+  my: { left: '77%', top: '60%', label: 'Malaysia' },
+  ph: { left: '82%', top: '59%', label: 'Philippines' },
+  jp: { left: '86%', top: '46%', label: 'Japan' },
+  hk: { left: '81%', top: '53%', label: 'Hong Kong' },
+  
+  // States
   va: { left: '27%', top: '43%', label: 'Virginia' },
   or: { left: '17%', top: '34%', label: 'Oregon' },
+  ny_state: { left: '28%', top: '38%', label: 'New York' },
+  il_state: { left: '23%', top: '38%', label: 'Illinois' },
+  ca_state: { left: '15%', top: '40%', label: 'California' },
+  qc_state: { left: '22%', top: '32%', label: 'Quebec' },
   hesse: { left: '52%', top: '35%', label: 'Hesse' },
   england: { left: '48%', top: '31%', label: 'England' },
-  karnataka: { left: '72%', top: '56%', label: 'Karnataka' },
+  lombardy: { left: '52%', top: '40%', label: 'Lombardy' },
+  bucharest_state: { left: '58%', top: '39%', label: 'Bucharest Region' },
+  cluj_state: { left: '56%', top: '37%', label: 'Cluj Region' },
+  pomerania: { left: '55%', top: '33%', label: 'Pomerania' },
+  karnataka: { left: '72%', top: '57%', label: 'Karnataka' },
+  maharashtra: { left: '70%', top: '55%', label: 'Maharashtra' },
+  telangana: { left: '72%', top: '55%', label: 'Telangana' },
+  delhi_state: { left: '71%', top: '51%', label: 'Delhi NCR' },
   central: { left: '78%', top: '62%', label: 'Central Region' },
-  ashburn: { left: '27%', top: '43%', label: 'Ashburn' },
-  boardman: { left: '17%', top: '34%', label: 'Boardman' },
-  frankfurt: { left: '52%', top: '35%', label: 'Frankfurt' },
-  london: { left: '48%', top: '31%', label: 'London' },
-  bangalore: { left: '72%', top: '56%', label: 'Bangalore' },
-  jurong: { left: '78%', top: '62%', label: 'Jurong' },
+  western_province: { left: '71%', top: '61%', label: 'Western Province' },
+  penang_state: { left: '76%', top: '59%', label: 'Penang State' },
+  metro_manila: { left: '82%', top: '59%', label: 'Metro Manila' },
+  tokyo_state: { left: '86%', top: '46%', label: 'Tokyo Prefecture' },
+  hk_island: { left: '81%', top: '53%', label: 'Hong Kong Island' },
+  
+  // Cities
+  ashburn: { left: '27%', top: '43%', label: 'Ashburn (DC)' },
+  boardman: { left: '17%', top: '34%', label: 'Boardman (DC)' },
+  newyork: { left: '28%', top: '38%', label: 'New York Office' },
+  chicago: { left: '23%', top: '38%', label: 'Chicago Office' },
+  sanfrancisco: { left: '15%', top: '40%', label: 'San Francisco Office' },
+  montreal: { left: '22%', top: '32%', label: 'Montreal Office' },
+  frankfurt: { left: '52%', top: '35%', label: 'Frankfurt (DC)' },
+  london: { left: '48%', top: '31%', label: 'London HQ' },
+  milan: { left: '52%', top: '40%', label: 'Milan Office' },
+  bucharest: { left: '58%', top: '39%', label: 'Bucharest Office' },
+  cluj: { left: '56%', top: '37%', label: 'Cluj Office' },
+  gdynia: { left: '55%', top: '33%', label: 'Gdynia Office' },
+  bangalore: { left: '72%', top: '57%', label: 'Bengaluru Hub' },
+  mumbai: { left: '70%', top: '55%', label: 'Mumbai Office' },
+  hyderabad: { left: '72%', top: '55%', label: 'Hyderabad Hub' },
+  delhi: { left: '71%', top: '51%', label: 'New Delhi Office' },
+  jurong: { left: '77%', top: '62%', label: 'Jurong (DC)' },
+  singapore_city: { left: '79%', top: '62%', label: 'Singapore Office' },
+  colombo: { left: '71%', top: '61%', label: 'Colombo Office' },
+  penang: { left: '76%', top: '59%', label: 'Penang Office' },
+  manila: { left: '82%', top: '59%', label: 'Manila Office' },
+  tokyo: { left: '86%', top: '46%', label: 'Tokyo Office' },
+  hongkong: { left: '81%', top: '53%', label: 'Hong Kong Office' },
+  
+  // Subdivisions
   'london-north': { left: '47.5%', top: '29%', label: 'North London' },
   'london-se': { left: '48.5%', top: '32%', label: 'SouthEast London' }
 };
@@ -2763,8 +3193,62 @@ window.renderResilienceDashboard = function() {
     // Clear any existing pins (keep the SVG connector path elements)
     mapGrid.querySelectorAll('.map-node-pin').forEach(el => el.remove());
 
-    // Map always shows all regions
-    const pinsToShow = ['na', 'eu', 'apac'];
+    // Compute zoom scale & translate offset based on current path
+    let scale = 1;
+    let originX = '50%';
+    let originY = '50%';
+
+    if (path.length > 1) {
+      const activeRegion = path[1];
+      if (activeRegion === 'na') {
+        scale = 1.8;
+        originX = '25%';
+        originY = '40%';
+      } else if (activeRegion === 'eu') {
+        scale = 2.2;
+        originX = '51%';
+        originY = '36%';
+      } else if (activeRegion === 'apac') {
+        scale = 2.2;
+        originX = '78%';
+        originY = '62%';
+      }
+      
+      // Additional zoom for sub-locations
+      if (path.length > 2) {
+        scale = 2.8;
+        const focusKey = path[path.length - 1];
+        const focusCoord = pinCoordinates[focusKey];
+        if (focusCoord) {
+          originX = focusCoord.left;
+          originY = focusCoord.top;
+        }
+      }
+    }
+
+    // Apply zoom transition to the map
+    mapGrid.style.transition = 'transform 0.4s ease-in-out, transform-origin 0.4s ease-in-out';
+    mapGrid.style.transformOrigin = `${originX} ${originY}`;
+    mapGrid.style.transform = `scale(${scale})`;
+
+    // Toggle connection line visibility (only visible at global level)
+    const svgConnections = mapGrid.querySelector('.map-connections');
+    if (svgConnections) {
+      svgConnections.style.display = path.length === 1 ? 'block' : 'none';
+    }
+
+    // Determine pins to show based on current path depth
+    let pinsToShow = [];
+    if (path.length === 1) {
+      // Global Level: show regions
+      pinsToShow = Object.keys(state.resilience.hierarchy);
+    } else {
+      // Show countries, states, or cities within current node
+      if (currentNode.countries) pinsToShow = Object.keys(currentNode.countries);
+      else if (currentNode.states) pinsToShow = Object.keys(currentNode.states);
+      else if (currentNode.cities) pinsToShow = Object.keys(currentNode.cities);
+      else if (currentNode.subdivisions) pinsToShow = Object.keys(currentNode.subdivisions);
+    }
 
     pinsToShow.forEach(key => {
       const coord = pinCoordinates[key];
@@ -2774,20 +3258,30 @@ window.renderResilienceDashboard = function() {
       pinEl.className = `map-node-pin ${key}-pin`;
       pinEl.style.left = coord.left;
       pinEl.style.top = coord.top;
+      
+      // Override transform to maintain constant size during zooms (counter-scale)
+      pinEl.style.transform = `translate(-50%, -50%) scale(${1 / scale})`;
+      pinEl.style.cursor = 'pointer';
 
       let threatLevel = 'Nominal';
-      let nodeData = state.resilience.hierarchy[key];
+      // Find sub-node data under current node
+      let subNodeData = null;
+      if (currentNode.countries && currentNode.countries[key]) subNodeData = currentNode.countries[key];
+      else if (currentNode.states && currentNode.states[key]) subNodeData = currentNode.states[key];
+      else if (currentNode.cities && currentNode.cities[key]) subNodeData = currentNode.cities[key];
+      else if (currentNode.subdivisions && currentNode.subdivisions[key]) subNodeData = currentNode.subdivisions[key];
+      else if (path[path.length - 1] === key) subNodeData = currentNode; // subdivision fallback
 
-      if (nodeData) {
-        threatLevel = nodeData.threatLevel || 'Nominal';
+      if (subNodeData) {
+        threatLevel = subNodeData.threatLevel || 'Nominal';
       }
 
       // Filter pins dynamically by service type (ibs / cis)
       if (filterType !== 'all') {
-        const aggregatedPin = aggregateResilienceData(nodeData || currentNode);
+        const aggregatedPin = aggregateResilienceData(subNodeData || currentNode);
         const hasMatchingSystems = aggregatedPin.systems.some(sys => sys.serviceType === filterType);
         if (!hasMatchingSystems) {
-          return; // Skip rendering this pin on the map
+          return; // Skip rendering
         }
       }
 
@@ -2816,19 +3310,10 @@ window.renderResilienceDashboard = function() {
         pinEl.classList.add('status-nominal');
       }
 
-      // Clicking the pin sets the current path to this region to focus the detail card
+      // Clicking the pin drills down into this subnode
       pinEl.onclick = () => {
-        state.resilience.currentPath = ['Global', key];
-        state.resilience.selectedRegion = key;
-        saveState();
-        renderResilienceDashboard();
+        drillResilienceDown(key);
       };
-      pinEl.style.cursor = 'pointer';
-
-      // Highlight active region pin
-      if (path.includes(key)) {
-        pinEl.classList.add('active');
-      }
 
       pinEl.innerHTML = `
         <span class="pulse-ring"></span>
@@ -2892,22 +3377,64 @@ window.renderResilienceDashboard = function() {
       else if (name === 'eu') displayName = 'Europe';
       else if (name === 'apac') displayName = 'Asia-Pacific';
       else if (name === 'us') displayName = 'United States';
+      else if (name === 'ca') displayName = 'Canada';
       else if (name === 'de') displayName = 'Germany';
       else if (name === 'uk') displayName = 'United Kingdom';
+      else if (name === 'it') displayName = 'Italy';
+      else if (name === 'ro') displayName = 'Romania';
+      else if (name === 'pl') displayName = 'Poland';
       else if (name === 'in') displayName = 'India';
       else if (name === 'sg') displayName = 'Singapore';
+      else if (name === 'lk') displayName = 'Sri Lanka';
+      else if (name === 'my') displayName = 'Malaysia';
+      else if (name === 'ph') displayName = 'Philippines';
+      else if (name === 'jp') displayName = 'Japan';
+      else if (name === 'hk') displayName = 'Hong Kong';
       else if (name === 'va') displayName = 'Virginia';
       else if (name === 'or') displayName = 'Oregon';
+      else if (name === 'ny_state') displayName = 'New York';
+      else if (name === 'il_state') displayName = 'Illinois';
+      else if (name === 'ca_state') displayName = 'California';
+      else if (name === 'qc_state') displayName = 'Quebec';
       else if (name === 'hesse') displayName = 'Hesse';
       else if (name === 'england') displayName = 'England';
+      else if (name === 'lombardy') displayName = 'Lombardy';
+      else if (name === 'bucharest_state') displayName = 'Bucharest';
+      else if (name === 'cluj_state') displayName = 'Cluj';
+      else if (name === 'pomerania') displayName = 'Pomerania';
       else if (name === 'karnataka') displayName = 'Karnataka';
+      else if (name === 'maharashtra') displayName = 'Maharashtra';
+      else if (name === 'telangana') displayName = 'Telangana';
+      else if (name === 'delhi_state') displayName = 'Delhi NCR';
       else if (name === 'central') displayName = 'Central Region';
+      else if (name === 'western_province') displayName = 'Western Province';
+      else if (name === 'penang_state') displayName = 'Penang';
+      else if (name === 'metro_manila') displayName = 'Metro Manila';
+      else if (name === 'tokyo_state') displayName = 'Tokyo Prefecture';
+      else if (name === 'hk_island') displayName = 'Hong Kong Island';
       else if (name === 'ashburn') displayName = 'Ashburn';
       else if (name === 'boardman') displayName = 'Boardman';
+      else if (name === 'newyork') displayName = 'New York';
+      else if (name === 'chicago') displayName = 'Chicago';
+      else if (name === 'sanfrancisco') displayName = 'San Francisco';
+      else if (name === 'montreal') displayName = 'Montreal';
       else if (name === 'frankfurt') displayName = 'Frankfurt';
       else if (name === 'london') displayName = 'London';
+      else if (name === 'milan') displayName = 'Milan';
+      else if (name === 'bucharest') displayName = 'Bucharest';
+      else if (name === 'cluj') displayName = 'Cluj-Napoca';
+      else if (name === 'gdynia') displayName = 'Gdynia';
       else if (name === 'bangalore') displayName = 'Bangalore';
+      else if (name === 'mumbai') displayName = 'Mumbai';
+      else if (name === 'hyderabad') displayName = 'Hyderabad';
+      else if (name === 'delhi') displayName = 'New Delhi';
       else if (name === 'jurong') displayName = 'Jurong';
+      else if (name === 'singapore_city') displayName = 'Singapore Office';
+      else if (name === 'colombo') displayName = 'Colombo';
+      else if (name === 'penang') displayName = 'Penang';
+      else if (name === 'manila') displayName = 'Manila';
+      else if (name === 'tokyo') displayName = 'Tokyo';
+      else if (name === 'hongkong') displayName = 'Hong Kong';
       else if (name === 'london-north') displayName = 'North London';
       else if (name === 'london-se') displayName = 'SouthEast London';
 
