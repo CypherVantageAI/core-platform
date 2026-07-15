@@ -3282,8 +3282,8 @@ const pinCoordinates = {
   mumbai: { left: '70%', top: '55%', label: 'Mumbai Office', labelPosition: 'bottom' },
   hyderabad: { left: '72%', top: '55%', label: 'Hyderabad Hub', labelPosition: 'bottom' },
   delhi: { left: '71%', top: '51%', label: 'New Delhi Office', labelPosition: 'bottom' },
-  jurong: { left: '77%', top: '62%', label: 'Jurong (DC)', labelPosition: 'left' },
-  singapore_city: { left: '79%', top: '62%', label: 'Singapore Office', labelPosition: 'right' },
+  jurong: { left: '74%', top: '63%', label: 'Jurong (DC)', labelPosition: 'left' },
+  singapore_city: { left: '81%', top: '60%', label: 'Singapore Office', labelPosition: 'right' },
   colombo: { left: '71%', top: '61%', label: 'Colombo Office', labelPosition: 'bottom' },
   penang: { left: '76%', top: '59%', label: 'Penang Office', labelPosition: 'bottom' },
   manila: { left: '82%', top: '59%', label: 'Manila Office', labelPosition: 'bottom' },
@@ -3294,8 +3294,8 @@ const pinCoordinates = {
   nairobi: { left: '52%', top: '66%', label: 'Nairobi Office', labelPosition: 'right' },
   
   // Subdivisions
-  'london-north': { left: '47.5%', top: '29%', label: 'North London', labelPosition: 'top' },
-  'london-se': { left: '48.5%', top: '32%', label: 'SouthEast London', labelPosition: 'bottom' }
+  'london-north': { left: '46.5%', top: '27%', label: 'North London', labelPosition: 'top' },
+  'london-se': { left: '49.5%', top: '35%', label: 'SouthEast London', labelPosition: 'bottom' }
 };
 
 window.renderResilienceDashboard = function() {
@@ -3477,10 +3477,10 @@ window.renderResilienceDashboard = function() {
     const aws = state.suppliers['aws'];
     if (aws && aws.documents.some(doc => doc.type === 'Resilience Evidence' && doc.status === 'Outdated')) {
       testingPillarStatus.className = 'pillar-status status-yellow';
-      testingPillarStatus.innerText = 'AWS DR Overdue';
+      testingPillarStatus.innerText = '80% Aligned';
     } else {
       testingPillarStatus.className = 'pillar-status status-green';
-      testingPillarStatus.innerText = '100% Verified';
+      testingPillarStatus.innerText = '100% Aligned';
     }
   }
 
@@ -3490,10 +3490,10 @@ window.renderResilienceDashboard = function() {
     const hasInfosysGap = infosys && infosys.assessments.some(ass => ass.status === 'Gap');
     if (hasInfosysGap) {
       tpmPillarStatus.className = 'pillar-status status-red';
-      tpmPillarStatus.innerText = 'Infosys Control Gap';
+      tpmPillarStatus.innerText = '60% Aligned';
     } else {
       tpmPillarStatus.className = 'pillar-status status-green';
-      tpmPillarStatus.innerText = '100% Compliant';
+      tpmPillarStatus.innerText = '100% Aligned';
     }
   }
 

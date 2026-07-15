@@ -2181,16 +2181,18 @@ textarea:focus-visible {
 }
 
 .pin-label {
-  margin-top: var(--spacing-xs);
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: 700;
   color: var(--color-text);
-  background: rgba(0, 0, 0, 0.75);
-  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 2px 6px;
   border-radius: var(--border-radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  white-space: nowrap;
-  letter-spacing: 0.03em;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  max-width: 90px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
 }
 
 .map-node-pin.active .pin-label {
