@@ -555,13 +555,12 @@
       <section id="view-manager-ai-risk" class="content-pane">
         <div class="view-header">
           <h2>AI Audit Suite</h2>
-          <p>Audit third-party LLM integrations, classify EU AI Act regulatory risks, and simulate adversarial security testing</p>
+          <p>Audit third-party LLM integrations, monitor real-time DLP data boundaries, and simulate adversarial security testing</p>
         </div>
 
-        <div class="dashboard-panels">
-          
-          <!-- Left Panel: DLP Gateway & Prompt Sanitizer -->
-          <div class="dashboard-card main-panel">
+        <div style="display: block; width: 100%;">
+          <!-- Left Panel: DLP Gateway & Prompt Sanitizer (Full Width) -->
+          <div class="dashboard-card main-panel" style="width: 100%;">
             <h3>LLM DLP Data Leakage Gateway</h3>
             <p class="panel-subtitle">Real-time prompt sanitization proxy strips out corporate secrets and PII before routing to third-party endpoints</p>
             
@@ -589,8 +588,14 @@
 
             <!-- Automated Adversarial Pentesting -->
             <div class="mt-5" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
-              <h3>Adversarial Agent Pentester</h3>
-              <p class="panel-subtitle">Simulate prompt-injection attacks on integrated third-party AI assistants to audit structural vulnerabilities</p>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <h3 style="margin: 0;">Adversarial Agent Pentester</h3>
+                <span class="badge badge-accent" style="font-size: 0.58rem; padding: 1px 6px; position: static;">AI/LLM System Audit</span>
+              </div>
+              <p class="panel-subtitle" style="margin-bottom: var(--spacing-sm);">Simulate prompt-injection attacks on integrated third-party AI assistants to audit structural vulnerabilities</p>
+              <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.35; margin-bottom: 12px; background: rgba(255,255,255,0.01); padding: 8px 10px; border-radius: var(--border-radius-sm); border: 1px solid rgba(255,255,255,0.03);">
+                <strong>Audit Scope: AI &amp; Model Boundaries.</strong> Simulates malicious prompt engineering, system instruction overrides, and conversational boundary escapes on integrated vendor chatbots to verify they do not leak sensitive tenant keys or data.
+              </div>
               
               <div style="display: flex; gap: var(--spacing-sm); margin-top: 15px; flex-wrap: wrap;">
                 <select id="pentest-target" class="dropdown-control" style="margin: 0; flex: 1; min-width: 150px;">
@@ -612,49 +617,18 @@
               </div>
             </div>
           </div>
-
-          <!-- Right Panel: EU AI Act Risk Calculator -->
-          <div class="dashboard-card side-panel">
-            <h3>EU AI Act Compliance Assessor</h3>
-            <p class="panel-subtitle">Classify third-party models into legal risk tiers under the EU AI Act framework</p>
-            
-            <div class="form-group mt-3">
-              <label for="ai-purpose">System Purpose</label>
-              <select id="ai-purpose" class="dropdown-control mt-1" onchange="assessAiActCompliance()">
-                <option value="minimal">General chatbot, Spam filter, Translation tool</option>
-                <option value="transparency">Customer-facing LLM Assistant, synthetic media creator</option>
-                <option value="high">CV parsing, credit scoring, employee vetting, critical infrastructure</option>
-                <option value="prohibited">Social scoring, biometric categorization, subliminal influence</option>
-              </select>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--border-radius-md); padding: 16px; margin-top: 20px;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span class="text-muted text-xs">Calculated Tier:</span>
-                <span class="badge badge-success" id="ai-act-tier" style="font-weight: 700;">Minimal Risk</span>
-              </div>
-              
-              <div class="mt-3">
-                <h5 style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">Compliance Requirements:</h5>
-                <ul id="ai-act-requirements" style="padding-left: 16px; margin-top: 6px; font-size: 0.82rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
-                  <li>- No mandatory compliance obligations under EU AI Act.</li>
-                  <li>- Code of conduct recommended.</li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="quick-contact-box mt-4">
-              <h4>Audit Guidance</h4>
-              <p class="text-xs text-secondary mt-1">If a vendor deploys a high-risk AI system, a conformity assessment, risk registry entry, and post-market tracking plan must be registered in the Cypher Vantage ledger.</p>
-            </div>
-          </div>
-
         </div>
 
         <!-- DORA & TIBER-EU Resilience Simulation Suite -->
         <div class="view-header mt-5" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 25px; margin-bottom: 15px;">
-          <h2>DORA & TIBER-EU Resilience Simulation Suite</h2>
-          <p>Launch threat-led penetration tests or trigger custom geopolitical/natural crises to audit operational resilience compliance</p>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <h2 style="margin: 0;">DORA &amp; TIBER-EU Resilience Simulation Suite</h2>
+            <span class="badge badge-info" style="font-size: 0.65rem; padding: 2px 8px; position: static;">Physical Infrastructure Audit</span>
+          </div>
+          <p style="margin-top: 6px;">Launch threat-led penetration tests or trigger custom geopolitical/natural crises to audit operational resilience compliance</p>
+          <div style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.4; margin-top: 8px; background: rgba(6, 182, 212, 0.02); padding: 10px 12px; border-radius: var(--border-radius-md); border: 1px solid rgba(6, 182, 212, 0.08);">
+            <strong>Audit Scope: Business Continuity &amp; DR Failover.</strong> Simulates real-world physical and system emergencies (power grid failures, fiber cutouts, regional ransomware, and volumetric DDoS attacks) directly on the Global Service Infrastructure Map to verify BCP routing capabilities, failover protocols, and DORA Articles 11 &amp; 26 compliance.
+          </div>
         </div>
 
         <div class="resilience-row">
@@ -1064,6 +1038,42 @@
                 <span class="tag tag-accent">PRA SS2/21</span>
                 <span class="tag tag-accent">PCIDSS v4.0</span>
                 <span class="tag tag-accent">GDPR Privacy</span>
+              </div>
+            </div>
+
+            <!-- EU AI Act Compliance Assessor (Relocated Guidance Widget) -->
+            <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px;">
+              <h3 style="font-size: 0.95rem; font-family: var(--font-headings); font-weight: 700; margin-bottom: 4px;">EU AI Act Compliance Assessor</h3>
+              <p class="panel-subtitle" style="font-size: 0.72rem; margin-bottom: 12px; color: var(--text-secondary);">Classify third-party models into legal risk tiers under the EU AI Act framework</p>
+              
+              <div class="form-group">
+                <label for="ai-purpose" style="font-size: 0.72rem; color: var(--text-secondary);">System Purpose / Use Case</label>
+                <select id="ai-purpose" class="dropdown-control mt-1" onchange="assessAiActCompliance()" style="width: 100%; font-size: 0.74rem; padding: 4px 8px; height: 30px;">
+                  <option value="minimal">General chatbot, Spam filter, Translation tool</option>
+                  <option value="transparency">Customer-facing LLM Assistant, synthetic media creator</option>
+                  <option value="high">CV parsing, credit scoring, employee vetting, critical infrastructure</option>
+                  <option value="prohibited">Social scoring, biometric categorization, subliminal influence</option>
+                </select>
+              </div>
+
+              <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--border-radius-md); padding: 12px; margin-top: 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span class="text-muted" style="font-size: 0.7rem;">Calculated Tier:</span>
+                  <span class="badge badge-success" id="ai-act-tier" style="font-weight: 700; font-size: 0.65rem; padding: 2px 6px;">Minimal Risk</span>
+                </div>
+                
+                <div class="mt-2">
+                  <h5 style="font-size: 0.76rem; color: var(--text-primary); font-weight: 600;">Compliance Requirements:</h5>
+                  <ul id="ai-act-requirements" style="padding-left: 12px; margin-top: 4px; font-size: 0.72rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; list-style: none;">
+                    <li>• No mandatory compliance obligations under EU AI Act.</li>
+                    <li>• Code of conduct recommended.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="quick-contact-box mt-3" style="background: rgba(6, 182, 212, 0.03); border: 1px solid rgba(6, 182, 212, 0.1); border-radius: var(--border-radius-sm); padding: 10px;">
+                <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--color-cyan); margin-bottom: 2px;">Audit Guidance</h4>
+                <p class="text-xs text-secondary" style="font-size: 0.68rem; line-height: 1.3; margin: 0;">If a vendor deploys a high-risk AI system, a conformity assessment, risk registry entry, and post-market tracking plan must be registered in the Cypher Vantage ledger.</p>
               </div>
             </div>
           </div>
