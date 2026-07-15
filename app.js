@@ -304,7 +304,7 @@ Third-Party Risk Assurance, Cypher Vantage Team`,
       id: 'act-004',
       supplierId: 'infosys',
       domain: 'Technology Risk',
-      controlId: 'c14.1',
+      controlId: 'c5.3',
       title: 'Missing Subcontractor Evaluation Audits',
       gapDetails: 'No active subcontractor evaluation process exists. Technology Risk Technical module requires annual audits of key subcontractors handling downstream API services.',
       status: 'Open Gap',
@@ -364,6 +364,14 @@ window.loadState = function() {
       console.error("Failed to load persisted state, resetting.", e);
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
+  }
+  // Repair any invalid action controlIds from older local storage sessions
+  if (state && state.actions) {
+    state.actions.forEach(act => {
+      if (act.id === 'act-004' && act.controlId === 'c14.1') {
+        act.controlId = 'c5.3';
+      }
+    });
   }
   if (!state.supplierSurfaceData) {
     state.supplierSurfaceData = JSON.parse(JSON.stringify(supplierSurfaceData));
@@ -1648,7 +1656,7 @@ function renderManagerActions() {
 
   filteredActions.forEach(act => {
     const s = state.suppliers[act.supplierId];
-    const c = s.assessments.find(as => as.id === act.controlId);
+    const c = s.assessments.find(as => as.id === act.controlId) || { section: 'N/A' };
     
     let statusClass = 'badge-danger';
     if (act.status === 'Awaiting Response') statusClass = 'badge-warning';
@@ -3155,6 +3163,7 @@ function aggregateResilienceData(node) {
   let hotspots = [];
 
   function traverse(curr, parentName = '') {
+    if (!curr) return;
     const nodeName = curr.name || parentName;
     if (curr.systems) {
       systems = systems.concat(curr.systems);
@@ -3171,17 +3180,21 @@ function aggregateResilienceData(node) {
       hotspots = hotspots.concat(localizedHotspots);
     }
 
-    if (curr.countries) {
-      Object.values(curr.countries).forEach(c => traverse(c, nodeName));
-    }
-    if (curr.states) {
-      Object.values(curr.states).forEach(s => traverse(s, nodeName));
-    }
-    if (curr.cities) {
-      Object.values(curr.cities).forEach(c => traverse(c, nodeName));
-    }
-    if (curr.subdivisions) {
-      Object.values(curr.subdivisions).forEach(s => traverse(s, nodeName));
+    if (curr === state.resilience.hierarchy) {
+      Object.values(curr).forEach(region => traverse(region, ''));
+    } else {
+      if (curr.countries) {
+        Object.values(curr.countries).forEach(c => traverse(c, nodeName));
+      }
+      if (curr.states) {
+        Object.values(curr.states).forEach(s => traverse(s, nodeName));
+      }
+      if (curr.cities) {
+        Object.values(curr.cities).forEach(c => traverse(c, nodeName));
+      }
+      if (curr.subdivisions) {
+        Object.values(curr.subdivisions).forEach(s => traverse(s, nodeName));
+      }
     }
   }
 
@@ -3190,6 +3203,9 @@ function aggregateResilienceData(node) {
 }
 
 function getSubLocations(node) {
+  if (node === state.resilience.hierarchy) {
+    return Object.keys(node).map(k => ({ key: k, name: node[k].name, type: 'Region' }));
+  }
   if (node.countries) return Object.keys(node.countries).map(k => ({ key: k, name: node.countries[k].name, type: 'Country' }));
   if (node.states) return Object.keys(node.states).map(k => ({ key: k, name: node.states[k].name, type: 'State' }));
   if (node.cities) return Object.keys(node.cities).map(k => ({ key: k, name: node.cities[k].name, type: 'City' }));
