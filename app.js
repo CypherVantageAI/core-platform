@@ -717,7 +717,7 @@ window.setPersona = function(persona) {
     userAvatar.innerText = 'RM';
     userAvatar.style.background = 'var(--gradient-accent)';
     
-    switchTab('manager-dashboard');
+    switchTab('manager-compliance');
   } else {
     btnManager.classList.remove('active');
     btnSupplier.classList.add('active');
