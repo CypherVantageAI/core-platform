@@ -342,6 +342,10 @@ const LOCAL_STORAGE_KEY = 'cypher_vantage_db_state';
 
 window.saveState = function() {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+  const badge = document.getElementById('badge-actions-count');
+  if (badge && state && state.actions) {
+    badge.innerText = state.actions.length;
+  }
 };
 
 window.resetDatabase = function() {
@@ -1165,7 +1169,7 @@ function renderComplianceDashboard() {
   document.getElementById('stat-compliance-avg').innerText = `${avgCompliance}%`;
   document.getElementById('stat-pending-gaps').innerText = gapCount;
   document.getElementById('stat-active-followups').innerText = awaitingResponseCount;
-  document.getElementById('badge-actions-count').innerText = awaitingResponseCount;
+  document.getElementById('badge-actions-count').innerText = state.actions.length;
 
   // Render recent activity logs
   const logContainer = document.getElementById('recent-activity-log');
@@ -1658,6 +1662,7 @@ window.approveSupplierResponse = function(actionId) {
 
   state.actions = state.actions.filter(a => a.id !== actionId);
 
+  saveState();
   renderComplianceDashboard();
   renderManagerActions();
   showNotification('Supplier response approved. Score updated!');
@@ -1678,6 +1683,7 @@ window.rejectSupplierResponse = function(actionId) {
     date: `${formatDate(new Date())} ${new Date().toTimeString().slice(0, 5)}`
   });
 
+  saveState();
   renderManagerActions();
   showNotification('Supplier response rejected. Re-request sent.');
 };
@@ -3445,16 +3451,35 @@ window.renderResilienceDashboard = function() {
     const subLocations = getSubLocations(currentNode);
     let subLocationsHtml = '';
     if (subLocations.length > 0) {
+      const countryFlags = {
+        us: '🇺🇸',
+        ca: '🇨🇦',
+        de: '🇩🇪',
+        uk: '🇬🇧',
+        it: '🇮🇹',
+        ro: '🇷🇴',
+        pl: '🇵🇱',
+        in: '🇮🇳',
+        sg: '🇸🇬',
+        lk: '🇱🇰',
+        my: '🇲🇾',
+        ph: '🇵🇭',
+        jp: '🇯🇵',
+        hk: '🇭🇰'
+      };
       subLocationsHtml = `
         <div class="resilience-detail-section" style="margin-bottom: 12px;">
           <h4 style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 6px;">Drill Down Locations</h4>
           <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-            ${subLocations.map(loc => `
-              <button class="btn btn-secondary btn-sm" style="font-size: 0.7rem; padding: 3px 8px; display: flex; align-items: center; gap: 4px;" onclick="drillResilienceDown('${loc.key}')">
-                <span>📁 ${loc.name}</span>
-                <small style="opacity: 0.6; font-size: 0.58rem;">(${loc.type})</small>
-              </button>
-            `).join('')}
+            ${subLocations.map(loc => {
+              const icon = loc.type === 'Country' && countryFlags[loc.key] ? countryFlags[loc.key] : '📁';
+              return `
+                <button class="btn btn-secondary btn-sm" style="font-size: 0.7rem; padding: 3px 8px; display: flex; align-items: center; gap: 4px;" onclick="drillResilienceDown('${loc.key}')">
+                  <span>${icon} ${loc.name}</span>
+                  <small style="opacity: 0.6; font-size: 0.58rem;">(${loc.type})</small>
+                </button>
+              `;
+            }).join('')}
           </div>
         </div>
       `;
