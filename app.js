@@ -582,7 +582,47 @@ window.loadState = function() {
           }
         }
       };
-    };
+
+  if (!state.resilience.reports) {
+    state.resilience.reports = [
+      {
+        id: 'REP-2026-001',
+        title: 'DORA Art. 11 Drill Report: Frankfurt Power Grid Failure',
+        timestamp: '2026-07-10 10:15',
+        location: 'Frankfurt DC (Germany)',
+        threat: 'Power Grid Failure',
+        severity: 'High',
+        duration: '2 Hours (Simulated)',
+        status: 'Failover Verified',
+        summary: 'A simulated power grid collapse was initiated on the Frankfurt node. AWS eu-central-1 clearing portal failed over successfully to the Dublin DR site within the 4-hour RTO boundary.',
+        systemsAffected: ['AWS eu-central-1 (IBS Clearing Portal)'],
+        actionItems: [
+          'Upgrade local battery back-ups at Frankfurt DC to support 72-hour autonomous standby.',
+          'Conduct secondary failover testing with live ledger synchronization.'
+        ]
+      },
+      {
+        id: 'REP-2026-002',
+        title: 'TIBER-EU Red Team Report: LockBit Ransomware Attack Simulation',
+        timestamp: '2026-07-12 14:30',
+        location: 'Boardman DC (Oregon)',
+        threat: 'Ransomware Encryption',
+        severity: 'Critical',
+        duration: '3.5 Hours (Simulated)',
+        status: 'Mitigated & Recovered',
+        summary: 'Simulated penetration test of a LockBit ransomware variant attacking the CIS identity gateway. Attackers achieved lateral movement to local directories before detection. Automated DLP proxy isolated the threat.',
+        systemsAffected: ['Azure US-West-2 (CIS Identity Services)'],
+        actionItems: [
+          'Enable strict zero-trust network access policies for local domain admins.',
+          'Refine automated DLP out-of-band proxy rules for prompt detection.'
+        ]
+      }
+    ];
+  }
+  if (state.resilience.activeReportIndex === undefined) {
+    state.resilience.activeReportIndex = 0;
+  }
+};
 loadState();
 
 // --------------------------------------------------------------------------
@@ -627,8 +667,8 @@ window.switchTab = function(tabId) {
   }
 
   // Reload tab specific views
-  if (tabId === 'manager-dashboard') {
-    renderDashboard();
+  if (tabId === 'manager-compliance') {
+    renderComplianceDashboard();
   } else if (tabId === 'manager-suppliers') {
     renderSuppliersTable();
   } else if (tabId === 'manager-actions') {
@@ -644,6 +684,8 @@ window.switchTab = function(tabId) {
     assessAiActCompliance();
   } else if (tabId === 'manager-resilience') {
     renderResilienceDashboard();
+  } else if (tabId === 'manager-reports') {
+    renderSimulationReports();
   } else if (tabId === 'supplier-dashboard') {
     renderSupplierPortalDashboard();
   } else if (tabId === 'supplier-evidence') {
@@ -726,7 +768,7 @@ function updateSupplierPortalIdentity() {
 // --------------------------------------------------------------------------
 // 5. MANAGER VIEW: OVERVIEW DASHBOARD
 // --------------------------------------------------------------------------
-function renderDashboard() {
+function renderComplianceDashboard() {
   const suppliersList = Object.values(state.suppliers);
   const totalCount = suppliersList.length;
   
@@ -1070,7 +1112,7 @@ window.sendFollowupEmail = function() {
   });
 
   closeFollowupModal();
-  renderDashboard();
+  renderComplianceDashboard();
   renderSuppliersTable();
   renderManagerActions();
   
@@ -1237,7 +1279,7 @@ window.approveSupplierResponse = function(actionId) {
 
   state.actions = state.actions.filter(a => a.id !== actionId);
 
-  renderDashboard();
+  renderComplianceDashboard();
   renderManagerActions();
   showNotification('Supplier response approved. Score updated!');
 };
@@ -2374,7 +2416,7 @@ Third-Party Risk Operations, Cypher Vantage Team`;
     text: `Dispatched dynamic assessment <b>${actionId}</b> to <b>${s.name}</b> (${selectedModules.length} Modules).`
   });
 
-  renderDashboard();
+  renderComplianceDashboard();
   renderSuppliersTable();
   renderManagerActions();
   saveState();
@@ -3135,15 +3177,15 @@ function isSystemAffectedByCustomDrill(sys, drill) {
   return false;
 }
 
-window.runCustomSimulation = function() {
-  const locSelect = document.getElementById('simulation-location-select');
-  const threatSelect = document.getElementById('simulation-threat-select');
+window.runSuiteCustomSimulation = function() {
+  const locSelect = document.getElementById('suite-location-select');
+  const threatSelect = document.getElementById('suite-threat-select');
   if (!locSelect || !threatSelect) return;
 
   const location = locSelect.value;
   const threat = threatSelect.value;
 
-  // Show dynamic loader overlay
+  // Show dynamic loader overlay on the map
   const overlay = document.getElementById('simulation-loader-overlay');
   const overlayText = document.getElementById('simulation-loader-text');
   if (overlay && overlayText) {
@@ -3152,8 +3194,11 @@ window.runCustomSimulation = function() {
     overlay.style.opacity = '1';
   }
 
+  // Switch tab immediately to show map tracker
+  switchTab('manager-resilience');
+
   // Disable simulation button temporarily
-  const btn = document.getElementById('btn-run-simulation');
+  const btn = document.querySelector('.custom-drill-card button.btn-primary');
   if (btn) btn.disabled = true;
 
   // Simulate progress / calculation (1.5 seconds)
@@ -3233,11 +3278,35 @@ window.runCustomSimulation = function() {
       text: `⚠️ <b>DORA Custom Simulation:</b> Triggered <b>[${threatName}]</b> at <b>[${locationName}]</b>. Verifying resilience compliance.`
     });
 
+    // Save and log simulation compliance report
+    const reportId = `DRILL-${Date.now().toString().slice(-6)}`;
+    const newReport = {
+      id: reportId,
+      title: `DORA Art. 11 Simulation Report: ${threatName} at ${locationName}`,
+      timestamp: `${formatDate(new Date())} ${new Date().toTimeString().slice(0, 5)}`,
+      location: locationName,
+      threat: threatName,
+      severity: threat === 'ransomware' || threat === 'tlpt' ? 'Critical' : 'High',
+      duration: '1.5 Hours (Simulated)',
+      status: 'Failover Verified',
+      summary: `Contingency resilience drill executed under DORA Article 11 requirements. Simulated ${threatName} was initiated on the ${locationName} node. Local services mapped to this node were marked offline. Automatic failovers and business continuity procedures were monitored and verified.`,
+      systemsAffected: [location === 'na' || location === 'ashburn' || location === 'boardman' ? 'Azure US-West-2 (CIS Identity Services)' : location === 'eu' || location === 'frankfurt' || location === 'london' ? 'AWS eu-central-1 (IBS Clearing Portal)' : 'Google Cloud SG (CIS API Gateway Routing)'],
+      actionItems: [
+        `Ensure standby redundancy mappings for ${locationName} are fully verified quarterly.`,
+        'Update emergency call trees and key personnel notification lists.'
+      ]
+    };
+    if (!state.resilience.reports) state.resilience.reports = [];
+    state.resilience.reports.unshift(newReport);
+    state.resilience.activeReportIndex = 0;
+
     saveState();
     renderResilienceDashboard();
-    renderDashboard();
+    renderComplianceDashboard();
   }, 1500);
 };
+
+
 
 window.resetResilienceDrill = function() {
   state.resilience.activeDrill = null;
@@ -3247,8 +3316,8 @@ window.resetResilienceDrill = function() {
   }
 
   // Reset custom controls if they exist
-  const locationSelect = document.getElementById('simulation-location-select');
-  const threatSelect = document.getElementById('simulation-threat-select');
+  const locationSelect = document.getElementById('suite-location-select');
+  const threatSelect = document.getElementById('suite-threat-select');
   if (locationSelect) locationSelect.value = 'na';
   if (threatSelect) threatSelect.value = 'grid';
 
@@ -3259,7 +3328,7 @@ window.resetResilienceDrill = function() {
 
   saveState();
   renderResilienceDashboard();
-  renderDashboard();
+  renderComplianceDashboard();
 };
 
 // --------------------------------------------------------------------------
@@ -3380,6 +3449,7 @@ window.startTlptSimulation = function() {
 };
 
 window.stopTlptSimulation = function() {
+  const wasActive = state.resilience.tlptActive;
   state.resilience.tlptActive = false;
   state.resilience.tlptPhase = 'prep';
 
@@ -3400,6 +3470,61 @@ window.stopTlptSimulation = function() {
 
   updateTlptTrackerUI('prep');
   renderResilienceDashboard();
+
+  if (wasActive) {
+    // Generate TIBER-EU Report
+    const scenario = state.resilience.selectedScenario || 'ransomware';
+    const scenarioTitles = {
+      ransomware: 'LockBit Ransomware Encryption',
+      supplychain: 'Supply Chain Poisoning (Infosys API Hack)',
+      ddos: 'Distributed DDoS & DNS Spoofing',
+      insider: 'Malicious Insider Privilege Escalation'
+    };
+    const scenarioLocations = {
+      ransomware: 'Boardman DC (Oregon)',
+      supplychain: 'Infosys DB Cluster (Bangalore)',
+      ddos: 'Google Cloud SG (Jurong DC)',
+      insider: 'AWS Frankfurt DC (Germany)'
+    };
+    const scenarioSystems = {
+      ransomware: ['Azure US-West-2 (CIS Identity Services)'],
+      supplychain: ['Infosys Core Database'],
+      ddos: ['Google Cloud SG (CIS API Gateway Routing)'],
+      insider: ['AWS eu-central-1 (IBS Clearing Portal)']
+    };
+
+    const reportId = `TLPT-${Date.now().toString().slice(-6)}`;
+    const newReport = {
+      id: reportId,
+      title: `TIBER-EU Red Team Simulation Report: ${scenarioTitles[scenario]}`,
+      timestamp: `${formatDate(new Date())} ${new Date().toTimeString().slice(0, 5)}`,
+      location: scenarioLocations[scenario],
+      threat: 'TIBER-EU Red Team Test',
+      severity: 'Critical',
+      duration: '3 Hours (Simulated)',
+      status: 'Mitigated & Closed',
+      summary: `A structured TIBER-EU threat-led penetration test (TLPT) was executed targeting ${scenarioSystems[scenario].join(', ')}. Red-team simulated adversarial tactics, techniques, and procedures (TTPs) based on current cyber threat intelligence. Defensive system detection, automated isolated controls, and regulatory notification workflows were audited and validated under DORA Article 26 requirements.`,
+      systemsAffected: scenarioSystems[scenario],
+      actionItems: [
+        `Perform Zero-Trust administrative authentication audit on ${scenarioLocations[scenario]}.`,
+        'Refine intrusion detection telemetry and logging patterns for rapid lateral movement profiling.'
+      ]
+    };
+
+    if (!state.resilience.reports) state.resilience.reports = [];
+    state.resilience.reports.unshift(newReport);
+    state.resilience.activeReportIndex = 0;
+
+    saveState();
+    
+    // Add activity log
+    state.activityLog.unshift({
+      time: 'Just Now',
+      text: `📑 <b>TIBER-EU Report Saved:</b> Simulation <b>[${reportId}]</b> completed. Compliance report generated and archived.`
+    });
+
+    renderComplianceDashboard();
+  }
 };
 
 function updateTlptTrackerUI(phase) {
@@ -3429,6 +3554,139 @@ function updateTlptTrackerUI(phase) {
   }
 }
 
+window.renderSimulationReports = function() {
+  const container = document.getElementById('reports-list-container');
+  if (!container) return;
+
+  container.innerHTML = '';
+  
+  if (!state.resilience.reports || state.resilience.reports.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; color: var(--text-secondary); margin-top: 50px;">
+        <p>No reports generated yet.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Update reports count badge in navigation
+  const reportsBadge = document.getElementById('badge-reports-count');
+  if (reportsBadge) {
+    reportsBadge.innerText = state.resilience.reports.length;
+    reportsBadge.style.display = 'inline-block';
+  }
+
+  state.resilience.reports.forEach((rep, index) => {
+    const card = document.createElement('div');
+    const isActive = state.resilience.activeReportIndex === index;
+    card.className = `action-log-item ${isActive ? 'active' : ''}`;
+    card.style.cssText = `
+      padding: 12px;
+      background: ${isActive ? 'rgba(6, 182, 212, 0.08)' : 'rgba(255,255,255,0.02)'};
+      border: 1px solid ${isActive ? 'var(--color-cyan)' : 'rgba(255,255,255,0.05)'};
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+    `;
+    card.onclick = () => {
+      state.resilience.activeReportIndex = index;
+      saveState();
+      renderSimulationReports();
+    };
+
+    const isTiber = rep.id.includes('TIBER') || rep.id.includes('TLPT');
+    const badgeColor = isTiber ? 'badge-accent' : 'badge-info';
+
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-family: monospace; font-size: 0.72rem; color: var(--color-cyan); font-weight: 600;">${rep.id}</span>
+        <span class="badge ${badgeColor}" style="font-size: 0.6rem;">${rep.threat}</span>
+      </div>
+      <h4 style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px;">${rep.title}</h4>
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.68rem; color: var(--text-secondary);">
+        <span>📍 ${rep.location}</span>
+        <span>⏱️ ${rep.timestamp}</span>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Render active report content
+  const viewer = document.getElementById('report-viewer-content');
+  if (!viewer) return;
+
+  const activeIndex = state.resilience.activeReportIndex !== undefined ? state.resilience.activeReportIndex : 0;
+  const rep = state.resilience.reports[activeIndex];
+
+  if (!rep) {
+    viewer.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; opacity: 0.5;">
+        <span>Select a report from the log to view detailed DORA compliance metrics.</span>
+      </div>
+    `;
+    return;
+  }
+
+  viewer.innerHTML = `
+    <div style="border: 1px solid rgba(255,255,255,0.06); padding: 20px; border-radius: var(--border-radius-md); background: rgba(0,0,0,0.15);">
+      <div style="text-align: center; border-bottom: 2px solid var(--color-cyan); padding-bottom: 15px; margin-bottom: 20px;">
+        <h4 style="font-size: 0.75rem; font-family: monospace; color: var(--color-cyan); letter-spacing: 0.1em; text-transform: uppercase;">DORA COMPLIANCE TEST REPORT</h4>
+        <h2 style="font-size: 1.15rem; color: var(--text-primary); margin: 6px 0;">${rep.title}</h2>
+        <span style="font-size: 0.72rem; color: var(--text-secondary);">Audit Log Reference: <strong>${rep.id}</strong> | Timestamp: <strong>${rep.timestamp}</strong></span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+        <div>
+          <span style="font-size: 0.68rem; text-transform: uppercase; color: var(--text-secondary); display: block;">Simulation Location</span>
+          <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">📍 ${rep.location}</span>
+        </div>
+        <div>
+          <span style="font-size: 0.68rem; text-transform: uppercase; color: var(--text-secondary); display: block;">Threat Vector</span>
+          <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">⚡ ${rep.threat}</span>
+        </div>
+        <div>
+          <span style="font-size: 0.68rem; text-transform: uppercase; color: var(--text-secondary); display: block;">Severity Tier</span>
+          <span style="font-size: 0.8rem; font-weight: 600; color: ${rep.severity === 'Critical' ? '#f43f5e' : '#fb923c'};">⚠️ ${rep.severity}</span>
+        </div>
+        <div>
+          <span style="font-size: 0.68rem; text-transform: uppercase; color: var(--text-secondary); display: block;">Validation Status</span>
+          <span style="font-size: 0.8rem; font-weight: 600; color: #34d399;">🛡️ ${rep.status}</span>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px; margin-bottom: 20px;">
+        <h4 style="font-size: 0.85rem; color: var(--text-primary); margin-bottom: 6px;">Executive Summary</h4>
+        <p style="font-size: 0.78rem; line-height: 1.5; color: var(--text-secondary);">${rep.summary}</p>
+      </div>
+
+      <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px; margin-bottom: 20px;">
+        <h4 style="font-size: 0.85rem; color: var(--text-primary); margin-bottom: 6px;">Systems & Assets Affected</h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          ${rep.systemsAffected.map(sys => `<span class="badge badge-accent" style="font-size: 0.65rem;">🖥️ ${sys}</span>`).join('')}
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px;">
+        <h4 style="font-size: 0.85rem; color: var(--text-primary); margin-bottom: 8px;">Compliance Action Items</h4>
+        <ul style="list-style-type: none; padding-left: 0; display: flex; flex-direction: column; gap: 8px;">
+          ${rep.actionItems.map(item => `
+            <li style="font-size: 0.78rem; color: var(--text-secondary); display: flex; gap: 8px; align-items: flex-start;">
+              <span style="color: var(--color-cyan);">✔</span>
+              <span>${item}</span>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+
+      <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; margin-top: 20px; text-align: right;">
+        <span style="font-size: 0.65rem; color: var(--text-secondary); font-family: monospace; display: block;">VERIFIED CRYPHER VANTAGE AUDITOR LEDGER</span>
+        <span style="font-size: 0.58rem; color: var(--text-secondary); opacity: 0.5; font-family: monospace;">HASH: SHA-256 [CV-${Math.random().toString(16).substring(2, 10).toUpperCase()}]</span>
+      </div>
+    </div>
+  `;
+};
+
 // --------------------------------------------------------------------------
 // 22. INITIALIZATION
 // --------------------------------------------------------------------------
@@ -3436,7 +3694,7 @@ window.onload = function() {
   // Load state from db
   loadState();
   
-  renderDashboard();
+  renderComplianceDashboard();
   renderSuppliersTable();
   updateCollectorDropdown();
   const defaultSupplier = document.getElementById('collector-target-supplier').value;
