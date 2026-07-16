@@ -460,10 +460,10 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'LSEG New York Hub (IBS Market Feeds)', status: 'Active', serviceType: 'ibs', description: 'Real-time ticker multicast feed routing' }
+                    { name: 'Org New York Hub (IBS Market Feeds)', status: 'Active', serviceType: 'ibs', description: 'Real-time ticker multicast feed routing' }
                   ],
                   personnel: [
-                    { name: 'James Carter', role: 'Infrastructure Director', location: 'New York Office', contact: 'j.carter@lseg.com', status: 'On Duty' }
+                    { name: 'James Carter', role: 'Infrastructure Director', location: 'New York Office', contact: 'j.carter@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -479,10 +479,10 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'LSEG Chicago Gateway (CIS Clearing Access)', status: 'Active', serviceType: 'cis', description: 'Derivative clearing transit proxy' }
+                    { name: 'Org Chicago Gateway (CIS Clearing Access)', status: 'Active', serviceType: 'cis', description: 'Derivative clearing transit proxy' }
                   ],
                   personnel: [
-                    { name: 'Linda Ross', role: 'Clearing Analyst', location: 'Chicago Office', contact: 'l.ross@lseg.com', status: 'On Duty' }
+                    { name: 'Linda Ross', role: 'Clearing Analyst', location: 'Chicago Office', contact: 'l.ross@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -524,10 +524,10 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'LSEG Montreal Node (CIS Data Delivery)', status: 'Active', serviceType: 'cis', description: 'Bulk file delivery proxy' }
+                    { name: 'Org Montreal Node (CIS Data Delivery)', status: 'Active', serviceType: 'cis', description: 'Bulk file delivery proxy' }
                   ],
                   personnel: [
-                    { name: 'Marc Tremblay', role: 'Systems Engineer', location: 'Montreal Office', contact: 'm.tremblay@lseg.com', status: 'On Duty' }
+                    { name: 'Marc Tremblay', role: 'Systems Engineer', location: 'Montreal Office', contact: 'm.tremblay@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -633,7 +633,7 @@ window.loadState = function() {
                     { name: 'Borsa Italiana Transit Gateway (IBS Trade Entry)', status: 'Active', serviceType: 'ibs', description: 'Italian equity trade routing gateway' }
                   ],
                   personnel: [
-                    { name: 'Giovanni Rossi', role: 'Network Specialist', location: 'Milan Office', contact: 'g.rossi@lseg.com', status: 'On Duty' }
+                    { name: 'Giovanni Rossi', role: 'Network Specialist', location: 'Milan Office', contact: 'g.rossi@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -659,7 +659,7 @@ window.loadState = function() {
                     { name: 'Bucharest Shared Ops Hub (CIS Identity Audit)', status: 'Active', serviceType: 'cis', description: 'Access control compliance validation engine' }
                   ],
                   personnel: [
-                    { name: 'Andrei Popescu', role: 'Compliance Officer', location: 'Bucharest Office', contact: 'a.popescu@lseg.com', status: 'On Duty' }
+                    { name: 'Andrei Popescu', role: 'Compliance Officer', location: 'Bucharest Office', contact: 'a.popescu@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -678,7 +678,7 @@ window.loadState = function() {
                     { name: 'Cluj Tech Center (CIS Patching Gateway)', status: 'Active', serviceType: 'cis', description: 'Automated software patching controller' }
                   ],
                   personnel: [
-                    { name: 'Elena Radu', role: 'DevOps Engineer', location: 'Cluj Office', contact: 'e.radu@lseg.com', status: 'On Duty' }
+                    { name: 'Elena Radu', role: 'DevOps Engineer', location: 'Cluj Office', contact: 'e.radu@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -704,7 +704,7 @@ window.loadState = function() {
                     { name: 'Gdynia Risk Hub (IBS Analytics Compute)', status: 'Active', serviceType: 'ibs', description: 'Calculates risk metrics for European markets' }
                   ],
                   personnel: [
-                    { name: 'Piotr Nowak', role: 'Risk Analyst', location: 'Gdynia Office', contact: 'p.nowak@lseg.com', status: 'On Duty' }
+                    { name: 'Piotr Nowak', role: 'Risk Analyst', location: 'Gdynia Office', contact: 'p.nowak@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -756,7 +756,7 @@ window.loadState = function() {
                     { name: 'Mumbai Transit Access (IBS FX Feeds)', status: 'Active', serviceType: 'ibs', description: 'Rupee currency pricing relay' }
                   ],
                   personnel: [
-                    { name: 'Aditi Sharma', role: 'Support Lead', location: 'Mumbai Office', contact: 'a.sharma@lseg.com', status: 'On Duty' }
+                    { name: 'Aditi Sharma', role: 'Support Lead', location: 'Mumbai Office', contact: 'a.sharma@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -775,7 +775,7 @@ window.loadState = function() {
                     { name: 'Hyderabad Dev Node (CIS Sandbox)', status: 'Active', serviceType: 'cis', description: 'Secure isolated staging gateway' }
                   ],
                   personnel: [
-                    { name: 'Vikram Singh', role: 'SecOps Architect', location: 'Hyderabad Office', contact: 'v.singh@lseg.com', status: 'On Duty' }
+                    { name: 'Vikram Singh', role: 'SecOps Architect', location: 'Hyderabad Office', contact: 'v.singh@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -794,7 +794,7 @@ window.loadState = function() {
                     { name: 'Delhi Client API Portal (IBS Data Hub)', status: 'Active', serviceType: 'ibs', description: 'Client access portal API gateway' }
                   ],
                   personnel: [
-                    { name: 'Pooja Gupta', role: 'Client Manager', location: 'Delhi Office', contact: 'p.gupta@lseg.com', status: 'On Duty' }
+                    { name: 'Pooja Gupta', role: 'Client Manager', location: 'Delhi Office', contact: 'p.gupta@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -834,7 +834,7 @@ window.loadState = function() {
                     { name: 'FTSE SG Calculation Engine (IBS Straits Ticker)', status: 'Active', serviceType: 'ibs', description: 'Real-time calculation engine for index metrics' }
                   ],
                   personnel: [
-                    { name: 'Henry Tan', role: 'Support Lead', location: 'Singapore Office', contact: 'h.tan@lseg.com', status: 'On Duty' }
+                    { name: 'Henry Tan', role: 'Support Lead', location: 'Singapore Office', contact: 'h.tan@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -860,7 +860,7 @@ window.loadState = function() {
                     { name: 'Colombo Shared Services Node (CIS Network Transit)', status: 'Active', serviceType: 'cis', description: 'Global VPN authentication tunnel' }
                   ],
                   personnel: [
-                    { name: 'Ruwan Perera', role: 'Infrastructure Architect', location: 'Colombo Office', contact: 'r.perera@lseg.com', status: 'On Duty' }
+                    { name: 'Ruwan Perera', role: 'Infrastructure Architect', location: 'Colombo Office', contact: 'r.perera@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -886,7 +886,7 @@ window.loadState = function() {
                     { name: 'Penang Ops Node (CIS Support Routing)', status: 'Active', serviceType: 'cis', description: 'Support ticketing failover gateway' }
                   ],
                   personnel: [
-                    { name: 'Fatimah Awang', role: 'Operations Lead', location: 'Penang Office', contact: 'f.awang@lseg.com', status: 'On Duty' }
+                    { name: 'Fatimah Awang', role: 'Operations Lead', location: 'Penang Office', contact: 'f.awang@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -912,7 +912,7 @@ window.loadState = function() {
                     { name: 'Manila Client Delivery Gateway (IBS Support Feeds)', status: 'Active', serviceType: 'ibs', description: 'Customer service desk feed manager' }
                   ],
                   personnel: [
-                    { name: 'Maria Santos', role: 'Support Analyst', location: 'Manila Office', contact: 'm.santos@lseg.com', status: 'On Duty' }
+                    { name: 'Maria Santos', role: 'Support Analyst', location: 'Manila Office', contact: 'm.santos@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -935,10 +935,10 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'LSEG Tokyo Trade Gateway (IBS TSE Gateway)', status: 'Active', serviceType: 'ibs', description: 'Tokyo stock trading access routing proxy' }
+                    { name: 'Org Tokyo Trade Gateway (IBS TSE Gateway)', status: 'Active', serviceType: 'ibs', description: 'Tokyo stock trading access routing proxy' }
                   ],
                   personnel: [
-                    { name: 'Kenji Sato', role: 'Systems Lead', location: 'Tokyo Office', contact: 'k.sato@lseg.com', status: 'On Duty' }
+                    { name: 'Kenji Sato', role: 'Systems Lead', location: 'Tokyo Office', contact: 'k.sato@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -961,10 +961,10 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'LSEG HK Exchange Routing Node (IBS HKEX Transit)', status: 'Active', serviceType: 'ibs', description: 'Hong Kong Exchange direct connect interface' }
+                    { name: 'Org HK Exchange Routing Node (IBS HKEX Transit)', status: 'Active', serviceType: 'ibs', description: 'Hong Kong Exchange direct connect interface' }
                   ],
                   personnel: [
-                    { name: 'Wong Ka-shing', role: 'Support Analyst', location: 'Hong Kong Office', contact: 'w.kashing@lseg.com', status: 'On Duty' }
+                    { name: 'Wong Ka-shing', role: 'Support Analyst', location: 'Hong Kong Office', contact: 'w.kashing@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -994,10 +994,10 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'LSEG JSE Direct Connect (IBS JSE Link)', status: 'Active', serviceType: 'ibs', description: 'Johannesburg Stock Exchange dedicated gateway' }
+                    { name: 'Org JSE Direct Connect (IBS JSE Link)', status: 'Active', serviceType: 'ibs', description: 'Johannesburg Stock Exchange dedicated gateway' }
                   ],
                   personnel: [
-                    { name: 'Thabo Mbeki', role: 'Network Support', location: 'Johannesburg Office', contact: 't.mbeki@lseg.com', status: 'On Duty' }
+                    { name: 'Thabo Mbeki', role: 'Network Support', location: 'Johannesburg Office', contact: 't.mbeki@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -1013,10 +1013,10 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'LSEG Cape Town DR Node (CIS CT Recovery)', status: 'Active', serviceType: 'cis', description: 'Secondary disaster recovery hub for South Africa operations' }
+                    { name: 'Org Cape Town DR Node (CIS CT Recovery)', status: 'Active', serviceType: 'cis', description: 'Secondary disaster recovery hub for South Africa operations' }
                   ],
                   personnel: [
-                    { name: 'Chloe van der Merwe', role: 'DR Coordinator', location: 'Cape Town Office', contact: 'c.vdmerwe@lseg.com', status: 'On Standby' }
+                    { name: 'Chloe van der Merwe', role: 'DR Coordinator', location: 'Cape Town Office', contact: 'c.vdmerwe@org.internal', status: 'On Standby' }
                   ],
                   hotspots: []
                 }
@@ -1039,10 +1039,10 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'LSEG Nairobi Regional Hub (CIS NSE Feed)', status: 'Active', serviceType: 'cis', description: 'Nairobi Stock Exchange live ticker feed relay' }
+                    { name: 'Org Nairobi Regional Hub (CIS NSE Feed)', status: 'Active', serviceType: 'cis', description: 'Nairobi Stock Exchange live ticker feed relay' }
                   ],
                   personnel: [
-                    { name: 'Amara Okechukwu', role: 'Security Analyst', location: 'Nairobi Office', contact: 'a.okechukwu@lseg.com', status: 'On Duty' }
+                    { name: 'Amara Okechukwu', role: 'Security Analyst', location: 'Nairobi Office', contact: 'a.okechukwu@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -1072,12 +1072,12 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'LSEG B3 Direct Link (IBS B3 Connect)', status: 'Active', serviceType: 'ibs', description: 'São Paulo direct trading and routing connection to B3 Exchange.' },
-                    { name: 'LSEG LatAm Operations Hub (CIS LatAm Directory)', status: 'Active', serviceType: 'cis', description: 'Primary directory and identity authentication node for South American operations.' }
+                    { name: 'Org B3 Direct Link (IBS B3 Connect)', status: 'Active', serviceType: 'ibs', description: 'São Paulo direct trading and routing connection to B3 Exchange.' },
+                    { name: 'Org LatAm Operations Hub (CIS LatAm Directory)', status: 'Active', serviceType: 'cis', description: 'Primary directory and identity authentication node for South American operations.' }
                   ],
                   personnel: [
-                    { name: 'Gabriela Santos', role: 'Network Support', location: 'São Paulo Office (Cardoso de Melo 1855)', contact: 'g.santos@lseg.com', status: 'On Duty' },
-                    { name: 'Thiago Silva', role: 'Resilience Coordinator', location: 'São Paulo Office (Cardoso de Melo 1855)', contact: 't.silva@lseg.com', status: 'On Duty' }
+                    { name: 'Gabriela Santos', role: 'Network Support', location: 'São Paulo Office (Cardoso de Melo 1855)', contact: 'g.santos@org.internal', status: 'On Duty' },
+                    { name: 'Thiago Silva', role: 'Resilience Coordinator', location: 'São Paulo Office (Cardoso de Melo 1855)', contact: 't.silva@org.internal', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
