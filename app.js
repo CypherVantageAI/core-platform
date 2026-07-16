@@ -3968,7 +3968,7 @@ window.renderResilienceDashboard = function() {
         <span>${currentNode.name || 'Global Operations'}</span>
         ${path.length > 1 ? `<button class="btn btn-secondary btn-sm" style="font-size: 0.68rem; padding: 2px 8px; height: auto;" onclick="navigateResilienceBreadcrumb(${path.length - 2})">↩ Back</button>` : ''}
       </h3>
-      <p class="text-xs text-secondary" style="margin-bottom: var(--spacing-sm);">Detailed operational mapping of critical nodes</p>
+      <p class="text-xs text-secondary" style="margin-bottom: var(--spacing-sm);">Detailed operational mapping of critical services</p>
       
       <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: var(--border-radius-md); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
         <span style="font-size: 0.8rem;">Threat Index:</span>
@@ -4014,6 +4014,10 @@ window.renderResilienceDashboard = function() {
         totalLossPrevented += (state.resilience.lossPrevented || 0);
       }
       kpiLoss.innerText = formatCurrency(totalLossPrevented);
+    }
+    const kpiExposure = document.getElementById('kpi-loss-exposure');
+    if (kpiExposure) {
+      kpiExposure.innerText = formatCurrency(400000);
     }
   }
 };
@@ -4122,7 +4126,7 @@ window.showSystemDetails = function(sysName) {
         <div style="font-size: 0.68rem; color: var(--text-secondary); margin-top: 1px;">${p.contact}</div>
       </div>
     </div>
-  `).join('') || '<p class="text-xs text-secondary">No resiliency personnel assigned directly to this service node.</p>';
+  `).join('') || '<p class="text-xs text-secondary">No resiliency personnel assigned directly to this critical service node.</p>';
 
   // Determine current system status
   let displayStatus = foundSystem.status || 'Active';
@@ -4380,7 +4384,7 @@ window.runSuiteCustomSimulation = function() {
   const overlay = document.getElementById('simulation-loader-overlay');
   const overlayText = document.getElementById('simulation-loader-text');
   if (overlay && overlayText) {
-    overlayText.innerText = `Calibrating simulation parameters for ${location.toUpperCase()} node - [${threat.toUpperCase()}] threat...`;
+    overlayText.innerText = `Calibrating simulation parameters for ${location.toUpperCase()} critical service nodes - [${threat.toUpperCase()}] threat...`;
     overlay.classList.remove('hidden');
     overlay.style.opacity = '1';
   }
@@ -4524,7 +4528,7 @@ window.resetResilienceDrill = function() {
       duration: '1.5 Hours (Simulated)',
       status: 'Failover Verified',
       lossPrevented: state.resilience.lossPrevented,
-      summary: `Contingency resilience drill executed under DORA Article 11 requirements. Simulated ${threatName} was initiated on the ${locationName} node. Local services mapped to this node were marked offline. Automatic failovers and business continuity procedures were monitored and verified.`,
+      summary: `Contingency resilience drill executed under DORA Article 11 requirements. Simulated ${threatName} was initiated on the ${locationName} critical service node. Local services mapped to this critical service node were marked offline. Automatic failovers and business continuity procedures were monitored and verified.`,
       systemsAffected: [location === 'na' || location === 'ashburn' || location === 'boardman' ? 'Azure US-West-2 (CIS Identity Services)' : location === 'eu' || location === 'frankfurt' || location === 'london' ? 'AWS eu-central-1 (IBS Clearing Portal)' : 'Google Cloud SG (CIS API Gateway Routing)'],
       actionItems: [
         `Ensure standby redundancy mappings for ${locationName} are fully verified quarterly.`,
@@ -4538,7 +4542,7 @@ window.resetResilienceDrill = function() {
 
     state.activityLog.unshift({
       time: 'Just Now',
-      text: `📑 <b>DORA Drill Logged:</b> Custom simulation <b>[${reportId}]</b> completed. Mitigated Loss: $${state.resilience.lossPrevented.toLocaleString()}.`
+      text: `📑 <b>DORA Drill Logged:</b> Custom simulation <b>[${reportId}]</b> completed. Mitigated Loss: ${formatCurrency(state.resilience.lossPrevented)}.`
     });
   } else {
     state.activityLog.unshift({
@@ -4995,7 +4999,7 @@ window.openDoraIncidentReport = function(source) {
         status: 'ACTIVE MITIGATION',
         lossPrevented: state.resilience.lossPrevented,
         systemsAffected: [active.location === 'na' || active.location === 'ashburn' || active.location === 'boardman' ? 'Azure US-West-2 (CIS Identity Services)' : active.location === 'eu' || active.location === 'frankfurt' || active.location === 'london' ? 'AWS eu-central-1 (IBS Clearing Portal)' : 'Google Cloud SG (CIS API Gateway Routing)'],
-        summary: `Contingency resilience drill executed under DORA Article 11 requirements. Simulated ${threatNames[active.threat]} was initiated on the ${locationNames[active.location]} node. Automated failovers and business continuity procedures are active and functioning.`
+        summary: `Contingency resilience drill executed under DORA Article 11 requirements. Simulated ${threatNames[active.threat]} was initiated on the ${locationNames[active.location]} critical service node. Automated failovers and business continuity procedures are active and functioning.`
       };
     } else if (state.resilience.tlptActive) {
       const scenario = state.resilience.selectedScenario || 'ransomware';
@@ -5082,7 +5086,7 @@ window.openDoraIncidentReport = function(source) {
         <td style="padding: 6px 0; color: var(--text-primary);">${rep.threat}</td>
       </tr>
       <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <td style="padding: 6px 0; font-weight: 600; color: var(--text-secondary);">2.2 Root Cause Node Location</td>
+        <td style="padding: 6px 0; font-weight: 600; color: var(--text-secondary);">2.2 Root Cause Location</td>
         <td style="padding: 6px 0; color: var(--text-primary);">📍 ${rep.location}</td>
       </tr>
       <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
@@ -5194,7 +5198,7 @@ window.onload = function() {
       banner.classList.remove('hidden');
       const chosen = state.resilience.activeDrill;
       if (chosen === 'apac-outage') {
-        bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Simulated regional power outage in APAC Node (Infosys database & Google Cloud SG). Verify automatic failover and offline notifications.`;
+        bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Simulated regional power outage in APAC Critical Service Nodes (Infosys database & Google Cloud SG). Verify automatic failover and offline notifications.`;
       } else {
         bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Wildfire threat near Oregon AZ (Azure US-West). Simulated failover testing of identity directories.`;
       }
