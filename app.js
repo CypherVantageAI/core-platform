@@ -386,6 +386,8 @@ window.loadState = function() {
       tlptPhase: 'prep',
       tlptLogs: [],
       tlptActive: false,
+      lossPrevented: 0,
+      lossTrackerIntervalId: null,
       regions: {
         na: { name: 'North America Hub', threatLevel: 'Moderate', threatColor: 'orange' },
         eu: { name: 'Europe Operations', threatLevel: 'Nominal', threatColor: 'green' },
@@ -1100,6 +1102,7 @@ window.loadState = function() {
         severity: 'High',
         duration: '2 Hours (Simulated)',
         status: 'Failover Verified',
+        lossPrevented: 128000,
         summary: 'A simulated power grid collapse was initiated on the Frankfurt node. AWS eu-central-1 clearing portal failed over successfully to the Dublin DR site within the 4-hour RTO boundary.',
         systemsAffected: ['AWS eu-central-1 (IBS Clearing Portal)'],
         actionItems: [
@@ -1116,6 +1119,7 @@ window.loadState = function() {
         severity: 'Critical',
         duration: '3.5 Hours (Simulated)',
         status: 'Mitigated & Recovered',
+        lossPrevented: 345000,
         summary: 'Simulated penetration test of a LockBit ransomware variant attacking the CIS identity gateway. Attackers achieved lateral movement to local directories before detection. Automated DLP proxy isolated the threat.',
         systemsAffected: ['Azure US-West-2 (CIS Identity Services)'],
         actionItems: [
@@ -4000,6 +4004,21 @@ window.renderResilienceDashboard = function() {
   }
 };
 
+function getSystemDowntimeCost(sys) {
+  if (sys.downtimeCostPerHour) return sys.downtimeCostPerHour;
+  if (sys.serviceType === 'ibs') {
+    if (sys.name.includes('B3') || sys.name.includes('London Core') || sys.name.includes('API Gateway') || sys.name.includes('Payments')) {
+      return 75000;
+    }
+    return 48000;
+  } else {
+    if (sys.name.includes('Identity') || sys.name.includes('DB') || sys.name.includes('Directory') || sys.name.includes('Vault')) {
+      return 25000;
+    }
+    return 18000;
+  }
+}
+
 window.showSystemDetails = function(sysName) {
   // Find the system and its parent node in the hierarchy
   let foundSystem = null;
@@ -4129,6 +4148,16 @@ window.showSystemDetails = function(sysName) {
       <div class="text-xs text-secondary" style="margin-top: 8px; font-size: 0.7rem;">
         <strong>Host Infrastructure Location:</strong> ${foundParentNode.name || 'Unknown Node'}
       </div>
+      <div style="display: flex; gap: 20px; margin-top: 10px; padding: 6px 10px; border-radius: var(--border-radius-sm); background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.15);">
+        <div>
+          <span style="font-size: 0.62rem; text-transform: uppercase; color: var(--text-secondary); display: block; font-weight: 600;">Hourly Downtime Impact</span>
+          <span style="font-weight: 700; color: var(--color-cyan); font-size: 0.82rem;">$${getSystemDowntimeCost(foundSystem).toLocaleString()} / hr</span>
+        </div>
+        <div>
+          <span style="font-size: 0.62rem; text-transform: uppercase; color: var(--text-secondary); display: block; font-weight: 600;">Regulated Classification</span>
+          <span style="font-weight: 700; color: var(--text-primary); font-size: 0.82rem;">${foundSystem.serviceType.toUpperCase()} (DORA)</span>
+        </div>
+      </div>
     </div>
     
     <div>
@@ -4198,6 +4227,81 @@ function isSystemAffectedByCustomDrill(sys, drill) {
   if (loc === 'bangalore' && sys.name.includes('IN-South')) return true;
   if (loc === 'jurong' && sys.name.includes('SG')) return true;
   return false;
+}
+
+function startLossTracker(hourlyLossRate) {
+  if (state.resilience.lossTrackerIntervalId) {
+    clearInterval(state.resilience.lossTrackerIntervalId);
+  }
+  state.resilience.lossPrevented = 0;
+  
+  const valueEl = document.getElementById('drill-loss-value');
+  if (valueEl) valueEl.innerText = '$0';
+  
+  const tickMs = 800;
+  // tick cost based on rate per tick
+  const tickCost = (hourlyLossRate / 3600) * (tickMs / 1000);
+  
+  state.resilience.lossTrackerIntervalId = setInterval(() => {
+    const variation = 0.9 + Math.random() * 0.2;
+    state.resilience.lossPrevented += Math.floor(tickCost * variation);
+    
+    if (valueEl) {
+      valueEl.innerText = `$${state.resilience.lossPrevented.toLocaleString()}`;
+    }
+  }, tickMs);
+}
+
+function stopLossTracker() {
+  if (state.resilience.lossTrackerIntervalId) {
+    clearInterval(state.resilience.lossTrackerIntervalId);
+    state.resilience.lossTrackerIntervalId = null;
+  }
+}
+
+function getLocationDowntimeRate(locationKey) {
+  let rate = 0;
+  function traverse(curr) {
+    if (!curr) return;
+    if (curr.systems) {
+      curr.systems.forEach(sys => {
+        rate += getSystemDowntimeCost(sys);
+      });
+    }
+    if (curr.countries) Object.values(curr.countries).forEach(traverse);
+    if (curr.states) Object.values(curr.states).forEach(traverse);
+    if (curr.cities) Object.values(curr.cities).forEach(traverse);
+    if (curr.subdivisions) Object.values(curr.subdivisions).forEach(traverse);
+  }
+  
+  if (['na', 'eu', 'apac', 'af', 'sa'].includes(locationKey)) {
+    const regionNode = state.resilience.hierarchy[locationKey];
+    traverse(regionNode);
+  } else {
+    function search(curr) {
+      if (!curr) return;
+      if (curr.countries && curr.countries[locationKey]) {
+        traverse(curr.countries[locationKey]);
+      } else if (curr.states && curr.states[locationKey]) {
+        traverse(curr.states[locationKey]);
+      } else if (curr.cities && curr.cities[locationKey]) {
+        traverse(curr.cities[locationKey]);
+      } else if (curr.subdivisions && curr.subdivisions[locationKey]) {
+        traverse(curr.subdivisions[locationKey]);
+      } else {
+        if (curr === state.resilience.hierarchy) {
+          Object.values(curr).forEach(search);
+        } else {
+          if (curr.countries) Object.values(curr.countries).forEach(search);
+          if (curr.states) Object.values(curr.states).forEach(search);
+          if (curr.cities) Object.values(curr.cities).forEach(search);
+          if (curr.subdivisions) Object.values(curr.subdivisions).forEach(search);
+        }
+      }
+    }
+    search(state.resilience.hierarchy);
+  }
+  return rate || 48000;
 }
 
 window.runSuiteCustomSimulation = function() {
@@ -4272,6 +4376,10 @@ window.runSuiteCustomSimulation = function() {
       bannerText.innerHTML = `<strong>ACTIVE DRILL:</strong> Simulated <strong>${threatName}</strong> on <strong>${locationName}</strong>. Mapped systems status updated automatically.`;
     }
 
+    // Start loss tracker counter
+    const hourlyLossRate = getLocationDowntimeRate(location);
+    startLossTracker(hourlyLossRate);
+
     // Auto focus detail panel on simulated location
     if (location === 'na' || location === 'eu' || location === 'apac') {
       state.resilience.currentPath = ['Global', location];
@@ -4301,6 +4409,45 @@ window.runSuiteCustomSimulation = function() {
       text: `⚠️ <b>DORA Custom Simulation:</b> Triggered <b>[${threatName}]</b> at <b>[${locationName}]</b>. Verifying resilience compliance.`
     });
 
+    saveState();
+    renderResilienceDashboard();
+    renderComplianceDashboard();
+  }, 1500);
+};
+
+
+
+window.resetResilienceDrill = function() {
+  const activeDrill = state.resilience.activeDrill;
+  stopLossTracker();
+
+  if (activeDrill && activeDrill.isCustom) {
+    const location = activeDrill.location;
+    const threat = activeDrill.threat;
+
+    const locationNames = {
+      na: 'North America (Region)',
+      eu: 'Europe (Region)',
+      apac: 'Asia-Pacific (Region)',
+      ashburn: 'Ashburn DC (Virginia)',
+      boardman: 'Boardman DC (Oregon)',
+      frankfurt: 'Frankfurt DC (Germany)',
+      london: 'London Hub (UK)',
+      bangalore: 'Bangalore Hub (India)',
+      jurong: 'Jurong DC (Singapore)'
+    };
+    const threatNames = {
+      grid: 'Power Grid Failure',
+      wildfire: 'Wildfire Emergency',
+      ddos: 'Volumetric DDoS Attack',
+      fibercut: 'Fiber-Optic Cable Cut',
+      ransomware: 'Ransomware Encryption',
+      tlpt: 'TIBER-EU Red Team Test'
+    };
+
+    const locationName = locationNames[location] || location.toUpperCase();
+    const threatName = threatNames[threat] || threat.toUpperCase();
+
     // Save and log simulation compliance report
     const reportId = `DRILL-${Date.now().toString().slice(-6)}`;
     const newReport = {
@@ -4312,6 +4459,7 @@ window.runSuiteCustomSimulation = function() {
       severity: threat === 'ransomware' || threat === 'tlpt' ? 'Critical' : 'High',
       duration: '1.5 Hours (Simulated)',
       status: 'Failover Verified',
+      lossPrevented: state.resilience.lossPrevented,
       summary: `Contingency resilience drill executed under DORA Article 11 requirements. Simulated ${threatName} was initiated on the ${locationName} node. Local services mapped to this node were marked offline. Automatic failovers and business continuity procedures were monitored and verified.`,
       systemsAffected: [location === 'na' || location === 'ashburn' || location === 'boardman' ? 'Azure US-West-2 (CIS Identity Services)' : location === 'eu' || location === 'frankfurt' || location === 'london' ? 'AWS eu-central-1 (IBS Clearing Portal)' : 'Google Cloud SG (CIS API Gateway Routing)'],
       actionItems: [
@@ -4319,19 +4467,22 @@ window.runSuiteCustomSimulation = function() {
         'Update emergency call trees and key personnel notification lists.'
       ]
     };
+
     if (!state.resilience.reports) state.resilience.reports = [];
     state.resilience.reports.unshift(newReport);
     state.resilience.activeReportIndex = 0;
 
-    saveState();
-    renderResilienceDashboard();
-    renderComplianceDashboard();
-  }, 1500);
-};
+    state.activityLog.unshift({
+      time: 'Just Now',
+      text: `📑 <b>DORA Drill Logged:</b> Custom simulation <b>[${reportId}]</b> completed. Mitigated Loss: $${state.resilience.lossPrevented.toLocaleString()}.`
+    });
+  } else {
+    state.activityLog.unshift({
+      time: 'Just Now',
+      text: `🟢 <b>DORA Drill Completed:</b> Simulated resilience threat cleared. Systems returned to nominal production mappings.`
+    });
+  }
 
-
-
-window.resetResilienceDrill = function() {
   state.resilience.activeDrill = null;
   const banner = document.getElementById('drill-alert-banner');
   if (banner) {
@@ -4344,14 +4495,12 @@ window.resetResilienceDrill = function() {
   if (locationSelect) locationSelect.value = 'na';
   if (threatSelect) threatSelect.value = 'grid';
 
-  state.activityLog.unshift({
-    time: 'Just Now',
-    text: `🟢 <b>DORA Drill Completed:</b> Simulated resilience threat cleared. Systems returned to nominal production mappings.`
-  });
-
   saveState();
   renderResilienceDashboard();
   renderComplianceDashboard();
+  if (typeof renderSimulationReports === 'function') {
+    renderSimulationReports();
+  }
 };
 
 // --------------------------------------------------------------------------
@@ -4377,6 +4526,29 @@ window.startTlptSimulation = function() {
     statusEl.innerText = 'PREPARATION';
     statusEl.className = 'terminal-badge running';
   }
+
+  // Display alert banner and start loss counter for TIBER-EU
+  const tiberLocations = {
+    ransomware: 'boardman',
+    supplychain: 'bangalore',
+    ddos: 'jurong',
+    insider: 'frankfurt'
+  };
+  const locKey = tiberLocations[scenario] || 'boardman';
+  const tiberLossRate = getLocationDowntimeRate(locKey);
+  const banner = document.getElementById('drill-alert-banner');
+  const bannerText = document.getElementById('drill-alert-text');
+  if (banner && bannerText) {
+    banner.classList.remove('hidden');
+    const scenarioTitles = {
+      ransomware: 'LockBit Ransomware',
+      supplychain: 'Supply Chain Poisoning',
+      ddos: 'Volumetric DDoS Attack',
+      insider: 'Malicious Insider Privilege Escalation'
+    };
+    bannerText.innerHTML = `<strong>TIBER-EU DRILL:</strong> Simulated <strong>${scenarioTitles[scenario]}</strong> testing active. Mapped systems status updating in real-time.`;
+  }
+  startLossTracker(tiberLossRate);
 
   // Clear previous timeouts
   tlptTimeoutIds.forEach(clearTimeout);
@@ -4476,6 +4648,10 @@ window.stopTlptSimulation = function() {
   state.resilience.tlptActive = false;
   state.resilience.tlptPhase = 'prep';
 
+  stopLossTracker();
+  const banner = document.getElementById('drill-alert-banner');
+  if (banner) banner.classList.add('hidden');
+
   // Clear pending timeouts
   tlptTimeoutIds.forEach(clearTimeout);
   tlptTimeoutIds = [];
@@ -4526,6 +4702,7 @@ window.stopTlptSimulation = function() {
       severity: 'Critical',
       duration: '3 Hours (Simulated)',
       status: 'Mitigated & Closed',
+      lossPrevented: state.resilience.lossPrevented,
       summary: `A structured TIBER-EU threat-led penetration test (TLPT) was executed targeting ${scenarioSystems[scenario].join(', ')}. Red-team simulated adversarial tactics, techniques, and procedures (TTPs) based on current cyber threat intelligence. Defensive system detection, automated isolated controls, and regulatory notification workflows were audited and validated under DORA Article 26 requirements.`,
       systemsAffected: scenarioSystems[scenario],
       actionItems: [
@@ -4543,10 +4720,13 @@ window.stopTlptSimulation = function() {
     // Add activity log
     state.activityLog.unshift({
       time: 'Just Now',
-      text: `📑 <b>TIBER-EU Report Saved:</b> Simulation <b>[${reportId}]</b> completed. Compliance report generated and archived.`
+      text: `📑 <b>TIBER-EU Report Saved:</b> Simulation <b>[${reportId}]</b> completed. Mitigated Loss: $${state.resilience.lossPrevented.toLocaleString()}.`
     });
 
     renderComplianceDashboard();
+    if (typeof renderSimulationReports === 'function') {
+      renderSimulationReports();
+    }
   }
 };
 
@@ -4659,7 +4839,7 @@ window.renderSimulationReports = function() {
         <span style="font-size: 0.72rem; color: var(--text-secondary);">Audit Log Reference: <strong>${rep.id}</strong> | Timestamp: <strong>${rep.timestamp}</strong></span>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px;">
         <div>
           <span style="font-size: 0.68rem; text-transform: uppercase; color: var(--text-secondary); display: block;">Simulation Location</span>
           <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">📍 ${rep.location}</span>
@@ -4675,6 +4855,10 @@ window.renderSimulationReports = function() {
         <div>
           <span style="font-size: 0.68rem; text-transform: uppercase; color: var(--text-secondary); display: block;">Validation Status</span>
           <span style="font-size: 0.8rem; font-weight: 600; color: #34d399;">🛡️ ${rep.status}</span>
+        </div>
+        <div>
+          <span style="font-size: 0.68rem; text-transform: uppercase; color: var(--text-secondary); display: block;">Mitigated Business Loss</span>
+          <span style="font-size: 0.8rem; font-weight: 600; color: #34d399;">💰 $${(rep.lossPrevented || 0).toLocaleString()}</span>
         </div>
       </div>
 
@@ -4708,6 +4892,210 @@ window.renderSimulationReports = function() {
       </div>
     </div>
   `;
+};
+
+window.openDoraIncidentReport = function(source) {
+  let rep = null;
+  
+  if (source === 'active') {
+    if (state.resilience.activeDrill) {
+      const active = state.resilience.activeDrill;
+      const locationNames = {
+        na: 'North America (Region)',
+        eu: 'Europe (Region)',
+        apac: 'Asia-Pacific (Region)',
+        ashburn: 'Ashburn DC (Virginia)',
+        boardman: 'Boardman DC (Oregon)',
+        frankfurt: 'Frankfurt DC (Germany)',
+        london: 'London Hub (UK)',
+        bangalore: 'Bangalore Hub (India)',
+        jurong: 'Jurong DC (Singapore)'
+      };
+      const threatNames = {
+        grid: 'Power Grid Failure',
+        wildfire: 'Wildfire Emergency',
+        ddos: 'Volumetric DDoS Attack',
+        fibercut: 'Fiber-Optic Cable Cut',
+        ransomware: 'Ransomware Encryption',
+        tlpt: 'TIBER-EU Red Team Test'
+      };
+      
+      rep = {
+        id: `DRILL-${Date.now().toString().slice(-6)}`,
+        title: `Active DORA Art. 11 Simulation: ${threatNames[active.threat]} at ${locationNames[active.location]}`,
+        timestamp: `${formatDate(new Date())} ${new Date().toTimeString().slice(0, 5)}`,
+        location: locationNames[active.location],
+        threat: threatNames[active.threat],
+        severity: active.threat === 'ransomware' || active.threat === 'tlpt' ? 'Critical' : 'High',
+        status: 'ACTIVE MITIGATION',
+        lossPrevented: state.resilience.lossPrevented,
+        systemsAffected: [active.location === 'na' || active.location === 'ashburn' || active.location === 'boardman' ? 'Azure US-West-2 (CIS Identity Services)' : active.location === 'eu' || active.location === 'frankfurt' || active.location === 'london' ? 'AWS eu-central-1 (IBS Clearing Portal)' : 'Google Cloud SG (CIS API Gateway Routing)'],
+        summary: `Contingency resilience drill executed under DORA Article 11 requirements. Simulated ${threatNames[active.threat]} was initiated on the ${locationNames[active.location]} node. Automated failovers and business continuity procedures are active and functioning.`
+      };
+    } else if (state.resilience.tlptActive) {
+      const scenario = state.resilience.selectedScenario || 'ransomware';
+      const scenarioTitles = {
+        ransomware: 'LockBit Ransomware Encryption',
+        supplychain: 'Supply Chain Poisoning (Infosys API Hack)',
+        ddos: 'Distributed DDoS & DNS Spoofing',
+        insider: 'Malicious Insider Privilege Escalation'
+      };
+      const scenarioLocations = {
+        ransomware: 'Boardman DC (Oregon)',
+        supplychain: 'Infosys DB Cluster (Bangalore)',
+        ddos: 'Google Cloud SG (Jurong DC)',
+        insider: 'AWS Frankfurt DC (Germany)'
+      };
+      const scenarioSystems = {
+        ransomware: ['Azure US-West-2 (CIS Identity Services)'],
+        supplychain: ['Infosys Core Database'],
+        ddos: ['Google Cloud SG (CIS API Gateway Routing)'],
+        insider: ['AWS eu-central-1 (IBS Clearing Portal)']
+      };
+      
+      rep = {
+        id: `TLPT-${Date.now().toString().slice(-6)}`,
+        title: `Active TIBER-EU Red Team Simulation: ${scenarioTitles[scenario]}`,
+        timestamp: `${formatDate(new Date())} ${new Date().toTimeString().slice(0, 5)}`,
+        location: scenarioLocations[scenario],
+        threat: 'TIBER-EU Red Team Test',
+        severity: 'Critical',
+        status: 'ACTIVE MITIGATION',
+        lossPrevented: state.resilience.lossPrevented,
+        systemsAffected: scenarioSystems[scenario],
+        summary: `A structured TIBER-EU threat-led penetration test (TLPT) was executed targeting ${scenarioSystems[scenario].join(', ')}. Red-team simulated adversarial tactics are being monitored under DORA Article 26.`
+      };
+    }
+  } else {
+    const activeIndex = state.resilience.activeReportIndex !== undefined ? state.resilience.activeReportIndex : 0;
+    rep = state.resilience.reports[activeIndex];
+  }
+  
+  if (!rep) {
+    alert("No active simulation or historical report selected.");
+    return;
+  }
+  
+  const modal = document.getElementById('dora-incident-modal');
+  const body = document.getElementById('dora-incident-modal-body');
+  if (!modal || !body) return;
+  
+  body.innerHTML = `
+    <div style="font-family: 'Courier New', monospace; font-size: 0.74rem; color: #a5f3fc; background: rgba(0,0,0,0.25); padding: 12px; border: 1px dashed rgba(6, 182, 212, 0.4); margin-bottom: 20px; border-radius: 4px; line-height: 1.45;">
+      CONFIDENTIALITY TIER: RESTRICTED // NATIONAL COMPETENT AUTHORITY FILING
+      <br>REGULATORY DIRECTIVE: DIGITAL OPERATIONAL RESILIENCE ACT (DORA) ARTICLE 19
+      <br>REPORT STATUS: ${rep.status.toUpperCase()} // CV-AUDIT-ID: ${rep.id}
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.78rem;">
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; width: 35%; color: var(--text-secondary);">1.1 Reporting Entity</td>
+        <td style="padding: 6px 0; color: var(--text-primary);">Org Operations Center (Cypher Vantage Client Tenant)</td>
+      </tr>
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; color: var(--text-secondary);">1.2 Country of Origin</td>
+        <td style="padding: 6px 0; color: var(--text-primary);">EU / Global Operations</td>
+      </tr>
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; color: var(--text-secondary);">1.3 Incident Reference ID</td>
+        <td style="padding: 6px 0; font-family: monospace; color: var(--color-cyan); font-weight: 700;">${rep.id}</td>
+      </tr>
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; color: var(--text-secondary);">1.4 Incident Severity Tier</td>
+        <td style="padding: 6px 0; color: ${rep.severity === 'Critical' ? '#f43f5e' : '#fb923c'}; font-weight: 700;">⚠️ ${rep.severity.toUpperCase()}</td>
+      </tr>
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; color: var(--text-secondary);">1.5 Report Filing Timestamp</td>
+        <td style="padding: 6px 0; color: var(--text-primary);">${rep.timestamp}</td>
+      </tr>
+    </table>
+
+    <h3 style="font-size: 0.82rem; text-transform: uppercase; color: var(--color-cyan); margin-bottom: 8px; border-bottom: 1px solid rgba(6,182,212,0.2); padding-bottom: 4px;">2. Operational Blast Radius & Classification</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.78rem;">
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; width: 35%; color: var(--text-secondary);">2.1 Primary Threat Vector</td>
+        <td style="padding: 6px 0; color: var(--text-primary);">${rep.threat}</td>
+      </tr>
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; color: var(--text-secondary);">2.2 Root Cause Node Location</td>
+        <td style="padding: 6px 0; color: var(--text-primary);">📍 ${rep.location}</td>
+      </tr>
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; color: var(--text-secondary);">2.3 Affected Mapped Services</td>
+        <td style="padding: 6px 0; color: var(--text-primary);">
+          <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;">
+            ${rep.systemsAffected.map(sys => `<span style="font-size: 0.65rem; background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.2); color: #f43f5e; padding: 1px 5px; border-radius: 3px;">🖥️ ${sys}</span>`).join('')}
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <h3 style="font-size: 0.82rem; text-transform: uppercase; color: var(--color-cyan); margin-bottom: 8px; border-bottom: 1px solid rgba(6,182,212,0.2); padding-bottom: 4px;">3. Business Interruption & Loss Mitigation</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.78rem;">
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; width: 35%; color: var(--text-secondary);">3.1 Downtime Loss Prevented</td>
+        <td style="padding: 6px 0; color: #10b981; font-weight: 700; font-size: 0.85rem;">💰 $${(rep.lossPrevented || 0).toLocaleString()} USD</td>
+      </tr>
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <td style="padding: 6px 0; font-weight: 600; color: var(--text-secondary);">3.2 Mitigation Rationale</td>
+        <td style="padding: 6px 0; color: var(--text-primary); line-height: 1.45;">
+          Estimated losses prevented reflect the simulated recovery time objective (RTO) failover speed. Traffic redirection and failover execution successfully mitigated downstream client SLA penalties.
+        </td>
+      </tr>
+    </table>
+
+    <h3 style="font-size: 0.82rem; text-transform: uppercase; color: var(--color-cyan); margin-bottom: 8px; border-bottom: 1px solid rgba(6,182,212,0.2); padding-bottom: 4px;">4. Narrative Summary & Action Plan</h3>
+    <p style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5; margin: 6px 0 15px 0;">
+      ${rep.summary || 'Incident verification logs captured successfully.'}
+    </p>
+
+    <div style="font-size: 0.7rem; color: var(--text-secondary); opacity: 0.8; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; display: flex; justify-content: space-between;">
+      <span>SUBMITTED VIA: CYPHER VANTAGE DORA PORTAL</span>
+      <span>SIGNATURE: ORG COMPLIANCE OFFICER</span>
+    </div>
+  `;
+  
+  modal.classList.remove('hidden');
+};
+
+window.closeDoraIncidentReportModal = function() {
+  const modal = document.getElementById('dora-incident-modal');
+  if (modal) modal.classList.add('hidden');
+};
+
+window.printDoraIncidentReport = function() {
+  const printContent = document.getElementById('dora-incident-modal-body').innerHTML;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>DORA Article 19 Incident Report</title>
+        <style>
+          body {
+            background: #ffffff;
+            color: #000000;
+            font-family: sans-serif;
+            padding: 40px;
+            line-height: 1.5;
+          }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+          tr { border-bottom: 1px solid #dddddd; }
+          td { padding: 8px 0; }
+          h2, h3 { font-family: sans-serif; color: #111111; }
+          span { color: #000000 !important; border-color: #333 !important; background: none !important; padding: 0 !important; }
+        </style>
+      </head>
+      <body>
+        <div style="text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px;">
+          <h2>EUROPEAN SUPERVISORY AUTHORITIES (ESA)</h2>
+          <h3>DORA ARTICLE 19 - STANDARD INCIDENT REPORT FORM</h3>
+        </div>
+        ${printContent}
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.print();
 };
 
 // --------------------------------------------------------------------------
