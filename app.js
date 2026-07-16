@@ -4019,6 +4019,41 @@ window.renderResilienceDashboard = function() {
     if (kpiExposure) {
       kpiExposure.innerText = formatCurrency(400000);
     }
+
+    // Dynamic C-Suite Calculation Explanations for Tooltips
+    const tooltipRes = document.getElementById('tooltip-resilience');
+    if (tooltipRes) {
+      tooltipRes.innerHTML = `<strong>Overall Resilience Index</strong>Calculated as: 33 Active / 35 Mapped Services = 94.8% health. Score drops when mapped nodes are disrupted or fail DR audits.`;
+    }
+    const tooltipServ = document.getElementById('tooltip-services');
+    if (tooltipServ) {
+      tooltipServ.innerHTML = `<strong>Mapped Critical Services</strong>Calculated as: 30 Important Business Services (IBS) + 5 Critical Internal Services (CIS) = 35 total service nodes.`;
+    }
+    const tooltipLoss = document.getElementById('tooltip-loss-prevented');
+    if (tooltipLoss) {
+      let totalLoss = 473000;
+      if (state.resilience.activeDrill || state.resilience.tlptActive) {
+        totalLoss += state.resilience.lossPrevented;
+      }
+      const frankfurtFormatted = formatCurrency(128000);
+      const tiberFormatted = formatCurrency(345000);
+      const activeText = (state.resilience.activeDrill || state.resilience.tlptActive) ? ` + Active Drill (${formatCurrency(state.resilience.lossPrevented)})` : '';
+      tooltipLoss.innerHTML = `<strong>Mitigated Downtime Loss</strong>Calculated as: Sum of prevented losses. Frankfurt Grid (${frankfurtFormatted}) + TIBER Ransomware (${tiberFormatted})${activeText} = ${formatCurrency(totalLoss)} mitigated.`;
+    }
+    const tooltipExp = document.getElementById('tooltip-loss-exposure');
+    if (tooltipExp) {
+      const awsFormatted = formatCurrency(300000);
+      const infosysFormatted = formatCurrency(100000);
+      tooltipExp.innerHTML = `<strong>Potential Loss Exposure</strong>Calculated as: Hourly Rate × 4-hour RTO window for open gaps. Outdated AWS DR (${awsFormatted}) + Missing Infosys Subprocessor (${infosysFormatted}) = ${formatCurrency(400000)} risk exposure.`;
+    }
+    const tooltipGap = document.getElementById('tooltip-gaps');
+    if (tooltipGap) {
+      tooltipGap.innerHTML = `<strong>Active Regulatory Gaps</strong>Calculated as: Count of unverified compliance controls. Currently 2 open gaps: AWS DR Failover audit & Infosys Subprocessor review.`;
+    }
+    const tooltipTl = document.getElementById('tooltip-tlpt');
+    if (tooltipTl) {
+      tooltipTl.innerHTML = `<strong>TLPT Failover Verified</strong>Calculated as: Completed TLPT drills (4) / Total scoped threat scenarios (4) = 100%. Audited under TIBER-EU rules.`;
+    }
   }
 };
 
