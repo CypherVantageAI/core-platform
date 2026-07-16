@@ -463,7 +463,7 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'Org New York Hub (IBS Market Feeds)', status: 'Active', serviceType: 'ibs', description: 'Real-time ticker multicast feed routing' }
+                    { name: 'New York Hub (IBS Market Feeds)', status: 'Active', serviceType: 'ibs', description: 'Real-time ticker multicast feed routing' }
                   ],
                   personnel: [
                     { name: 'James Carter', role: 'Infrastructure Director', location: 'New York Office', contact: 'j.carter@org.internal', status: 'On Duty' }
@@ -482,7 +482,7 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'Org Chicago Gateway (CIS Clearing Access)', status: 'Active', serviceType: 'cis', description: 'Derivative clearing transit proxy' }
+                    { name: 'Chicago Gateway (CIS Clearing Access)', status: 'Active', serviceType: 'cis', description: 'Derivative clearing transit proxy' }
                   ],
                   personnel: [
                     { name: 'Linda Ross', role: 'Clearing Analyst', location: 'Chicago Office', contact: 'l.ross@org.internal', status: 'On Duty' }
@@ -527,7 +527,7 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'Org Montreal Node (CIS Data Delivery)', status: 'Active', serviceType: 'cis', description: 'Bulk file delivery proxy' }
+                    { name: 'Montreal Node (CIS Data Delivery)', status: 'Active', serviceType: 'cis', description: 'Bulk file delivery proxy' }
                   ],
                   personnel: [
                     { name: 'Marc Tremblay', role: 'Systems Engineer', location: 'Montreal Office', contact: 'm.tremblay@org.internal', status: 'On Duty' }
@@ -938,7 +938,7 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'Org Tokyo Trade Gateway (IBS TSE Gateway)', status: 'Active', serviceType: 'ibs', description: 'Tokyo stock trading access routing proxy' }
+                    { name: 'Tokyo Trade Gateway (IBS TSE Gateway)', status: 'Active', serviceType: 'ibs', description: 'Tokyo stock trading access routing proxy' }
                   ],
                   personnel: [
                     { name: 'Kenji Sato', role: 'Systems Lead', location: 'Tokyo Office', contact: 'k.sato@org.internal', status: 'On Duty' }
@@ -964,7 +964,7 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'Org HK Exchange Routing Node (IBS HKEX Transit)', status: 'Active', serviceType: 'ibs', description: 'Hong Kong Exchange direct connect interface' }
+                    { name: 'HK Exchange Routing Node (IBS HKEX Transit)', status: 'Active', serviceType: 'ibs', description: 'Hong Kong Exchange direct connect interface' }
                   ],
                   personnel: [
                     { name: 'Wong Ka-shing', role: 'Support Analyst', location: 'Hong Kong Office', contact: 'w.kashing@org.internal', status: 'On Duty' }
@@ -997,7 +997,7 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'Org JSE Direct Connect (IBS JSE Link)', status: 'Active', serviceType: 'ibs', description: 'Johannesburg Stock Exchange dedicated gateway' }
+                    { name: 'JSE Direct Connect (IBS JSE Link)', status: 'Active', serviceType: 'ibs', description: 'Johannesburg Stock Exchange dedicated gateway' }
                   ],
                   personnel: [
                     { name: 'Thabo Mbeki', role: 'Network Support', location: 'Johannesburg Office', contact: 't.mbeki@org.internal', status: 'On Duty' }
@@ -1016,7 +1016,7 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'Org Cape Town DR Node (CIS CT Recovery)', status: 'Active', serviceType: 'cis', description: 'Secondary disaster recovery hub for South Africa operations' }
+                    { name: 'Cape Town DR Node (CIS CT Recovery)', status: 'Active', serviceType: 'cis', description: 'Secondary disaster recovery hub for South Africa operations' }
                   ],
                   personnel: [
                     { name: 'Chloe van der Merwe', role: 'DR Coordinator', location: 'Cape Town Office', contact: 'c.vdmerwe@org.internal', status: 'On Standby' }
@@ -1042,7 +1042,7 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'Org Nairobi Regional Hub (CIS NSE Feed)', status: 'Active', serviceType: 'cis', description: 'Nairobi Stock Exchange live ticker feed relay' }
+                    { name: 'Nairobi Regional Hub (CIS NSE Feed)', status: 'Active', serviceType: 'cis', description: 'Nairobi Stock Exchange live ticker feed relay' }
                   ],
                   personnel: [
                     { name: 'Amara Okechukwu', role: 'Security Analyst', location: 'Nairobi Office', contact: 'a.okechukwu@org.internal', status: 'On Duty' }
@@ -1075,8 +1075,8 @@ window.loadState = function() {
                   threatLevel: 'Nominal',
                   threatColor: 'green',
                   systems: [
-                    { name: 'Org B3 Direct Link (IBS B3 Connect)', status: 'Active', serviceType: 'ibs', description: 'São Paulo direct trading and routing connection to B3 Exchange.' },
-                    { name: 'Org LatAm Operations Hub (CIS LatAm Directory)', status: 'Active', serviceType: 'cis', description: 'Primary directory and identity authentication node for South American operations.' }
+                    { name: 'B3 Direct Link (IBS B3 Connect)', status: 'Active', serviceType: 'ibs', description: 'São Paulo direct trading and routing connection to B3 Exchange.' },
+                    { name: 'LatAm Operations Hub (CIS LatAm Directory)', status: 'Active', serviceType: 'cis', description: 'Primary directory and identity authentication node for South American operations.' }
                   ],
                   personnel: [
                     { name: 'Gabriela Santos', role: 'Network Support', location: 'São Paulo Office (Cardoso de Melo 1855)', contact: 'g.santos@org.internal', status: 'On Duty' },
@@ -4067,7 +4067,7 @@ window.renderResilienceDashboard = function() {
     }
     const tooltipTl = document.getElementById('tooltip-tlpt');
     if (tooltipTl) {
-      tooltipTl.innerHTML = `<strong>TLPT Failover Verified</strong>Calculated as: Completed TLPT drills (4) / Total scoped threat scenarios (4) = 100%. Audited under TIBER-EU rules.`;
+      tooltipTl.innerHTML = `<strong>TLPT &amp; BAS Failover Verified</strong>Calculated as: Completed TLPT &amp; BAS drills (4) / Total scoped threat scenarios (4) = 100%. Audited under TIBER-EU and DORA rules.`;
     }
   }
 };
@@ -5426,19 +5426,19 @@ window.selectNavigatorService = function(serviceName, element) {
     'Mumbai Transit Access (IBS FX Feeds)': 'org',
     'Delhi Client API Portal (IBS Data Hub)': 'org',
     'Manila Client Delivery Gateway (IBS Support Feeds)': 'org',
-    'Org Tokyo Trade Gateway (IBS TSE Gateway)': 'org',
-    'Org HK Exchange Routing Node (IBS HKEX Transit)': 'org',
-    'Org JSE Direct Connect (IBS JSE Link)': 'org',
-    'Org B3 Direct Link (IBS B3 Connect)': 'org',
-    'Org Chicago Gateway (CIS Clearing Access)': 'org',
-    'Org Montreal Node (CIS Data Delivery)': 'org',
+    'Tokyo Trade Gateway (IBS TSE Gateway)': 'org',
+    'HK Exchange Routing Node (IBS HKEX Transit)': 'org',
+    'JSE Direct Connect (IBS JSE Link)': 'org',
+    'B3 Direct Link (IBS B3 Connect)': 'org',
+    'Chicago Gateway (CIS Clearing Access)': 'org',
+    'Montreal Node (CIS Data Delivery)': 'org',
     'Bucharest Shared Ops Hub (CIS Identity Audit)': 'org',
     'Cluj Tech Center (CIS Patching Gateway)': 'org',
     'Colombo Shared Services Node (CIS Network Transit)': 'org',
     'Penang Ops Node (CIS Support Routing)': 'org',
-    'Org Cape Town DR Node (CIS CT Recovery)': 'org',
-    'Org Nairobi Regional Hub (CIS NSE Feed)': 'org',
-    'Org LatAm Operations Hub (CIS LatAm Directory)': 'org'
+    'Cape Town DR Node (CIS CT Recovery)': 'org',
+    'Nairobi Regional Hub (CIS NSE Feed)': 'org',
+    'LatAm Operations Hub (CIS LatAm Directory)': 'org'
   };
 
   const supplierId = serviceSupplierMap[serviceName] || 'org';
