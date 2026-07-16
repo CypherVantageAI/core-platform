@@ -102,7 +102,7 @@ let state = {
       ],
       history: [
         { type: 'evidence-uploaded', title: 'SOC 2 Report Uploaded', body: 'AWS uploaded file AWS_SOC_2_Type_II_2025.pdf', user: 'David Vance (AWS)', date: '2025-02-10 14:32' },
-        { type: 'action-raised', title: 'Assessment Run - Gap Identified', body: 'AI Auto-Collector detected outdated Recovery Planning evidence.', user: 'AI Risk Officer', date: '2026-07-01 09:12' },
+        { type: 'action-raised', title: 'Assessment Run - Gap Identified', body: 'AI Evidence Collector detected outdated Recovery Planning evidence.', user: 'AI Risk Officer', date: '2026-07-01 09:12' },
         { type: 'action-raised', title: 'Follow-up Sent by Risk Manager', body: 'Sarah Jenkins requested 2025 DR testing report evidence.', user: 'Sarah Jenkins', date: '2026-07-01 10:15' }
       ]
     },
@@ -131,7 +131,7 @@ let state = {
         { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'SFDC_SOC_2_Type_II_2025.pdf', snippet: 'Salesforce complies with PCIDSS standards for merchants, maintaining active SAQ-D merchant validation certificates.' }
       ],
       history: [
-        { type: 'evidence-uploaded', title: 'SOC 2 & BCP Documents Scanned', body: 'AI Auto-Collector successfully scanned Salesforce files. 100% compliance verified.', user: 'AI Risk Officer', date: '2026-07-02 11:45' }
+        { type: 'evidence-uploaded', title: 'SOC 2 & BCP Documents Scanned', body: 'AI Evidence Collector successfully scanned Salesforce files. 100% compliance verified.', user: 'AI Risk Officer', date: '2026-07-02 11:45' }
       ]
     },
     'servicenow': {
@@ -158,7 +158,7 @@ let state = {
         { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Gap', document: 'None', snippet: 'Exemption logged; ServiceNow does not process client payment data directly.' }
       ],
       history: [
-        { type: 'evidence-uploaded', title: 'SOC 2 Analysis Verified', body: 'AI Auto-Collector successfully scanned ServiceNow evidence document.', user: 'AI Risk Officer', date: '2026-07-06 10:45' }
+        { type: 'evidence-uploaded', title: 'SOC 2 Analysis Verified', body: 'AI Evidence Collector successfully scanned ServiceNow evidence document.', user: 'AI Risk Officer', date: '2026-07-06 10:45' }
       ]
     },
     'infosys': {
@@ -185,7 +185,7 @@ let state = {
         { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'Infosys_Cyber_Policy_2025.pdf', snippet: 'Infosys global services division maintains active PCI DSS Level 1 certification for processing networks.' }
       ],
       history: [
-        { type: 'action-raised', title: 'Auto-Collector Assessment', body: 'AI Auto-Collector identified gaps in Data Management (encryption at rest) and Technology Risk (Subcontractors).', user: 'AI Risk Officer', date: '2026-07-03 16:30' }
+        { type: 'action-raised', title: 'Evidence Collector Assessment', body: 'AI Evidence Collector identified gaps in Data Management (encryption at rest) and Technology Risk (Subcontractors).', user: 'AI Risk Officer', date: '2026-07-03 16:30' }
       ]
     },
     'slack': {
@@ -213,7 +213,7 @@ let state = {
         { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'Slack_SOC_3_Report_2025.pdf', snippet: 'Payment gateways are hosted in PCI-compliant VPC infrastructure.' }
       ],
       history: [
-        { type: 'evidence-uploaded', title: 'Quarterly Check Complete', body: 'AI Auto-Collector verified Slack certificates. 100% compliant.', user: 'AI Risk Officer', date: '2026-07-04 10:20' }
+        { type: 'evidence-uploaded', title: 'Quarterly Check Complete', body: 'AI Evidence Collector verified Slack certificates. 100% compliant.', user: 'AI Risk Officer', date: '2026-07-04 10:20' }
       ]
     },
     'acme': {
@@ -331,9 +331,9 @@ Third-Party Risk Assurance, Cypher Vantage Team`,
   activityLog: [
     { time: '14:22', text: 'Sarah Jenkins logged in as Risk Manager.' },
     { time: 'Yesterday', text: 'AWS compliance portal accessed by David Vance.' },
-    { time: '02-Jul-2026', text: 'AI Auto-Collector completed scheduled scan on <b>Salesforce Inc.</b> -> 100% Compliant.' },
+    { time: '02-Jul-2026', text: 'AI Evidence Collector completed scheduled scan on <b>Salesforce Inc.</b> -> 100% Compliant.' },
     { time: '01-Jul-2026', text: 'Action <b>act-001</b> sent to AWS (David Vance) by Sarah Jenkins.' },
-    { time: '01-Jul-2026', text: 'AI Auto-Collector flagged Gap in <b>AWS</b>: Section 13.0 Recovery Planning outdated.' }
+    { time: '01-Jul-2026', text: 'AI Evidence Collector flagged Gap in <b>AWS</b>: Section 13.0 Recovery Planning outdated.' }
   ]
 };
 
@@ -1776,7 +1776,7 @@ window.rejectSupplierResponse = function(actionId) {
 };
 
 // --------------------------------------------------------------------------
-// 10. AI OBLIGATIONS AUTO-COLLECTOR SIMULATION
+// 10. AI OBLIGATIONS EVIDENCE COLLECTOR SIMULATION
 // --------------------------------------------------------------------------
 function updateCollectorDocumentsList(supplierId) {
   const s = state.suppliers[supplierId];
@@ -1834,7 +1834,7 @@ window.runAutoCollector = function() {
   const logs = [
     { text: 'Starting Cypher Vantage AI assessment engine...', type: 'info' },
     { text: `Target supplier: ${s.name}`, type: 'info' },
-    { text: 'Target framework: Cypher Vantage 15 Control Modules', type: 'info' },
+    { text: 'Target framework: Cypher Vantage 15 Reference Control Modules', type: 'info' },
     { text: 'Accessing secure supplier document vault...', type: 'info' },
     ...s.documents.flatMap(doc => [
       { text: `Initiating file parsing: ${doc.name}`, type: 'info' },
@@ -1863,7 +1863,7 @@ window.runAutoCollector = function() {
       { text: 'Check result: [Sub-processors annually verified and contractually bound] - Verified.', type: 'success' }
     ]),
     { text: 'Finalizing assessment gap analysis report...', type: 'info' },
-    { text: 'Auto-Collector processing complete. Report compiled.', type: 'success' }
+    { text: 'AI Evidence Collector processing complete. Report compiled.', type: 'success' }
   ];
 
   let logIndex = 0;
@@ -4347,7 +4347,7 @@ window.startTlptSimulation = function() {
     steps = [
       { phase: 'prep', text: '[TIBER-EU Scope] Target: Infosys database cluster (CIS Core DB Ledger, Bangalore). Verification of downstream subprocessor controls (DORA Pillar 4).', delay: 500 },
       { phase: 'intel', text: '[Threat Intel] Modeling APT41 software supply-chain poisoning attack patterns. Formulating scenario exploiting third-party contractor updates.', delay: 2500 },
-      { phase: 'exec', text: '[Exploitation] Compromising Infosys staging build server via vulnerable Open SSH port (identified by Auto-Collector scan). Injecting malicious script.', delay: 5000 },
+      { phase: 'exec', text: '[Exploitation] Compromising Infosys staging build server via vulnerable Open SSH port (identified by AI Evidence Collector scan). Injecting malicious script.', delay: 5000 },
       { phase: 'exec', text: '[Exploitation] Malicious API package distributed via automated CI/CD pipeline. Infosys Core Database status: MALICIOUS CORRUPTION.', delay: 7500, systemUpdate: true },
       { phase: 'exec', text: '[Resiliency Response] Database checksum mismatch alert raised. Cypher Vantage ledger blocks automated database writes to protect transaction integrity.', delay: 10000 },
       { phase: 'exec', text: '[Resiliency Response] Activating database replica rollback. Restoring data states from immutable snapshots. Traffic rerouted to secondary secure node.', delay: 13000, systemUpdate: true },
