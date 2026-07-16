@@ -138,6 +138,23 @@ body.dark-mode {
   margin-top: 1px;
 }
 
+.brand-tagline {
+  margin-left: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding-left: 20px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  max-width: 380px;
+  line-height: 1.35;
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .brand-tagline {
+    display: none;
+  }
+}
+
 .header-controls {
   display: flex;
   align-items: center;
@@ -1122,7 +1139,7 @@ body.dark-mode {
   display: grid;
   grid-template-columns: 2.2fr 1fr;
   gap: 24px;
-  height: 480px;
+  height: 560px;
 }
 
 .chat-card {
@@ -1220,6 +1237,8 @@ body.dark-mode {
 .chat-suggestions {
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .suggestion-list {
