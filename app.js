@@ -388,6 +388,7 @@ window.loadState = function() {
       tlptActive: false,
       lossPrevented: 0,
       lossTrackerIntervalId: null,
+      selectedCurrency: 'GBP',
       regions: {
         na: { name: 'North America Hub', threatLevel: 'Moderate', threatColor: 'orange' },
         eu: { name: 'Europe Operations', threatLevel: 'Nominal', threatColor: 'green' },
@@ -4004,6 +4005,41 @@ window.renderResilienceDashboard = function() {
   }
 };
 
+function formatCurrency(amountGbp) {
+  const currency = state.resilience.selectedCurrency || 'GBP';
+  if (currency === 'USD') {
+    const converted = Math.round(amountGbp * 1.30);
+    return `$${converted.toLocaleString()}`;
+  } else if (currency === 'EUR') {
+    const converted = Math.round(amountGbp * 1.18);
+    return `€${converted.toLocaleString()}`;
+  } else {
+    return `£${amountGbp.toLocaleString()}`;
+  }
+}
+
+window.changeCurrency = function(val) {
+  state.resilience.selectedCurrency = val;
+  saveState();
+  
+  // Refresh live counter if active
+  const valueEl = document.getElementById('drill-loss-value');
+  if (valueEl) {
+    valueEl.innerText = formatCurrency(state.resilience.lossPrevented);
+  }
+  
+  // Refresh reports page
+  if (typeof renderSimulationReports === 'function') {
+    renderSimulationReports();
+  }
+  
+  // Refresh incident report modal if open
+  const modal = document.getElementById('dora-incident-modal');
+  if (modal && !modal.classList.contains('hidden')) {
+    openDoraIncidentReport(window.lastReportSource || 'selected');
+  }
+};
+
 function getSystemDowntimeCost(sys) {
   if (sys.downtimeCostPerHour) return sys.downtimeCostPerHour;
   if (sys.serviceType === 'ibs') {
@@ -4151,7 +4187,7 @@ window.showSystemDetails = function(sysName) {
       <div style="display: flex; gap: 20px; margin-top: 10px; padding: 6px 10px; border-radius: var(--border-radius-sm); background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.15);">
         <div>
           <span style="font-size: 0.62rem; text-transform: uppercase; color: var(--text-secondary); display: block; font-weight: 600;">Hourly Downtime Impact</span>
-          <span style="font-weight: 700; color: var(--color-cyan); font-size: 0.82rem;">$${getSystemDowntimeCost(foundSystem).toLocaleString()} / hr</span>
+          <span style="font-weight: 700; color: var(--color-cyan); font-size: 0.82rem;">${formatCurrency(getSystemDowntimeCost(foundSystem))} / hr</span>
         </div>
         <div>
           <span style="font-size: 0.62rem; text-transform: uppercase; color: var(--text-secondary); display: block; font-weight: 600;">Regulated Classification</span>
@@ -4236,7 +4272,7 @@ function startLossTracker(hourlyLossRate) {
   state.resilience.lossPrevented = 0;
   
   const valueEl = document.getElementById('drill-loss-value');
-  if (valueEl) valueEl.innerText = '$0';
+  if (valueEl) valueEl.innerText = formatCurrency(0);
   
   const tickMs = 800;
   // tick cost based on rate per tick
@@ -4247,7 +4283,7 @@ function startLossTracker(hourlyLossRate) {
     state.resilience.lossPrevented += Math.floor(tickCost * variation);
     
     if (valueEl) {
-      valueEl.innerText = `$${state.resilience.lossPrevented.toLocaleString()}`;
+      valueEl.innerText = formatCurrency(state.resilience.lossPrevented);
     }
   }, tickMs);
 }
@@ -4895,6 +4931,7 @@ window.renderSimulationReports = function() {
 };
 
 window.openDoraIncidentReport = function(source) {
+  window.lastReportSource = source;
   let rep = null;
   
   if (source === 'active') {
@@ -5104,6 +5141,11 @@ window.printDoraIncidentReport = function() {
 window.onload = function() {
   // Load state from db
   loadState();
+  
+  const selector = document.getElementById('currency-selector');
+  if (selector && state.resilience.selectedCurrency) {
+    selector.value = state.resilience.selectedCurrency;
+  }
   
   renderComplianceDashboard();
   renderSuppliersTable();
