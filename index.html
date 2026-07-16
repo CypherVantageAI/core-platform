@@ -1111,8 +1111,19 @@
               <div class="chat-bubble agent">
                 <div class="bubble-avatar">🤖</div>
                 <div class="bubble-text">
-                  <p>Welcome! I am your Cypher Vantage Risk Advisor. I am trained on the 15 Reference Control Modules (including Cyber Security, Recovery Planning, PCIDSS, and Power Resilience), as well as key UK and European banking regulations (DORA, SS2/21, GDPR, EBA Outsourcing Guidelines).</p>
-                  <p>How can I assist you in verifying your suppliers' control obligations today?</p>
+                  <p>Welcome! I am your Cypher Vantage Risk Advisor. I am trained on DORA compliance, key UK and European banking regulations (PRA SS2/21, GDPR, EBA Guidelines), and the 15 Reference Control Modules (including Recovery Planning and Power Resilience).</p>
+                  <p>I can help guide you through operational resilience queries, including aligning and mapping your Important Business Services (IBS) and Critical Internal Services (CIS) to global threat vectors, BCP test logs, or vendor compliance reports.</p>
+                  <p>How can I assist you with your compliance and resilience queries today?</p>
+                  
+                  <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
+                    <span style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 6px;">Suggested Queries:</span>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                      <a href="#" onclick="triggerPresetQuery('What are the key changes in the Recovery Planning and Power Resilience modules?')" style="font-size: 0.76rem; color: var(--color-cyan); text-decoration: none; opacity: 0.75; transition: opacity 0.2s; display: inline-block;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">➔ Explain Recovery Planning &amp; Power Resilience</a>
+                      <a href="#" onclick="triggerPresetQuery('Show me which suppliers are currently failing DORA resilience requirements.')" style="font-size: 0.76rem; color: var(--color-cyan); text-decoration: none; opacity: 0.75; transition: opacity 0.2s; display: inline-block;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">➔ Which suppliers fail DORA resilience requirements?</a>
+                      <a href="#" onclick="triggerPresetQuery('Draft an escalation email to AWS regarding the missing BCP Test Report.')" style="font-size: 0.76rem; color: var(--color-cyan); text-decoration: none; opacity: 0.75; transition: opacity 0.2s; display: inline-block;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">➔ Draft BCP escalation email to AWS</a>
+                      <a href="#" onclick="triggerPresetQuery('Explain the subcontractor flow-down obligations under Technology Risk.')" style="font-size: 0.76rem; color: var(--color-cyan); text-decoration: none; opacity: 0.75; transition: opacity 0.2s; display: inline-block;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">➔ Explain Subcontractor requirements</a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1128,31 +1139,7 @@
 
           <!-- Suggested Queries sidebar -->
           <div class="dashboard-card chat-suggestions">
-            <h3>Suggested Queries</h3>
-            <ul class="suggestion-list">
-              <li>
-                <button class="suggestion-btn" onclick="triggerPresetQuery('What are the key changes in the Recovery Planning and Power Resilience modules?')">
-                  Explain Recovery Planning & Power Resilience
-                </button>
-              </li>
-              <li>
-                <button class="suggestion-btn" onclick="triggerPresetQuery('Show me which suppliers are currently failing DORA resilience requirements.')">
-                  Which suppliers fail DORA resilience requirements?
-                </button>
-              </li>
-              <li>
-                <button class="suggestion-btn" onclick="triggerPresetQuery('Draft an escalation email to AWS regarding the missing BCP Test Report.')">
-                  Draft BCP escalation email to AWS
-                </button>
-              </li>
-              <li>
-                <button class="suggestion-btn" onclick="triggerPresetQuery('Explain the subcontractor flow-down obligations under Technology Risk.')">
-                  Explain Subcontractor requirements
-                </button>
-              </li>
-            </ul>
-
-            <div class="regulatory-quick-box mt-4">
+            <div class="regulatory-quick-box">
               <h4>Active Regulatory Context</h4>
               <div class="reg-tags mt-2">
                 <span class="tag tag-accent">DORA Compliance</span>
