@@ -1195,6 +1195,8 @@ window.switchTab = function(tabId) {
     assessAiActCompliance();
   } else if (tabId === 'manager-resilience') {
     renderResilienceDashboard();
+  } else if (tabId === 'manager-navigator') {
+    renderServiceNavigator();
   } else if (tabId === 'manager-reports') {
     renderSimulationReports();
   } else if (tabId === 'supplier-dashboard') {
@@ -3254,15 +3256,28 @@ function aggregateResilienceData(node) {
   let systems = [];
   let personnel = [];
   let hotspots = [];
+  const systemNames = new Set();
+  const personnelKeys = new Set();
 
   function traverse(curr, parentName = '') {
     if (!curr) return;
     const nodeName = curr.name || parentName;
     if (curr.systems) {
-      systems = systems.concat(curr.systems);
+      curr.systems.forEach(sys => {
+        if (!systemNames.has(sys.name)) {
+          systemNames.add(sys.name);
+          systems.push(sys);
+        }
+      });
     }
     if (curr.personnel) {
-      personnel = personnel.concat(curr.personnel);
+      curr.personnel.forEach(p => {
+        const pKey = `${p.name}-${p.role}`;
+        if (!personnelKeys.has(pKey)) {
+          personnelKeys.add(pKey);
+          personnel.push(p);
+        }
+      });
     }
     if (curr.hotspots) {
       // Clone hotspots and attach location name
@@ -4023,11 +4038,11 @@ window.renderResilienceDashboard = function() {
     // Dynamic C-Suite Calculation Explanations for Tooltips
     const tooltipRes = document.getElementById('tooltip-resilience');
     if (tooltipRes) {
-      tooltipRes.innerHTML = `<strong>Overall Resilience Index</strong>Calculated as: 33 Active / 35 Mapped Services = 94.8% health. Score drops when mapped nodes are disrupted or fail DR audits.`;
+      tooltipRes.innerHTML = `<strong>Overall Resilience Index</strong>Calculated as: Weighted health index of all mapped critical services. Disrupted service nodes or unverified recovery targets reduce this score.`;
     }
     const tooltipServ = document.getElementById('tooltip-services');
     if (tooltipServ) {
-      tooltipServ.innerHTML = `<strong>Mapped Critical Services</strong>Calculated as: 30 Important Business Services (IBS) + 5 Critical Internal Services (CIS) = 35 total service nodes.`;
+      tooltipServ.innerHTML = `<strong>Mapped Critical Services</strong>Calculated as: 14 Important Business Services (IBS) + 14 Critical Internal Services (CIS) = 28 total services.`;
     }
     const tooltipLoss = document.getElementById('tooltip-loss-prevented');
     if (tooltipLoss) {
@@ -5240,3 +5255,327 @@ window.onload = function() {
     }
   }
 };
+
+// =================================------------------------------------------
+// 16. IBS & CIS SERVICE NAVIGATOR PORTAL
+// =================================------------------------------------------
+window.renderServiceNavigator = function() {
+  const aggregated = aggregateResilienceData(state.resilience.hierarchy);
+  const listContainer = document.getElementById('navigator-services-list');
+  if (!listContainer) return;
+
+  listContainer.innerHTML = '';
+  
+  // Sort systems so IBS is grouped, then CIS
+  const sortedSystems = [...aggregated.systems].sort((a, b) => {
+    if (a.serviceType !== b.serviceType) {
+      return a.serviceType === 'ibs' ? -1 : 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
+
+  sortedSystems.forEach(sys => {
+    const isCis = sys.serviceType === 'cis';
+    const typeLabel = isCis ? 'CIS' : 'IBS';
+    const badgeColor = isCis ? '#8b5cf6' : 'var(--color-cyan)';
+    const item = document.createElement('div');
+    item.className = `navigator-list-item ${isCis ? 'cis' : ''}`;
+    item.setAttribute('data-name', sys.name.toLowerCase());
+    item.onclick = () => selectNavigatorService(sys.name, item);
+    item.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span style="font-weight: 600; font-size: 0.74rem; color: var(--text-primary);">${sys.name}</span>
+        <span style="font-size: 0.55rem; font-weight: 700; color: #fff; background: ${badgeColor}; padding: 1px 4px; border-radius: 3px;">${typeLabel}</span>
+      </div>
+      <div style="font-size: 0.64rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px;">
+        ${sys.description || 'No description available'}
+      </div>
+    `;
+    listContainer.appendChild(item);
+  });
+};
+
+window.filterNavigatorServices = function() {
+  const input = document.getElementById('navigator-search-input');
+  if (!input) return;
+  const filter = input.value.toLowerCase();
+  const items = document.querySelectorAll('.navigator-list-item');
+  items.forEach(item => {
+    const name = item.getAttribute('data-name');
+    if (name.includes(filter)) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+};
+
+window.selectNavigatorService = function(serviceName, element) {
+  // Deactivate other items
+  document.querySelectorAll('.navigator-list-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  if (element) {
+    element.classList.add('active');
+  }
+
+  const detailsPane = document.getElementById('navigator-details-pane');
+  const emptyPane = document.getElementById('navigator-details-empty');
+  if (!detailsPane || !emptyPane) return;
+
+  emptyPane.classList.add('hidden');
+  detailsPane.classList.remove('hidden');
+
+  // Find the service and its parent location node in the hierarchy
+  let targetSys = null;
+  let locationNodeName = '';
+  let associatedPersonnel = [];
+
+  function findService(curr, parentName = '') {
+    if (!curr) return;
+    const nodeName = curr.name || parentName;
+    if (curr.systems) {
+      const found = curr.systems.find(s => s.name === serviceName);
+      if (found) {
+        targetSys = found;
+        locationNodeName = nodeName;
+        if (curr.personnel) {
+          associatedPersonnel = curr.personnel;
+        }
+      }
+    }
+    if (curr === state.resilience.hierarchy) {
+      Object.values(curr).forEach(region => findService(region, ''));
+    } else {
+      if (curr.countries) Object.values(curr.countries).forEach(c => findService(c, nodeName));
+      if (curr.states) Object.values(curr.states).forEach(s => findService(s, nodeName));
+      if (curr.cities) Object.values(curr.cities).forEach(c => findService(c, nodeName));
+      if (curr.subdivisions) Object.values(curr.subdivisions).forEach(s => findService(s, nodeName));
+    }
+  }
+
+  findService(state.resilience.hierarchy);
+
+  if (!targetSys) return;
+
+  // Resolve supplier mapping
+  const serviceSupplierMap = {
+    'AWS us-east-1a (IBS Payments)': 'aws',
+    'AWS eu-central-1 (IBS Clearing Portal)': 'aws',
+    'AWS London Edge (CIS Auth Relay)': 'aws',
+    'Azure US-West-2 (CIS Identity Services)': 'microsoft',
+    'Infosys Core DB Ledger (CIS Database Backup)': 'infosys',
+    'Hyderabad Dev Node (CIS Sandbox)': 'infosys',
+    'Google Cloud SG (CIS API Gateway Routing)': 'google',
+    'FTSE Russell SF (IBS Index Calculation)': 'ftse',
+    'FTSE SG Calculation Engine (IBS Straits Ticker)': 'ftse',
+    'Borsa Italiana Transit Gateway (IBS Trade Entry)': 'borsa',
+    'Gdynia Risk Hub (IBS Analytics Compute)': 'org',
+    'Mumbai Transit Access (IBS FX Feeds)': 'org',
+    'Delhi Client API Portal (IBS Data Hub)': 'org',
+    'Manila Client Delivery Gateway (IBS Support Feeds)': 'org',
+    'Org Tokyo Trade Gateway (IBS TSE Gateway)': 'org',
+    'Org HK Exchange Routing Node (IBS HKEX Transit)': 'org',
+    'Org JSE Direct Connect (IBS JSE Link)': 'org',
+    'Org B3 Direct Link (IBS B3 Connect)': 'org',
+    'Org Chicago Gateway (CIS Clearing Access)': 'org',
+    'Org Montreal Node (CIS Data Delivery)': 'org',
+    'Bucharest Shared Ops Hub (CIS Identity Audit)': 'org',
+    'Cluj Tech Center (CIS Patching Gateway)': 'org',
+    'Colombo Shared Services Node (CIS Network Transit)': 'org',
+    'Penang Ops Node (CIS Support Routing)': 'org',
+    'Org Cape Town DR Node (CIS CT Recovery)': 'org',
+    'Org Nairobi Regional Hub (CIS NSE Feed)': 'org',
+    'Org LatAm Operations Hub (CIS LatAm Directory)': 'org'
+  };
+
+  const supplierId = serviceSupplierMap[serviceName] || 'org';
+  let supplierName = '';
+  let riskTier = '';
+  let compScore = '';
+  let primaryLoc = '';
+  let subcontractors = [];
+
+  const mockSuppliersInfo = {
+    'microsoft': { name: 'Microsoft Corporation (Azure)', riskTier: 'Critical', complianceScore: 95, primarySupportLocation: 'Redmond, WA (USA)', subcontractors: ['Cloudflare (DNS/Edge)', 'Equinix (Data Centers)'] },
+    'google': { name: 'Google Cloud Platform (GCP)', riskTier: 'Critical', complianceScore: 92, primarySupportLocation: 'Mountain View, CA (USA)', subcontractors: ['Intel Corporation (Hardware)', 'Equinix (Data Centers)'] },
+    'ftse': { name: 'FTSE Russell Ltd', riskTier: 'High', complianceScore: 88, primarySupportLocation: 'London, UK', subcontractors: ['AWS (Hosting)', 'LSEG Infrastructure (Network Link)'] },
+    'borsa': { name: 'Borsa Italiana S.p.A.', riskTier: 'High', complianceScore: 90, primarySupportLocation: 'Milan, Italy', subcontractors: ['Euronext (Clearing & Settling)', 'Colt Technology Services (Fiber Networks)'] },
+    'org': { name: 'Internal IT Infrastructure Operations', riskTier: 'Low (Internal)', complianceScore: 100, primarySupportLocation: 'London, UK / New York, USA', subcontractors: ['Colt (Fiber Networks)', 'Equinix (Colocation)'] }
+  };
+
+  if (state.suppliers[supplierId]) {
+    const s = state.suppliers[supplierId];
+    supplierName = s.name;
+    riskTier = s.riskTier;
+    compScore = `${s.complianceScore}%`;
+    primaryLoc = s.primarySupportLocation || 'Unknown';
+    subcontractors = s.subcontractors || [];
+  } else if (mockSuppliersInfo[supplierId]) {
+    const s = mockSuppliersInfo[supplierId];
+    supplierName = s.name;
+    riskTier = s.riskTier;
+    compScore = `${s.complianceScore}%`;
+    primaryLoc = s.primarySupportLocation;
+    subcontractors = s.subcontractors;
+  } else {
+    supplierName = 'Unknown Provider';
+    riskTier = 'Medium';
+    compScore = 'N/A';
+    primaryLoc = 'Unknown';
+    subcontractors = [];
+  }
+
+  // Concentration Risk Analysis
+  let concentrationCount = 0;
+  Object.keys(serviceSupplierMap).forEach(key => {
+    if (serviceSupplierMap[key] === supplierId && key !== serviceName) {
+      concentrationCount++;
+    }
+  });
+
+  // Build details header HTML
+  const headerContainer = document.getElementById('navigator-details-header');
+  const badgeColor = targetSys.serviceType === 'cis' ? '#8b5cf6' : 'var(--color-cyan)';
+  headerContainer.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+      <div>
+        <span style="font-size: 0.58rem; font-weight: 700; text-transform: uppercase; color: ${badgeColor}; letter-spacing: 0.05em; background: rgba(255,255,255,0.03); padding: 2px 6px; border-radius: 4px;">
+          ${targetSys.serviceType === 'cis' ? 'Critical Internal Service (CIS)' : 'Important Business Service (IBS)'}
+        </span>
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 4px; color: var(--text-primary);">${targetSys.name}</h2>
+      </div>
+      <div style="text-align: right;">
+        <span class="badge ${targetSys.status === 'Active' ? 'badge-success' : 'badge-warning'}" style="font-size: 0.65rem; padding: 3px 8px;">
+          ${targetSys.status}
+        </span>
+      </div>
+    </div>
+    <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.4;">
+      <strong>Description:</strong> ${targetSys.description || 'No description available.'}
+    </p>
+  `;
+
+  // Build the dependency tree visualization
+  const treeContainer = document.getElementById('navigator-dependency-tree');
+  treeContainer.innerHTML = '';
+
+  // 1. Service Node (Root)
+  const rootNode = document.createElement('div');
+  rootNode.className = 'dependency-tree-node service-node';
+  rootNode.innerHTML = `
+    <div class="node-content">
+      <span class="node-label">Root Service</span>
+      <span class="node-title">${targetSys.name}</span>
+      <span class="node-meta">Infrastructure Node: ${locationNodeName} | Operational Status: ${targetSys.status}</span>
+    </div>
+  `;
+  treeContainer.appendChild(rootNode);
+
+  const rootBranches = document.createElement('div');
+  rootBranches.className = 'node-branches';
+  rootNode.appendChild(rootBranches);
+
+  // 2. Personnel Location Node (Especially important for CIS internal services)
+  if (associatedPersonnel && associatedPersonnel.length > 0) {
+    associatedPersonnel.forEach(p => {
+      const pNode = document.createElement('div');
+      pNode.className = 'dependency-tree-node personnel-node';
+      pNode.innerHTML = `
+        <div class="node-content">
+          <span class="node-label">Key Personnel Location (${targetSys.serviceType.toUpperCase()} Safeguard)</span>
+          <span class="node-title">${p.name} (${p.role})</span>
+          <span class="node-meta">Location: ${p.location} | Status: ${p.status} | Contact: ${p.contact}</span>
+        </div>
+      `;
+      rootBranches.appendChild(pNode);
+    });
+  } else {
+    const noPersonnelNode = document.createElement('div');
+    noPersonnelNode.className = 'dependency-tree-node personnel-node';
+    noPersonnelNode.innerHTML = `
+      <div class="node-content" style="border-left: 3px solid var(--text-muted); opacity: 0.6;">
+        <span class="node-label">Key Personnel Location</span>
+        <span class="node-title">No Specific Personnel Assigned</span>
+        <span class="node-meta">Managed via shared regional operational pools.</span>
+      </div>
+    `;
+    rootBranches.appendChild(noPersonnelNode);
+  }
+
+  // 3. Primary Supplier Node (Tier 3)
+  const supplierNode = document.createElement('div');
+  supplierNode.className = 'dependency-tree-node supplier-node';
+  supplierNode.innerHTML = `
+    <div class="node-content">
+      <span class="node-label">Tier 3 (Primary Supplier / Provider)</span>
+      <span class="node-title">${supplierName}</span>
+      <span class="node-meta">Risk Tier: ${riskTier} | DORA Compliance: ${compScore} | Support HQ: ${primaryLoc}</span>
+    </div>
+  `;
+  rootBranches.appendChild(supplierNode);
+
+  const supplierBranches = document.createElement('div');
+  supplierBranches.className = 'node-branches';
+  supplierNode.appendChild(supplierBranches);
+
+  // 4. Recursive Subcontractors (Tier 4 / Nth Party)
+  if (subcontractors && subcontractors.length > 0) {
+    subcontractors.forEach(sub => {
+      const subNode = document.createElement('div');
+      subNode.className = 'dependency-tree-node subcontractor-node';
+      // Mock subcontractor location based on subcontractor name
+      let subLoc = 'Global Operations';
+      if (sub.includes('Equinix')) subLoc = 'Ashburn, VA / London, UK / Singapore (Datacenter Hubs)';
+      else if (sub.includes('Cloudflare')) subLoc = 'Global Edge CDN Nodes (200+ Cities)';
+      else if (sub.includes('Twilio')) subLoc = 'San Francisco, California (USA)';
+      else if (sub.includes('Wipro')) subLoc = 'Bangalore, India';
+      else if (sub.includes('TATA')) subLoc = 'Mumbai, India';
+      else if (sub.includes('AWS')) subLoc = 'Seattle, Washington (USA)';
+      else if (sub.includes('Microsoft')) subLoc = 'Redmond, Washington (USA)';
+
+      subNode.innerHTML = `
+        <div class="node-content">
+          <span class="node-label">Tier 4 (N-th Party Subcontractor)</span>
+          <span class="node-title">${sub}</span>
+          <span class="node-meta">Location: ${subLoc} | SLA Binding: Enforced | Security Audit: Passed</span>
+        </div>
+      `;
+      supplierBranches.appendChild(subNode);
+    });
+  } else {
+    const noSubNode = document.createElement('div');
+    noSubNode.className = 'dependency-tree-node subcontractor-node';
+    noSubNode.innerHTML = `
+      <div class="node-content" style="border-left: 3px solid var(--text-muted); opacity: 0.6;">
+        <span class="node-label">Tier 4 (N-th Party Subcontractor)</span>
+        <span class="node-title">No Downstream Subcontractors Mapped</span>
+        <span class="node-meta">All operations are handled natively by the primary supplier.</span>
+      </div>
+    `;
+    supplierBranches.appendChild(noSubNode);
+  }
+
+  // 5. Concentration Risk Alert Block if concentration count > 0
+  if (concentrationCount > 0) {
+    const concentrationAlert = document.createElement('div');
+    concentrationAlert.style.marginTop = '15px';
+    concentrationAlert.style.padding = '12px';
+    concentrationAlert.style.background = 'rgba(239, 68, 68, 0.04)';
+    concentrationAlert.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+    concentrationAlert.style.borderRadius = '8px';
+    concentrationAlert.innerHTML = `
+      <div style="display: flex; gap: 8px; align-items: flex-start;">
+        <span style="font-size: 1.1rem; color: #ef4444;">⚠️</span>
+        <div>
+          <strong style="font-size: 0.74rem; color: #ef4444; display: block;">DORA Concentration Risk Warning</strong>
+          <span style="font-size: 0.68rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
+            The supplier/infrastructure provider <strong>${supplierName}</strong> is shared by <strong>${concentrationCount}</strong> other critical services in your registry. Any disruption to this provider exposes multiple services to simultaneous outages, creating a high regulatory blast radius.
+          </span>
+        </div>
+      </div>
+    `;
+    treeContainer.appendChild(concentrationAlert);
+  }
+};
+

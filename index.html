@@ -75,6 +75,105 @@
     .dashboard-card:last-child:hover .tooltip-text {
       transform: translateY(-2px) !important;
     }
+
+    /* IBS & CIS Service Navigator Custom Tree Styling */
+    .navigator-list-item {
+      padding: 10px 12px;
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--border-color);
+      background-color: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: all 0.2s ease;
+    }
+    .navigator-list-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+    .navigator-list-item.active {
+      background-color: rgba(6, 182, 212, 0.06);
+      border-color: var(--color-cyan);
+      box-shadow: inset 3px 0 0 0 var(--color-cyan);
+    }
+    .navigator-list-item.active.cis {
+      background-color: rgba(139, 92, 246, 0.06);
+      border-color: #8b5cf6;
+      box-shadow: inset 3px 0 0 0 #8b5cf6;
+    }
+
+    .dependency-tree-node {
+      position: relative;
+      margin-left: 20px;
+      padding-left: 15px;
+      border-left: 1px dashed rgba(6, 182, 212, 0.25);
+      margin-top: 10px;
+    }
+    .dependency-tree-node::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 22px;
+      width: 12px;
+      height: 1px;
+      border-top: 1px dashed rgba(6, 182, 212, 0.25);
+    }
+    .dependency-tree-node.service-node {
+      margin-left: 0;
+      padding-left: 0;
+      border-left: none;
+    }
+    .dependency-tree-node.service-node::before {
+      display: none;
+    }
+
+    .node-content {
+      background-color: rgba(22, 26, 43, 0.65);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .node-content:hover {
+      background-color: var(--bg-card-hover);
+      border-color: var(--color-cyan);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+    }
+    
+    .node-label {
+      font-size: 0.58rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+    .node-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .node-meta {
+      font-size: 0.66rem;
+      color: var(--text-secondary);
+    }
+
+    .dependency-tree-node.service-node > .node-content {
+      border-left: 3px solid var(--color-cyan);
+    }
+    .dependency-tree-node.personnel-node > .node-content {
+      border-left: 3px solid #8b5cf6;
+    }
+    .dependency-tree-node.supplier-node > .node-content {
+      border-left: 3px solid #f59e0b;
+    }
+    .dependency-tree-node.subcontractor-node > .node-content {
+      border-left: 3px solid #ef4444;
+    }
   </style>
 </head>
 <body class="dark-mode">
@@ -160,6 +259,20 @@
               <span>Operational Resilience</span>
               <span class="badge badge-accent">DORA</span>
             </a>
+            <ul class="nav-sub-list" style="list-style: none; padding-left: 32px; margin-top: 2px; margin-bottom: 4px;">
+              <li>
+                <a href="#" id="nav-manager-navigator" class="nav-sub-item" onclick="switchTab('manager-navigator'); event.stopPropagation();">
+                  <span style="display: flex; align-items: center; gap: 6px;">
+                    <svg class="nav-icon" style="width: 13px; height: 13px; margin: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                      <polyline points="2 17 12 22 22 17"></polyline>
+                      <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                    <span>IBS &amp; CIS Navigator</span>
+                  </span>
+                </a>
+              </li>
+            </ul>
           </li>
           <li>
             <a href="#" id="nav-manager-suppliers" class="nav-item" onclick="switchTab('manager-suppliers')">
@@ -625,8 +738,8 @@
       <!-- ============================================== -->
       <section id="view-manager-ai-risk" class="content-pane">
         <div class="view-header">
-          <h2>AI Audit &amp; Resilience Suite</h2>
-          <p>Launch threat-led penetration tests, audit third-party LLM integrations, and monitor outbound data loss prevention</p>
+          <h2>AI Audit &amp; BAS (Breach and Attack Simulation) Resilience Suite</h2>
+          <p>Execute BAS (Breach and Attack Simulation) tests, launch threat-led penetration tests, audit third-party LLM integrations, and monitor outbound data loss prevention</p>
         </div>
 
         <div style="display: block; width: 100%;">
@@ -636,10 +749,10 @@
           <!-- ============================================== -->
           <div class="view-header mt-3" style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <h3 style="margin: 0; font-size: 1.1rem;">1. DORA &amp; TIBER-EU Resilience Simulation Suite</h3>
-              <span class="badge badge-info" style="font-size: 0.65rem; padding: 2px 8px; position: static;">Physical Infrastructure Audit</span>
+              <h3 style="margin: 0; font-size: 1.1rem;">1. DORA &amp; TIBER-EU BAS (Breach and Attack Simulation) Suite</h3>
+              <span class="badge badge-info" style="font-size: 0.65rem; padding: 2px 8px; position: static;">BAS &amp; Red-Teaming Portal</span>
             </div>
-            <p style="margin-top: 4px; font-size: 0.8rem; color: var(--text-secondary);">Simulate natural crises or execute threat-led penetration tests directly on the Global Service Infrastructure Map</p>
+            <p style="margin-top: 4px; font-size: 0.8rem; color: var(--text-secondary);">Launch natural crisis scenarios or trigger automated BAS (Breach and Attack Simulation) threat-led penetration tests on the global infrastructure map</p>
           </div>
 
           <!-- Wins and Benefits box for Simulation Suite -->
@@ -649,7 +762,7 @@
               <div>
                 <strong style="font-size: 0.8rem; color: #10b981; display: block;">Regulatory Compliance Win</strong>
                 <span style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
-                  Directly satisfies **DORA Article 11 (ICT Incident Management)** and **Article 26 (TLPT Red Teaming)** guidelines, eliminating third-party consulting audit overhead.
+                  Directly satisfies **DORA Article 11 (ICT Incident Management)** and **Article 26 (TLPT Red Teaming)** guidelines via continuous **BAS (Breach and Attack Simulation)** validation, eliminating third-party consulting audit overhead.
                 </span>
               </div>
             </div>
@@ -1235,6 +1348,56 @@
             <!-- Region Detail Info Card -->
             <div class="dashboard-card info-card" id="resilience-detail-card" style="display: flex; flex-direction: column; min-height: 460px;">
               <!-- Dynamically populated in app.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW: IBS & CIS SERVICE NAVIGATOR              -->
+      <!-- ============================================== -->
+      <section id="view-manager-navigator" class="content-pane">
+        <div class="view-header">
+          <h2>IBS &amp; CIS Service Navigator</h2>
+          <p>Explore end-to-end critical service mappings, operational dependencies, Nth-party subcontractors, and regulatory blast radiuses under DORA Article 19</p>
+        </div>
+
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+          <!-- Left Column: Service Selector Tree -->
+          <div class="dashboard-card" style="flex: 1; min-width: 320px; max-width: 380px; display: flex; flex-direction: column; height: 700px; padding: 15px;">
+            <div style="margin-bottom: 12px;">
+              <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Critical Services</h3>
+              <input type="text" id="navigator-search-input" placeholder="Search services..." onkeyup="filterNavigatorServices()" style="width: 100%; padding: 8px 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.25); color: var(--text-primary); font-size: 0.8rem;">
+            </div>
+
+            <!-- Scrollable list of services -->
+            <div id="navigator-services-list" style="flex: 1; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 8px;">
+              <!-- Populated dynamically in app.js -->
+            </div>
+          </div>
+
+          <!-- Right Column: Interactive Dependency Blast Radius Viewer -->
+          <div class="dashboard-card" style="flex: 2; min-width: 500px; display: flex; flex-direction: column; height: 700px; padding: 15px; overflow-y: auto; position: relative;">
+            <div id="navigator-details-empty" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: var(--text-muted); text-align: center;">
+              <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.35;" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 16v-4"></path>
+                <path d="M12 8h.01"></path>
+              </svg>
+              <h3>No Service Selected</h3>
+              <p style="font-size: 0.8rem; max-width: 300px; margin-top: 6px;">Select an Important Business Service (IBS) or Critical Internal Service (CIS) from the left pane to explore dependencies and subcontractor chains.</p>
+            </div>
+            
+            <div id="navigator-details-pane" class="hidden" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+              <!-- Dynamic content header -->
+              <div id="navigator-details-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+                <!-- Populated dynamically in app.js -->
+              </div>
+
+              <!-- Collapsible Dependency Tree container -->
+              <div id="navigator-dependency-tree" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Mapped components in tree layout -->
+              </div>
             </div>
           </div>
         </div>
