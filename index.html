@@ -1365,9 +1365,31 @@
         <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
           <!-- Left Column: Service Selector Tree -->
           <div class="dashboard-card" style="flex: 1; min-width: 320px; max-width: 380px; display: flex; flex-direction: column; height: 700px; padding: 15px;">
-            <div style="margin-bottom: 12px;">
-              <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Critical Services</h3>
+            <div style="margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+              <h3 style="font-size: 0.95rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Critical Services</h3>
               <input type="text" id="navigator-search-input" placeholder="Search services..." onkeyup="filterNavigatorServices()" style="width: 100%; padding: 8px 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.25); color: var(--text-primary); font-size: 0.8rem;">
+              
+              <!-- Slicing Filters Ribbon -->
+              <div style="display: flex; gap: 6px; width: 100%;">
+                <select id="navigator-filter-type" onchange="filterNavigatorServices()" style="flex: 1; padding: 6px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); background-color: rgba(22, 26, 43, 0.95); color: var(--text-secondary); font-size: 0.72rem; cursor: pointer;">
+                  <option value="all">All Types</option>
+                  <option value="ibs">IBS</option>
+                  <option value="cis">CIS</option>
+                </select>
+                <select id="navigator-filter-region" onchange="filterNavigatorServices()" style="flex: 1; padding: 6px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); background-color: rgba(22, 26, 43, 0.95); color: var(--text-secondary); font-size: 0.72rem; cursor: pointer;">
+                  <option value="all">All Regions</option>
+                  <option value="na">North America</option>
+                  <option value="eu">Europe</option>
+                  <option value="apac">Asia-Pacific</option>
+                  <option value="af">Africa</option>
+                  <option value="sa">South America</option>
+                </select>
+                <select id="navigator-filter-status" onchange="filterNavigatorServices()" style="flex: 1; padding: 6px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); background-color: rgba(22, 26, 43, 0.95); color: var(--text-secondary); font-size: 0.72rem; cursor: pointer;">
+                  <option value="all">All Statuses</option>
+                  <option value="Active">Active</option>
+                  <option value="Warning">Warning</option>
+                </select>
+              </div>
             </div>
 
             <!-- Scrollable list of services -->

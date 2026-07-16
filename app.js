@@ -5260,14 +5260,45 @@ window.onload = function() {
 // 16. IBS & CIS SERVICE NAVIGATOR PORTAL
 // =================================------------------------------------------
 window.renderServiceNavigator = function() {
-  const aggregated = aggregateResilienceData(state.resilience.hierarchy);
   const listContainer = document.getElementById('navigator-services-list');
   if (!listContainer) return;
 
   listContainer.innerHTML = '';
   
+  // Traverse and gather all systems with their regional context
+  const services = [];
+  const systemNames = new Set();
+  
+  function traverse(curr, regionCode = '') {
+    if (!curr) return;
+    let currentRegion = regionCode;
+    if (curr === state.resilience.hierarchy) {
+      Object.keys(curr).forEach(key => {
+        traverse(curr[key], key);
+      });
+      return;
+    }
+    if (curr.systems) {
+      curr.systems.forEach(sys => {
+        if (!systemNames.has(sys.name)) {
+          systemNames.add(sys.name);
+          services.push({
+            ...sys,
+            region: currentRegion
+          });
+        }
+      });
+    }
+    if (curr.countries) Object.values(curr.countries).forEach(c => traverse(c, currentRegion));
+    if (curr.states) Object.values(curr.states).forEach(s => traverse(s, currentRegion));
+    if (curr.cities) Object.values(curr.cities).forEach(c => traverse(c, currentRegion));
+    if (curr.subdivisions) Object.values(curr.subdivisions).forEach(s => traverse(s, currentRegion));
+  }
+  
+  traverse(state.resilience.hierarchy);
+
   // Sort systems so IBS is grouped, then CIS
-  const sortedSystems = [...aggregated.systems].sort((a, b) => {
+  const sortedSystems = services.sort((a, b) => {
     if (a.serviceType !== b.serviceType) {
       return a.serviceType === 'ibs' ? -1 : 1;
     }
@@ -5281,6 +5312,9 @@ window.renderServiceNavigator = function() {
     const item = document.createElement('div');
     item.className = `navigator-list-item ${isCis ? 'cis' : ''}`;
     item.setAttribute('data-name', sys.name.toLowerCase());
+    item.setAttribute('data-type', sys.serviceType);
+    item.setAttribute('data-region', sys.region);
+    item.setAttribute('data-status', sys.status);
     item.onclick = () => selectNavigatorService(sys.name, item);
     item.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -5296,13 +5330,31 @@ window.renderServiceNavigator = function() {
 };
 
 window.filterNavigatorServices = function() {
-  const input = document.getElementById('navigator-search-input');
-  if (!input) return;
-  const filter = input.value.toLowerCase();
+  const searchInput = document.getElementById('navigator-search-input');
+  const typeFilter = document.getElementById('navigator-filter-type');
+  const regionFilter = document.getElementById('navigator-filter-region');
+  const statusFilter = document.getElementById('navigator-filter-status');
+
+  if (!searchInput || !typeFilter || !regionFilter || !statusFilter) return;
+
+  const search = searchInput.value.toLowerCase();
+  const type = typeFilter.value;
+  const region = regionFilter.value;
+  const status = statusFilter.value;
+
   const items = document.querySelectorAll('.navigator-list-item');
   items.forEach(item => {
-    const name = item.getAttribute('data-name');
-    if (name.includes(filter)) {
+    const nameAttr = item.getAttribute('data-name');
+    const typeAttr = item.getAttribute('data-type');
+    const regionAttr = item.getAttribute('data-region');
+    const statusAttr = item.getAttribute('data-status');
+
+    const matchesSearch = nameAttr.includes(search);
+    const matchesType = type === 'all' || typeAttr === type;
+    const matchesRegion = region === 'all' || regionAttr === region;
+    const matchesStatus = status === 'all' || statusAttr === status;
+
+    if (matchesSearch && matchesType && matchesRegion && matchesStatus) {
       item.style.display = 'flex';
     } else {
       item.style.display = 'none';
