@@ -390,7 +390,8 @@ window.loadState = function() {
         na: { name: 'North America Hub', threatLevel: 'Moderate', threatColor: 'orange' },
         eu: { name: 'Europe Operations', threatLevel: 'Nominal', threatColor: 'green' },
         apac: { name: 'Asia-Pacific Centre', threatLevel: 'High', threatColor: 'red' },
-        af: { name: 'Africa Operations', threatLevel: 'Nominal', threatColor: 'green' }
+        af: { name: 'Africa Operations', threatLevel: 'Nominal', threatColor: 'green' },
+        sa: { name: 'South America Operations', threatLevel: 'Nominal', threatColor: 'green' }
       }
     };
   }
@@ -1042,6 +1043,41 @@ window.loadState = function() {
                   ],
                   personnel: [
                     { name: 'Amara Okechukwu', role: 'Security Analyst', location: 'Nairobi Office', contact: 'a.okechukwu@lseg.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    sa: {
+      name: 'South America',
+      threatLevel: 'Nominal',
+      threatColor: 'green',
+      countries: {
+        br: {
+          name: 'Brazil',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            sp_state: {
+              name: 'São Paulo',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                sao_paulo: {
+                  name: 'São Paulo Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'LSEG B3 Direct Link (IBS B3 Connect)', status: 'Active', serviceType: 'ibs', description: 'São Paulo direct trading and routing connection to B3 Exchange.' },
+                    { name: 'LSEG LatAm Operations Hub (CIS LatAm Directory)', status: 'Active', serviceType: 'cis', description: 'Primary directory and identity authentication node for South American operations.' }
+                  ],
+                  personnel: [
+                    { name: 'Gabriela Santos', role: 'Network Support', location: 'São Paulo Office (Cardoso de Melo 1855)', contact: 'g.santos@lseg.com', status: 'On Duty' },
+                    { name: 'Thiago Silva', role: 'Resilience Coordinator', location: 'São Paulo Office (Cardoso de Melo 1855)', contact: 't.silva@lseg.com', status: 'On Duty' }
                   ],
                   hotspots: []
                 }
@@ -3271,6 +3307,7 @@ const pinCoordinates = {
   eu: { left: '51%', top: '36%', label: 'Europe', labelPosition: 'bottom' },
   apac: { left: '78%', top: '62%', label: 'Asia-Pacific', labelPosition: 'bottom' },
   af: { left: '46%', top: '65%', label: 'Africa', labelPosition: 'right' },
+  sa: { left: '34%', top: '72%', label: 'South America', labelPosition: 'bottom' },
   
   // Countries
   us: { left: '23%', top: '38%', label: 'United States', labelPosition: 'bottom' },
@@ -3289,6 +3326,7 @@ const pinCoordinates = {
   hk: { left: '81%', top: '53%', label: 'Hong Kong', labelPosition: 'bottom' },
   za: { left: '47%', top: '80%', label: 'South Africa', labelPosition: 'bottom' },
   ke: { left: '52%', top: '66%', label: 'Kenya', labelPosition: 'right' },
+  br: { left: '36%', top: '74%', label: 'Brazil', labelPosition: 'bottom' },
   
   // States
   va: { left: '27%', top: '43%', label: 'Virginia', labelPosition: 'bottom' },
@@ -3316,6 +3354,7 @@ const pinCoordinates = {
   gauteng: { left: '47%', top: '80%', label: 'Gauteng', labelPosition: 'bottom' },
   western_cape: { left: '44%', top: '83%', label: 'Western Cape', labelPosition: 'left' },
   nairobi_county: { left: '52%', top: '66%', label: 'Nairobi Area', labelPosition: 'right' },
+  sp_state: { left: '37%', top: '79%', label: 'São Paulo State', labelPosition: 'bottom' },
   
   // Cities
   ashburn: { left: '27%', top: '43%', label: 'Ashburn (DC)', labelPosition: 'right' },
@@ -3342,6 +3381,7 @@ const pinCoordinates = {
   tokyo: { left: '86%', top: '46%', label: 'Tokyo Office', labelPosition: 'bottom' },
   hongkong: { left: '81%', top: '53%', label: 'Hong Kong Office', labelPosition: 'bottom' },
   johannesburg: { left: '47%', top: '80%', label: 'Johannesburg Office', labelPosition: 'bottom' },
+  sao_paulo: { left: '38%', top: '78%', label: 'São Paulo Office', labelPosition: 'right' },
   capetown: { left: '44%', top: '83%', label: 'Cape Town Office', labelPosition: 'left' },
   nairobi: { left: '52%', top: '66%', label: 'Nairobi Office', labelPosition: 'right' },
   
@@ -3384,6 +3424,10 @@ window.renderResilienceDashboard = function() {
         scale = 2.2;
         originX = '46%';
         originY = '65%';
+      } else if (activeRegion === 'sa') {
+        scale = 2.2;
+        originX = '34%';
+        originY = '72%';
       }
       
       // Additional zoom for sub-locations
@@ -3677,6 +3721,10 @@ window.renderResilienceDashboard = function() {
       else if (name === 'nairobi') displayName = 'Nairobi';
       else if (name === 'london-north') displayName = 'North London';
       else if (name === 'london-se') displayName = 'SouthEast London';
+      else if (name === 'sa') displayName = 'South America';
+      else if (name === 'br') displayName = 'Brazil';
+      else if (name === 'sp_state') displayName = 'São Paulo';
+      else if (name === 'sao_paulo') displayName = 'São Paulo Office';
 
       return `<span class="breadcrumb-item" style="cursor: pointer; text-decoration: underline;" onclick="navigateResilienceBreadcrumb(${index})">${displayName}</span>`;
     }).join(' <span style="color: var(--color-text-secondary); pointer-events: none;">&gt;</span> ');
