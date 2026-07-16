@@ -3992,6 +3992,11 @@ window.renderResilienceDashboard = function() {
     if (systemsCount) {
       systemsCount.innerText = `${filteredSystems.length} Service(s)`;
     }
+    const kpiCount = document.getElementById('kpi-services-count');
+    if (kpiCount) {
+      const globalAggregated = aggregateResilienceData(state.resilience.hierarchy);
+      kpiCount.innerText = `${globalAggregated.systems.length} Services`;
+    }
   }
 };
 
