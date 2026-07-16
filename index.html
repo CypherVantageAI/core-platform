@@ -892,6 +892,10 @@
               <span style="font-size: 0.55rem; color: #10b981; font-weight: 600; background: rgba(16, 185, 129, 0.08); padding: 1px 3px; border-radius: 3px;">Nominal</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #10b981;"></div>
+            <span class="tooltip-text">
+              <strong>Overall Resilience Index</strong>
+              Weighted health index of all mapped critical services. Disrupted or unverified recovery targets reduce this score.
+            </span>
           </div>
           <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">Mapped Critical Services</span>
@@ -900,6 +904,10 @@
               <span style="font-size: 0.55rem; color: var(--color-cyan); font-weight: 600; background: rgba(6, 182, 212, 0.08); padding: 1px 3px; border-radius: 3px;">IBS &amp; CIS</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: var(--color-cyan);"></div>
+            <span class="tooltip-text">
+              <strong>Mapped Critical Services</strong>
+              Total number of mapped Important Business Services (IBS) and Critical Internal Services (CIS) under active DORA scope.
+            </span>
           </div>
           <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">Mitigated Downtime Loss</span>
@@ -908,6 +916,10 @@
               <span style="font-size: 0.55rem; color: #10b981; font-weight: 600; background: rgba(16, 185, 129, 0.08); padding: 1px 3px; border-radius: 3px;">DORA Benefit</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #10b981;"></div>
+            <span class="tooltip-text">
+              <strong>Mitigated Downtime Loss</strong>
+              Accumulated financial losses successfully avoided by completing automated failovers during simulation drills.
+            </span>
           </div>
           <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; border: 1px solid rgba(239, 68, 68, 0.15); background: linear-gradient(135deg, rgba(239, 68, 68, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">Potential Loss Exposure</span>
@@ -916,6 +928,10 @@
               <span style="font-size: 0.55rem; color: #ef4444; font-weight: 600; background: rgba(239, 68, 68, 0.08); padding: 1px 3px; border-radius: 3px;">Active Risk</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #ef4444;"></div>
+            <span class="tooltip-text">
+              <strong>Potential Loss Exposure</strong>
+              Unmitigated financial risk modeled from open regulatory gaps (e.g. unverified disaster recovery plans).
+            </span>
           </div>
           <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">Active Regulatory Gaps</span>
@@ -924,6 +940,10 @@
               <span style="font-size: 0.55rem; color: #f59e0b; font-weight: 600; background: rgba(245, 158, 11, 0.08); padding: 1px 3px; border-radius: 3px;">Awaiting Evidence</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #f59e0b;"></div>
+            <span class="tooltip-text">
+              <strong>Active Regulatory Gaps</strong>
+              Number of regulatory requirements missing active evidence, supporting documentation, or validated drill audits.
+            </span>
           </div>
           <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">TLPT Failover Verified</span>
@@ -932,6 +952,10 @@
               <span style="font-size: 0.55rem; color: #10b981; font-weight: 600; background: rgba(16, 185, 129, 0.08); padding: 1px 3px; border-radius: 3px;">TIBER-EU</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #10b981;"></div>
+            <span class="tooltip-text">
+              <strong>TLPT Failover Verified</strong>
+              Percentage of Threat-Led Penetration Testing (TLPT) scenarios audited and successfully mitigated under DORA Art. 26.
+            </span>
           </div>
         </div>
 

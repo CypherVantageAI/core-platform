@@ -2687,5 +2687,62 @@ textarea:focus-visible {
   filter: drop-shadow(0 0 4px var(--color-cyan));
 }
 
+/* Dashboard KPI Card Tooltips */
+.dashboard-card {
+  position: relative;
+  cursor: help;
+}
+
+.dashboard-card .tooltip-text {
+  visibility: hidden;
+  width: 230px;
+  background-color: #0d1322;
+  color: var(--text-secondary);
+  text-align: left;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: var(--border-radius-sm);
+  padding: 8px 10px;
+  position: absolute;
+  z-index: 999;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.22s, transform 0.22s;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+  pointer-events: none;
+  font-family: var(--font-body);
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: normal;
+}
+
+.dashboard-card .tooltip-text strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.72rem;
+}
+
+/* Prevent clipping of tooltips on the screen edges */
+.dashboard-card:first-child .tooltip-text {
+  left: 10%;
+  transform: none;
+}
+
+.dashboard-card:last-child .tooltip-text {
+  left: auto;
+  right: 10%;
+  transform: none;
+}
+
+.dashboard-card:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
 
 
