@@ -4002,6 +4002,19 @@ window.renderResilienceDashboard = function() {
       const globalAggregated = aggregateResilienceData(state.resilience.hierarchy);
       kpiCount.innerText = `${globalAggregated.systems.length} Services`;
     }
+    const kpiLoss = document.getElementById('kpi-loss-prevented');
+    if (kpiLoss) {
+      let totalLossPrevented = 0;
+      if (state.resilience.reports) {
+        state.resilience.reports.forEach(rep => {
+          totalLossPrevented += (rep.lossPrevented || 0);
+        });
+      }
+      if (state.resilience.activeDrill || state.resilience.tlptActive) {
+        totalLossPrevented += (state.resilience.lossPrevented || 0);
+      }
+      kpiLoss.innerText = formatCurrency(totalLossPrevented);
+    }
   }
 };
 
@@ -4027,6 +4040,9 @@ window.changeCurrency = function(val) {
   if (valueEl) {
     valueEl.innerText = formatCurrency(state.resilience.lossPrevented);
   }
+  
+  // Refresh resilience dashboard view
+  renderResilienceDashboard();
   
   // Refresh reports page
   if (typeof renderSimulationReports === 'function') {
@@ -4284,6 +4300,18 @@ function startLossTracker(hourlyLossRate) {
     
     if (valueEl) {
       valueEl.innerText = formatCurrency(state.resilience.lossPrevented);
+    }
+
+    const kpiLoss = document.getElementById('kpi-loss-prevented');
+    if (kpiLoss) {
+      let totalLossPrevented = 0;
+      if (state.resilience.reports) {
+        state.resilience.reports.forEach(rep => {
+          totalLossPrevented += (rep.lossPrevented || 0);
+        });
+      }
+      totalLossPrevented += state.resilience.lossPrevented;
+      kpiLoss.innerText = formatCurrency(totalLossPrevented);
     }
   }, tickMs);
 }
