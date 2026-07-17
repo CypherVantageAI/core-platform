@@ -1814,30 +1814,65 @@ function renderManagerActions() {
     const c = s.assessments.find(as => as.id === act.controlId) || { section: 'N/A' };
     
     let statusClass = 'badge-danger';
+    let displayStatus = act.status;
     if (act.status === 'Awaiting Response') statusClass = 'badge-warning';
     if (act.status === 'Pending Review') statusClass = 'badge-accent';
     if (act.status === 'Closed') statusClass = 'badge-success';
 
+    if (act.isVulnerabilityRemediation) {
+      if (act.status === 'Awaiting Response') {
+        statusClass = 'badge-danger';
+        displayStatus = 'Awaiting Plan';
+      } else if (act.status === 'Plan Submitted') {
+        statusClass = 'badge-accent';
+        displayStatus = 'Plan Submitted';
+      } else if (act.status === 'Awaiting RCA') {
+        statusClass = 'badge-warning';
+        displayStatus = 'Awaiting RCA';
+      } else if (act.status === 'RCA Submitted') {
+        statusClass = 'badge-accent';
+        displayStatus = 'RCA Submitted';
+      } else if (act.status === 'Closed') {
+        statusClass = 'badge-success';
+        displayStatus = 'Remediated';
+      }
+    }
+
     const card = document.createElement('div');
     card.className = 'action-card';
+    if (act.isVulnerabilityRemediation) {
+      card.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.03), rgba(0, 0, 0, 0))';
+      card.style.borderColor = 'rgba(239, 68, 68, 0.25)';
+      card.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.08)';
+    }
     
     let actionButtons = '';
-    if (act.status === 'Open Gap') {
-      actionButtons = `<button class="btn btn-primary" onclick="openFollowupModal('${act.supplierId}', '${act.controlId}')">Generate Follow-up</button>`;
-    } else if (act.status === 'Awaiting Response') {
-      actionButtons = `
-        <span class="text-secondary text-xs italic mb-2">Sent ${act.dateCreated}</span>
-        <button class="btn btn-secondary" onclick="openFollowupModal('${act.supplierId}', '${act.controlId}')">Resend Request</button>
-      `;
-    } else if (act.status === 'Pending Review') {
-      actionButtons = `
-        <button class="btn btn-primary" onclick="approveSupplierResponse('${act.id}')">Approve response</button>
-        <button class="btn btn-secondary mt-2" onclick="rejectSupplierResponse('${act.id}')">Request revisions</button>
-      `;
+    if (act.isVulnerabilityRemediation) {
+      if (act.status === 'Closed') {
+        actionButtons = `<span style="color: #10b981; font-weight: 700; font-size: 0.72rem; display: flex; align-items: center; gap: 4px; justify-content: flex-end; width: 100%;">✅ Resolved</span>`;
+      } else {
+        actionButtons = `
+          <button class="btn btn-primary btn-sm" onclick="switchTab('manager-inbox')" style="background: #ef4444; border-color: #ef4444; color: white; font-size: 0.65rem; padding: 4px 10px;">Open in Urgent Inbox</button>
+        `;
+      }
+    } else {
+      if (act.status === 'Open Gap') {
+        actionButtons = `<button class="btn btn-primary" onclick="openFollowupModal('${act.supplierId}', '${act.controlId}')">Generate Follow-up</button>`;
+      } else if (act.status === 'Awaiting Response') {
+        actionButtons = `
+          <span class="text-secondary text-xs italic mb-2">Sent ${act.dateCreated}</span>
+          <button class="btn btn-secondary" onclick="openFollowupModal('${act.supplierId}', '${act.controlId}')">Resend Request</button>
+        `;
+      } else if (act.status === 'Pending Review') {
+        actionButtons = `
+          <button class="btn btn-primary" onclick="approveSupplierResponse('${act.id}')">Approve response</button>
+          <button class="btn btn-secondary mt-2" onclick="rejectSupplierResponse('${act.id}')">Request revisions</button>
+        `;
+      }
     }
 
     let supplierResponseHTML = '';
-    if (act.status === 'Pending Review' && act.responseMessage) {
+    if (!act.isVulnerabilityRemediation && act.status === 'Pending Review' && act.responseMessage) {
       supplierResponseHTML = `
         <div class="supplier-response-box">
           <div class="supplier-response-header">
@@ -1853,18 +1888,31 @@ function renderManagerActions() {
           </div>
         </div>
       `;
+    } else if (act.isVulnerabilityRemediation && (act.status === 'Plan Submitted' || act.status === 'RCA Submitted' || act.status === 'Awaiting RCA' || act.status === 'Closed')) {
+      let planText = act.remediationPlan ? `<div><strong>Plan:</strong> ${act.remediationPlan}</div>` : '';
+      let rcaText = act.rootCauseAnalysis ? `<div style="margin-top: 2px;"><strong>RCA:</strong> ${act.rootCauseAnalysis}</div>` : '';
+      supplierResponseHTML = `
+        <div class="supplier-response-box" style="border-color: rgba(255,255,255,0.06); background: rgba(0,0,0,0.15); font-size: 0.7rem; color: var(--text-secondary); padding: 8px; border-radius: 4px; margin-top: 8px; width: 100%;">
+          ${planText}
+          ${rcaText}
+        </div>
+      `;
     }
+
+    let titleHtml = act.isVulnerabilityRemediation 
+      ? `<span class="badge mb-1" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); font-weight: 700; font-size: 0.58rem; text-transform: uppercase;">🚨 URGENT SLA ACTION</span><h4 style="margin-top: 2px;">${act.title}</h4>`
+      : `<h4>${act.title}</h4>`;
 
     card.innerHTML = `
       <div class="action-info">
         <span class="supplier-tag">${s.name} (Risk Tier: ${s.riskTier})</span>
-        <h4>${act.title}</h4>
+        ${titleHtml}
         <p>${act.gapDetails}</p>
         <span class="clause-tag">Target: CV ${c.section}</span>
         ${supplierResponseHTML}
       </div>
-      <div class="action-controls">
-        <span class="badge ${statusClass} mb-2">${act.status}</span>
+      <div class="action-controls" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start;">
+        <span class="badge ${statusClass} mb-2">${displayStatus}</span>
         ${actionButtons}
       </div>
     `;

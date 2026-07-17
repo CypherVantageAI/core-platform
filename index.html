@@ -291,15 +291,6 @@
                   </span>
                 </a>
               </li>
-              <li>
-                <a href="#" id="nav-manager-inbox" class="nav-sub-item" onclick="switchTab('manager-inbox'); event.stopPropagation();">
-                  <span style="display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 0.8rem;">📥</span>
-                    <span>Vulnerability Inbox</span>
-                  </span>
-                  <span id="badge-manager-inbox" class="badge badge-danger" style="font-size: 0.65rem; padding: 1px 4px; border-radius: 4px; display: none;">0</span>
-                </a>
-              </li>
             </ul>
           </li>
           <li>
@@ -324,6 +315,15 @@
                   </span>
                   <span id="badge-actions-count" class="badge badge-warning" style="font-size: 0.65rem; padding: 1px 4px; border-radius: 4px;">2</span>
                 </a>
+                <ul class="nav-sub-sub-list" style="list-style: none; padding-left: 20px; margin-top: 2px; margin-bottom: 2px; display: flex; flex-direction: column; gap: 2px;">
+                  <li>
+                    <a href="#" id="nav-manager-inbox" class="nav-sub-item" onclick="switchTab('manager-inbox'); event.stopPropagation();" style="font-size: 0.72rem; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
+                      <span>🚨</span>
+                      <span>Urgent Actions</span>
+                      <span id="badge-manager-inbox" class="badge badge-danger" style="font-size: 0.58rem; padding: 1px 4px; border-radius: 3px; display: none; margin-left: auto;">0</span>
+                    </a>
+                  </li>
+                </ul>
               </li>
               <li>
                 <a href="#" id="nav-manager-collector" class="nav-sub-item" onclick="switchTab('manager-collector'); event.stopPropagation();">
@@ -1541,8 +1541,8 @@
       <!-- ============================================== -->
       <section id="view-manager-inbox" class="content-pane">
         <div class="view-header">
-          <h2>Vulnerability Remediation Inbox</h2>
-          <p>Review supplier submissions for critical SLA vulnerability remediation plans and root cause analyses (RCA)</p>
+          <h2>Urgent Actions Inbox</h2>
+          <p>Review supplier submissions for critical SLA vulnerability remediation plans and root cause analyses (RCA) under DORA</p>
         </div>
 
         <div class="supplier-portal-panels">
