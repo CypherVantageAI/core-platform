@@ -5726,13 +5726,13 @@ window.renderServiceNavigator = function() {
     if (curr.systems) {
       curr.systems.forEach(sys => {
         if (sys.name === 'AWS us-east-1a (IBS Payments)') {
-          sys.status = '9h SLA';
+          sys.status = '9h SLA (Urgent)';
         } else if (sys.name === 'Infosys Core DB Ledger (CIS Database Backup)') {
-          sys.status = '24h SLA';
+          sys.status = '24h SLA (Critical)';
         } else if (sys.name === 'AWS eu-central-1 (IBS Clearing Portal)') {
-          sys.status = '48h SLA';
+          sys.status = '48h SLA (Critical)';
         } else if (sys.name === 'Google Cloud SG (CIS API Gateway Routing)') {
-          sys.status = '48h SLA';
+          sys.status = '48h SLA (Critical)';
         } else {
           const profile = getServiceSecurityProfile(sys.name, sys.serviceType);
           const activeVuln = profile && profile.vulnerabilities ? profile.vulnerabilities.find(v => v.status !== 'Remediated') : null;
@@ -5740,22 +5740,22 @@ window.renderServiceNavigator = function() {
           if (activeVuln) {
             const turnaround = activeVuln.turnaround;
             if (turnaround.includes('Hour') || turnaround.includes('h')) {
-              if (turnaround.includes('9')) sys.status = '9h SLA';
-              else if (turnaround.includes('24')) sys.status = '24h SLA';
-              else sys.status = '48h SLA';
+              if (turnaround.includes('9')) sys.status = '9h SLA (Urgent)';
+              else if (turnaround.includes('24')) sys.status = '24h SLA (Critical)';
+              else sys.status = '48h SLA (Critical)';
             } else {
               const daysMatch = turnaround.match(/(\d+)\s*Day/i);
               const days = daysMatch ? parseInt(daysMatch[1]) : 7;
               if (days >= 90) {
-                sys.status = '90d Low Risk';
+                sys.status = '90d SLA (Low)';
               } else if (days >= 30) {
-                sys.status = '30d Medium Risk';
+                sys.status = '30d SLA (Medium)';
               } else {
-                sys.status = '7d High Risk';
+                sys.status = '7d SLA (High)';
               }
             }
           } else {
-            sys.status = '90d Low Risk';
+            sys.status = '90d SLA (Low)';
           }
         }
       });
@@ -5775,13 +5775,17 @@ window.renderServiceNavigator = function() {
   let count9h = 0;
   let count24h = 0;
   let count48h = 0;
-  let countNominal = 0;
+  let countHigh = 0;
+  let countMedium = 0;
+  let countLow = 0;
 
   services.forEach(sys => {
-    if (sys.status === '9h SLA') count9h++;
-    else if (sys.status === '24h SLA') count24h++;
-    else if (sys.status === '48h SLA') count48h++;
-    else countNominal++;
+    if (sys.status === '9h SLA (Urgent)') count9h++;
+    else if (sys.status === '24h SLA (Critical)') count24h++;
+    else if (sys.status === '48h SLA (Critical)') count48h++;
+    else if (sys.status === '7d SLA (High)') countHigh++;
+    else if (sys.status === '30d SLA (Medium)') countMedium++;
+    else if (sys.status === '90d SLA (Low)') countLow++;
   });
 
   const el9h = document.getElementById('kri-sla-9h');
@@ -5792,7 +5796,9 @@ window.renderServiceNavigator = function() {
   if (el9h) el9h.innerText = `${count9h} Service${count9h === 1 ? '' : 's'}`;
   if (el24h) el24h.innerText = `${count24h} Service${count24h === 1 ? '' : 's'}`;
   if (el48h) el48h.innerText = `${count48h} Service${count48h === 1 ? '' : 's'}`;
-  if (elNominal) elNominal.innerText = `${countNominal} Service${countNominal === 1 ? '' : 's'}`;
+  if (elNominal) {
+    elNominal.innerText = `High: ${countHigh} | Med: ${countMedium} | Low: ${countLow}`;
+  }
 
   // Sort systems so IBS is grouped, then CIS
   const sortedSystems = services.sort((a, b) => {
@@ -5810,16 +5816,17 @@ window.renderServiceNavigator = function() {
     // SLA status color coding with high-contrast readable text colors
     let statusBadgeColor = '#10b981'; // Green
     let statusTextColor = '#ffffff';
-    if (sys.status === '9h SLA' || sys.status === '7d High Risk') {
+    
+    if (sys.status === '9h SLA (Urgent)' || sys.status === '7d SLA (High)') {
       statusBadgeColor = '#ef4444'; // Red
       statusTextColor = '#ffffff';
-    } else if (sys.status === '24h SLA' || sys.status === '30d Medium Risk') {
+    } else if (sys.status === '24h SLA (Critical)' || sys.status === '30d SLA (Medium)') {
       statusBadgeColor = '#f97316'; // Bright Orange
       statusTextColor = '#ffffff';
-    } else if (sys.status === '48h SLA') {
+    } else if (sys.status === '48h SLA (Critical)') {
       statusBadgeColor = '#eab308'; // Rich Yellow
       statusTextColor = '#0b0f19'; // High-contrast Dark Navy text!
-    } else if (sys.status === '90d Low Risk') {
+    } else if (sys.status === '90d SLA (Low)') {
       statusBadgeColor = '#10b981'; // Green
       statusTextColor = '#ffffff';
     }
@@ -6069,10 +6076,10 @@ window.selectNavigatorService = function(serviceName, element) {
 
   // SLA status color coding for details header with high-contrast solid backgrounds
   let statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);';
-  if (targetSys.status === '9h SLA' || targetSys.status === '7d High Risk') statusBadgeStyle = 'background: #ef4444; color: #ffffff; font-weight: 700;';
-  else if (targetSys.status === '24h SLA' || targetSys.status === '30d Medium Risk') statusBadgeStyle = 'background: #f97316; color: #ffffff; font-weight: 700;';
-  else if (targetSys.status === '48h SLA') statusBadgeStyle = 'background: #eab308; color: #0b0f19; font-weight: 700;';
-  else if (targetSys.status === '90d Low Risk') statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 700;';
+  if (targetSys.status === '9h SLA (Urgent)' || targetSys.status === '7d SLA (High)') statusBadgeStyle = 'background: #ef4444; color: #ffffff; font-weight: 700;';
+  else if (targetSys.status === '24h SLA (Critical)' || targetSys.status === '30d SLA (Medium)') statusBadgeStyle = 'background: #f97316; color: #ffffff; font-weight: 700;';
+  else if (targetSys.status === '48h SLA (Critical)') statusBadgeStyle = 'background: #eab308; color: #0b0f19; font-weight: 700;';
+  else if (targetSys.status === '90d SLA (Low)') statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 700;';
 
   // Build details header HTML
   const headerContainer = document.getElementById('navigator-details-header');
