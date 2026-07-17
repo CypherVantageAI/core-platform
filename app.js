@@ -2748,7 +2748,7 @@ function renderSCOAccordion() {
       const itemsList = sco.items.map(it => `<li>${it}</li>`).join('');
 
       item.innerHTML = `
-        <button class="accordion-trigger" onclick="toggleAccordion(event)">
+        <button class="accordion-trigger" onclick="toggleAccordion(event)" aria-expanded="${idx === 0 ? 'true' : 'false'}">
           <h4>${sco.section}</h4>
           <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" fill="currentColor"/></svg>
         </button>
@@ -2771,17 +2771,21 @@ function renderSCOAccordion() {
 
 window.toggleAccordion = function(e) {
   const item = e.currentTarget.closest('.accordion-item');
+  const trigger = e.currentTarget;
   const isActive = item.classList.contains('active');
   
   document.querySelectorAll('.accordion-item').forEach(el => {
     el.classList.remove('active');
     el.querySelector('.accordion-content').style.maxHeight = '0';
+    const trig = el.querySelector('.accordion-trigger');
+    if (trig) trig.setAttribute('aria-expanded', 'false');
   });
 
   if (!isActive) {
     item.classList.add('active');
     const content = item.querySelector('.accordion-content');
     content.style.maxHeight = '500px';
+    trigger.setAttribute('aria-expanded', 'true');
   }
 };
 
@@ -5843,7 +5847,17 @@ window.renderServiceNavigator = function() {
     item.setAttribute('data-type', sys.serviceType);
     item.setAttribute('data-region', sys.region);
     item.setAttribute('data-status', sys.status);
+    item.setAttribute('tabindex', '0');
+    item.setAttribute('role', 'button');
+    item.setAttribute('aria-label', `${sys.name}, ${typeLabel}, Status: ${sys.status}`);
+    
     item.onclick = () => selectNavigatorService(sys.name, item);
+    item.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectNavigatorService(sys.name, item);
+      }
+    };
     item.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <span style="font-weight: 600; font-size: 0.74rem; color: var(--text-primary);">${sys.name}</span>
