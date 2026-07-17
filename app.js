@@ -5696,7 +5696,7 @@ window.selectNavigatorService = function(serviceName, element) {
 
 
   // 6. Populate Tech Stack & Security Profile Panel (Sub-Tab 2)
-  const profile = getServiceSecurityProfile(serviceName, targetSys.serviceType);
+  const profile = getServiceSecurityProfile(serviceName, targetSys.serviceType, targetSys.status);
 
   let infraHtml = profile.infra.map(item => `<span style="font-size: 0.7rem; color: var(--text-primary); background: rgba(255,255,255,0.03); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">${item}</span>`).join('');
   let stackHtml = profile.stack.map(item => `<span style="font-size: 0.7rem; color: var(--color-cyan); background: rgba(6, 182, 212, 0.04); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.15);">${item}</span>`).join('');
@@ -5799,7 +5799,7 @@ window.switchNavigatorSubTab = function(subTabId) {
   }
 };
 
-function getServiceSecurityProfile(serviceName, serviceType) {
+function getServiceSecurityProfile(serviceName, serviceType, serviceStatus) {
   const serviceSecurityProfiles = {
     'AWS us-east-1a (IBS Payments)': {
       infra: ['AWS Application Load Balancer', 'ECS Fargate Containers', 'Amazon Aurora PostgreSQL', 'AWS KMS HSM'],
@@ -5810,7 +5810,7 @@ function getServiceSecurityProfile(serviceName, serviceType) {
           title: 'Spring Framework Remote Code Execution',
           severity: 'Critical (CVSS 9.8)',
           mythosImpact: 'Mythos Threat Vector Alert: Game-changer automated exploit code released in wild. CVSS adjusted to 10.0 due to immediate replication risk.',
-          turnaround: '24 Hours (Immediate Action)',
+          turnaround: '9 Hours (Immediate Action)',
           remediation: 'Upgrade Spring Boot to version 3.2.5+ immediately, restrict actuator ports, and apply strict input filtering.',
           financialImpact: 'High exposure. Modeled potential outage cost of £75,000/hr + credit network SLA fines.',
           reputationalImpact: 'Severe breach of payment processing integrity. Risk of merchant churn and PCI DSS compliance suspension.'
@@ -5830,6 +5830,22 @@ function getServiceSecurityProfile(serviceName, serviceType) {
           remediation: 'Rebuild Docker containers using Node.js v20.12.2+ or deploy Cloudflare/Shield WAF HTTP/2 rate limits.',
           financialImpact: 'Outage exposure modeled at £75,000/hr. Backlog penalty of £150,000 baseline.',
           reputationalImpact: 'High risk of clearing delays impacting European stock exchanges. Major negative press coverage.'
+        }
+      ]
+    },
+    'Google Cloud SG (CIS API Gateway Routing)': {
+      infra: ['Google Cloud Load Balancing', 'GKE Autopilot Cluster', 'Cloud Spanner Multi-Region', 'Cloud Armor WAF'],
+      stack: ['Go 1.22', 'gRPC', 'Protocol Buffers', 'Spanner DB', 'Docker/Kubernetes'],
+      vulnerabilities: [
+        {
+          id: 'CVE-2026-8819',
+          title: 'Google Cloud Armor Bypass via HTTP/1.1 Chunked Encoding',
+          severity: 'High (CVSS 8.8)',
+          mythosImpact: 'Mythos Impact Assessment: High scanning volumes detected on proxy routes. Priority upgraded to 48h SLA.',
+          turnaround: '48 Hours (Urgent Action)',
+          remediation: 'Deploy WAF mitigation rule block for chunked transfer headers and patch ingress controllers.',
+          financialImpact: 'High risk of unauthorized API calls. SLA violation cost up to £50,000/day.',
+          reputationalImpact: 'Medium risk of API gateway outage affecting South-East Asian client routers.'
         }
       ]
     },
