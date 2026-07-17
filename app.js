@@ -6708,8 +6708,9 @@ window.renderManagerInbox = function() {
         <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">⏳ Awaiting Supplier Plan</span>
       `;
       contentHTML = `
-        <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 8px 10px; border-radius: 4px; font-size: 0.7rem; color: var(--text-muted); width: 100%;">
-          <strong>No action required:</strong> Waiting for ${supplierName} to submit their Stage 1 Remediation Action Plan.
+        <div style="background: rgba(245, 158, 11, 0.02); border: 1px solid rgba(245, 158, 11, 0.15); padding: 10px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 500; line-height: 1.45; color: var(--text-primary); width: 100%;">
+          <strong style="color: #f59e0b; display: block; margin-bottom: 2px;">⏳ No immediate action required from our end:</strong>
+          Waiting for ${supplierName} to submit their Stage 1 Remediation Action Plan. Offline follow-up or escalation might be required to Supplier management.
           ${act.revisionComment ? `<div style="color: #ef4444; margin-top: 4px; font-weight: 600;">Revision Feedback Sent: "${act.revisionComment}"</div>` : ''}
         </div>
       `;
@@ -6736,9 +6737,10 @@ window.renderManagerInbox = function() {
         <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">⏳ Awaiting Supplier RCA</span>
       `;
       contentHTML = `
-        <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 8px 10px; border-radius: 4px; font-size: 0.7rem; color: var(--text-muted); width: 100%;">
-          <strong>No action required:</strong> Stage 1 Plan approved. Waiting for ${supplierName} to submit their Stage 2 Root Cause Analysis (RCA).
-          <div style="margin-top: 4px; font-size: 0.65rem;">Approved Plan: "${act.remediationPlan}"</div>
+        <div style="background: rgba(245, 158, 11, 0.02); border: 1px solid rgba(245, 158, 11, 0.15); padding: 10px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 500; line-height: 1.45; color: var(--text-primary); width: 100%;">
+          <strong style="color: #f59e0b; display: block; margin-bottom: 2px;">⏳ No immediate action required from our end:</strong>
+          Stage 1 Plan approved. Waiting for ${supplierName} to submit their Stage 2 Root Cause Analysis (RCA). Offline follow-up or escalation might be required to Supplier management.
+          <div style="margin-top: 4px; font-size: 0.65rem; color: var(--text-muted);">Approved Plan: "${act.remediationPlan}"</div>
           ${act.revisionComment ? `<div style="color: #ef4444; margin-top: 4px; font-weight: 600;">Revision Feedback Sent: "${act.revisionComment}"</div>` : ''}
         </div>
       `;
