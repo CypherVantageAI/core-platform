@@ -70,7 +70,7 @@ const supplierSurfaceData = {
 // 1. MOCK DATABASE STATE (15 Reference Control Modules Mapping)
 // --------------------------------------------------------------------------
 let state = {
-  version: 5,
+  version: 6,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Currently active supplier for Supplier Portal
   dlpProxyEnabled: true,    // LLM DLP Outbound Gateway default state
@@ -404,7 +404,7 @@ window.loadState = function() {
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      if (!parsed.version || parsed.version < 5) {
+      if (!parsed.version || parsed.version < 6) {
         console.warn("Outdated state version detected. Clearing local storage to apply updates.");
         localStorage.removeItem(LOCAL_STORAGE_KEY);
       } else {
@@ -424,7 +424,8 @@ window.loadState = function() {
       state.suppliers['workday'] = {
         id: 'workday',
         name: 'Workday, Inc. (SaaS HR & ERP)',
-        riskTier: 'High',
+        riskTier: 'Critical',
+        riskTierExplanation: 'Hosts core enterprise ledger and employee payroll system of record. High business impact on operational continuity.',
         scoVersion: 'CV Framework',
         complianceScore: 80,
         status: 'Gaps Identified',
@@ -433,7 +434,10 @@ window.loadState = function() {
         avatar: 'WD',
         primarySupportLocation: 'Pleasanton, CA (USA)',
         secondarySupportLocation: 'Dublin, Ireland',
-        subcontractors: ['AWS (Hosting Infrastructure)', 'Cloudflare (Edge Delivery)'],
+        subcontractors: [
+          { name: 'Amazon Web Services (AWS)', role: 'Hosting & Core Cloud Storage', primaryLocation: 'Seattle, WA (USA)', secondaryLocation: 'Frankfurt, Germany', additionalLocations: 'Dublin' },
+          { name: 'Akamai Technologies', role: 'Edge Delivery & DDoS Shielding', primaryLocation: 'Cambridge, MA (USA)', secondaryLocation: 'Munich, Germany', additionalLocations: 'Singapore' }
+        ],
         documents: [
           { name: 'Workday_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-02-15', scanned: '2026-07-05', status: 'Valid' },
           { name: 'Workday_BCP_TestDoc_2025.pdf', type: 'Resilience Evidence', date: '2025-06-01', scanned: '2026-07-05', status: 'Valid' }
@@ -6682,8 +6686,22 @@ window.renderManagerInbox = function() {
     let buttonsHTML = '';
     let statusBadgeHTML = '';
 
+    let slaTimerHTML = '';
+    if (v) {
+      slaTimerHTML = `
+        <div style="font-size: 0.68rem; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+          <span style="color: var(--text-muted);">SLA:</span> 
+          <span class="manager-live-countdown" data-due-time="${dueTime}" style="color: #ef4444; font-weight: 700;">--h --m --s</span>
+          <span style="color: var(--text-muted); font-size: 0.65rem;">(${slaHours}h Target: ${dueDateStr})</span>
+        </div>
+      `;
+    }
+
     if (act.status === 'Awaiting Response') {
-      statusBadgeHTML = `<span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase;">⏳ Awaiting Supplier Plan</span>`;
+      statusBadgeHTML = `
+        ${slaTimerHTML}
+        <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">⏳ Awaiting Supplier Plan</span>
+      `;
       contentHTML = `
         <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 8px 10px; border-radius: 4px; font-size: 0.7rem; color: var(--text-muted); width: 100%;">
           <strong>No action required:</strong> Waiting for ${supplierName} to submit their Stage 1 Remediation Action Plan.
@@ -6691,7 +6709,10 @@ window.renderManagerInbox = function() {
         </div>
       `;
     } else if (act.status === 'Plan Submitted') {
-      statusBadgeHTML = `<span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.58rem; text-transform: uppercase;">🚨 Action Required: Review Plan</span>`;
+      statusBadgeHTML = `
+        ${slaTimerHTML}
+        <span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">🚨 Action Required: Review Plan</span>
+      `;
       contentHTML = `
         <div style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 6px; padding: 10px; font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); width: 100%;">
           <strong style="color: #f59e0b; display: block; margin-bottom: 4px;">📂 SUBMITTED: Stage 1 Remediation Action Plan</strong>
@@ -6705,7 +6726,10 @@ window.renderManagerInbox = function() {
         </div>
       `;
     } else if (act.status === 'Awaiting RCA') {
-      statusBadgeHTML = `<span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase;">⏳ Awaiting Supplier RCA</span>`;
+      statusBadgeHTML = `
+        ${slaTimerHTML}
+        <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">⏳ Awaiting Supplier RCA</span>
+      `;
       contentHTML = `
         <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 8px 10px; border-radius: 4px; font-size: 0.7rem; color: var(--text-muted); width: 100%;">
           <strong>No action required:</strong> Stage 1 Plan approved. Waiting for ${supplierName} to submit their Stage 2 Root Cause Analysis (RCA).
@@ -6714,7 +6738,10 @@ window.renderManagerInbox = function() {
         </div>
       `;
     } else if (act.status === 'RCA Submitted') {
-      statusBadgeHTML = `<span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.58rem; text-transform: uppercase;">🚨 Action Required: Review RCA</span>`;
+      statusBadgeHTML = `
+        ${slaTimerHTML}
+        <span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">🚨 Action Required: Review RCA</span>
+      `;
       contentHTML = `
         <div style="background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px; padding: 10px; font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); width: 100%;">
           <strong style="color: #10b981; display: block; margin-bottom: 4px;">📂 SUBMITTED: Stage 2 Root Cause Analysis (RCA)</strong>
@@ -6733,18 +6760,11 @@ window.renderManagerInbox = function() {
     let impactPanelHTML = '';
     if (v) {
       impactPanelHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px; font-size: 0.7rem; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 10px; margin-top: 8px; width: 100%;">
-          <div>
-            <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Remediation SLA Deadline:</strong>
-            <span class="manager-live-countdown" data-due-time="${dueTime}" style="color: #ef4444; font-weight: 700; font-size: 0.72rem;">--h --m --s</span>
-            <span style="color: var(--text-muted); font-size: 0.65rem; display: block; margin-top: 2px;">Target: ${dueDateStr} (${slaHours}h SLA)</span>
-          </div>
-          <div>
-            <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Impact Assessment Rationale:</strong>
-            <div style="line-height: 1.4; color: var(--text-secondary); font-size: 0.68rem;">
-              <div>💸 <strong>Financial:</strong> ${v.financialImpact}</div>
-              <div style="margin-top: 3px;">🛡️ <strong>Reputational &amp; Regulatory:</strong> ${v.reputationalImpact}</div>
-            </div>
+        <div style="font-size: 0.7rem; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 8px; margin-top: 8px; width: 100%;">
+          <strong style="color: var(--text-primary); display: block; margin-bottom: 4px;">DORA Critical Impact Assessment:</strong>
+          <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px; line-height: 1.45; color: var(--text-secondary); font-size: 0.68rem;">
+            <div>💸 <strong>Financial:</strong> ${v.financialImpact}</div>
+            <div>🛡️ <strong>Reputational &amp; Regulatory:</strong> ${v.reputationalImpact}</div>
           </div>
         </div>
       `;
