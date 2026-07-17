@@ -4023,7 +4023,7 @@ window.renderResilienceDashboard = function() {
       </div>
 
       <div class="resilience-detail-section" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 4px;">
-        <h4 style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 4px;">Key Resiliency Personnel</h4>
+        <h4 style="font-size: 0.76rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 4px;">Key Resiliency Personnel for ${currentNode.name || 'Global Operations'}</h4>
         <div class="resilience-personnel-list" style="max-height: 140px; overflow-y: auto;">${personnelHtml || '<p class="text-xs text-secondary">No personnel mapped in this scope.</p>'}</div>
       </div>
     `;
