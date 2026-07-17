@@ -5295,7 +5295,57 @@ window.renderServiceNavigator = function() {
     if (curr.subdivisions) Object.values(curr.subdivisions).forEach(s => traverse(s, currentRegion));
   }
   
+
+
+  // Normalize service statuses directly in the hierarchy tree to make it persistent across views
+  function normalizeHierarchyStatuses(curr) {
+    if (!curr) return;
+    if (curr.systems) {
+      curr.systems.forEach(sys => {
+        if (sys.name === 'AWS us-east-1a (IBS Payments)') {
+          sys.status = '9h SLA';
+        } else if (sys.name === 'Infosys Core DB Ledger (CIS Database Backup)') {
+          sys.status = '24h SLA';
+        } else if (sys.name === 'AWS eu-central-1 (IBS Clearing Portal)') {
+          sys.status = '48h SLA';
+        } else if (sys.name === 'Google Cloud SG (CIS API Gateway Routing)') {
+          sys.status = '48h SLA';
+        } else {
+          sys.status = 'Nominal';
+        }
+      });
+    }
+    if (curr.countries) Object.values(curr.countries).forEach(normalizeHierarchyStatuses);
+    if (curr.states) Object.values(curr.states).forEach(normalizeHierarchyStatuses);
+    if (curr.cities) Object.values(curr.cities).forEach(normalizeHierarchyStatuses);
+    if (curr.subdivisions) Object.values(curr.subdivisions).forEach(normalizeHierarchyStatuses);
+  }
+  normalizeHierarchyStatuses(state.resilience.hierarchy);
+
   traverse(state.resilience.hierarchy);
+
+  // Count SLA statuses for KRI Metrics Ribbon
+  let count9h = 0;
+  let count24h = 0;
+  let count48h = 0;
+  let countNominal = 0;
+
+  services.forEach(sys => {
+    if (sys.status === '9h SLA') count9h++;
+    else if (sys.status === '24h SLA') count24h++;
+    else if (sys.status === '48h SLA') count48h++;
+    else countNominal++;
+  });
+
+  const el9h = document.getElementById('kri-sla-9h');
+  const el24h = document.getElementById('kri-sla-24h');
+  const el48h = document.getElementById('kri-sla-48h');
+  const elNominal = document.getElementById('kri-sla-nominal');
+
+  if (el9h) el9h.innerText = `${count9h} Service${count9h === 1 ? '' : 's'}`;
+  if (el24h) el24h.innerText = `${count24h} Service${count24h === 1 ? '' : 's'}`;
+  if (el48h) el48h.innerText = `${count48h} Service${count48h === 1 ? '' : 's'}`;
+  if (elNominal) elNominal.innerText = `${countNominal} Service${countNominal === 1 ? '' : 's'}`;
 
   // Sort systems so IBS is grouped, then CIS
   const sortedSystems = services.sort((a, b) => {
@@ -5309,6 +5359,13 @@ window.renderServiceNavigator = function() {
     const isCis = sys.serviceType === 'cis';
     const typeLabel = isCis ? 'CIS' : 'IBS';
     const badgeColor = isCis ? '#8b5cf6' : 'var(--color-cyan)';
+    
+    // SLA status color coding
+    let statusBadgeColor = '#10b981'; // Green
+    if (sys.status === '9h SLA') statusBadgeColor = '#ef4444'; // Red
+    else if (sys.status === '24h SLA') statusBadgeColor = '#f59e0b'; // Orange
+    else if (sys.status === '48h SLA') statusBadgeColor = '#fbbf24'; // Yellow
+
     const item = document.createElement('div');
     item.className = `navigator-list-item ${isCis ? 'cis' : ''}`;
     item.setAttribute('data-name', sys.name.toLowerCase());
@@ -5319,7 +5376,10 @@ window.renderServiceNavigator = function() {
     item.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <span style="font-weight: 600; font-size: 0.74rem; color: var(--text-primary);">${sys.name}</span>
-        <span style="font-size: 0.55rem; font-weight: 700; color: #fff; background: ${badgeColor}; padding: 1px 4px; border-radius: 3px;">${typeLabel}</span>
+        <div style="display: flex; gap: 4px; align-items: center;">
+          <span style="font-size: 0.55rem; font-weight: 700; color: #fff; background: ${badgeColor}; padding: 1px 4px; border-radius: 3px;">${typeLabel}</span>
+          <span style="font-size: 0.55rem; font-weight: 700; color: #fff; background: ${statusBadgeColor}; padding: 1px 4px; border-radius: 3px;">${sys.status}</span>
+        </div>
       </div>
       <div style="font-size: 0.64rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px;">
         ${sys.description || 'No description available'}
@@ -5486,6 +5546,30 @@ window.selectNavigatorService = function(serviceName, element) {
     }
   });
 
+  // DORA Concentration Risk Warning HTML (shown below the service description)
+  let concentrationHtml = '';
+  if (concentrationCount > 0) {
+    concentrationHtml = `
+      <div style="margin-top: 10px; padding: 10px 12px; background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.20); border-radius: 8px;">
+        <div style="display: flex; gap: 8px; align-items: flex-start;">
+          <span style="font-size: 1.1rem; color: #ef4444;">⚠️</span>
+          <div>
+            <strong style="font-size: 0.74rem; color: #ef4444; display: block;">DORA Concentration Risk Warning</strong>
+            <span style="font-size: 0.68rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
+              The supplier/infrastructure provider <strong>${supplierName}</strong> is shared by <strong>${concentrationCount}</strong> other critical services in your registry. Any disruption to this provider exposes multiple services to simultaneous outages, creating a high regulatory blast radius.
+            </span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // SLA status color coding for details header
+  let statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);';
+  if (targetSys.status === '9h SLA') statusBadgeStyle = 'background: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);';
+  else if (targetSys.status === '24h SLA') statusBadgeStyle = 'background: rgba(245, 158, 11, 0.08); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);';
+  else if (targetSys.status === '48h SLA') statusBadgeStyle = 'background: rgba(251, 191, 36, 0.08); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2);';
+
   // Build details header HTML
   const headerContainer = document.getElementById('navigator-details-header');
   const badgeColor = targetSys.serviceType === 'cis' ? '#8b5cf6' : 'var(--color-cyan)';
@@ -5498,14 +5582,15 @@ window.selectNavigatorService = function(serviceName, element) {
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 4px; color: var(--text-primary);">${targetSys.name}</h2>
       </div>
       <div style="text-align: right;">
-        <span class="badge ${targetSys.status === 'Active' ? 'badge-success' : 'badge-warning'}" style="font-size: 0.65rem; padding: 3px 8px;">
+        <span style="font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; ${statusBadgeStyle}">
           ${targetSys.status}
         </span>
       </div>
     </div>
-    <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.4;">
+    <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.4; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 8px; margin-bottom: 0;">
       <strong>Description:</strong> ${targetSys.description || 'No description available.'}
     </p>
+    ${concentrationHtml}
   `;
 
   // Build the dependency tree visualization
@@ -5608,27 +5693,7 @@ window.selectNavigatorService = function(serviceName, element) {
     supplierBranches.appendChild(noSubNode);
   }
 
-  // 5. Concentration Risk Alert Block if concentration count > 0
-  if (concentrationCount > 0) {
-    const concentrationAlert = document.createElement('div');
-    concentrationAlert.style.marginTop = '15px';
-    concentrationAlert.style.padding = '12px';
-    concentrationAlert.style.background = 'rgba(239, 68, 68, 0.04)';
-    concentrationAlert.style.border = '1px solid rgba(239, 68, 68, 0.2)';
-    concentrationAlert.style.borderRadius = '8px';
-    concentrationAlert.innerHTML = `
-      <div style="display: flex; gap: 8px; align-items: flex-start;">
-        <span style="font-size: 1.1rem; color: #ef4444;">⚠️</span>
-        <div>
-          <strong style="font-size: 0.74rem; color: #ef4444; display: block;">DORA Concentration Risk Warning</strong>
-          <span style="font-size: 0.68rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
-            The supplier/infrastructure provider <strong>${supplierName}</strong> is shared by <strong>${concentrationCount}</strong> other critical services in your registry. Any disruption to this provider exposes multiple services to simultaneous outages, creating a high regulatory blast radius.
-          </span>
-        </div>
-      </div>
-    `;
-    treeContainer.appendChild(concentrationAlert);
-  }
+
 
   // 6. Populate Tech Stack & Security Profile Panel (Sub-Tab 2)
   const profile = getServiceSecurityProfile(serviceName, targetSys.serviceType);

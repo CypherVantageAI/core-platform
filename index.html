@@ -1376,9 +1376,47 @@
         <div class="view-header">
           <h2>IBS &amp; CIS Service Navigator</h2>
           <p>Explore end-to-end critical service mappings, operational dependencies, Nth-party subcontractors, and regulatory blast radiuses under DORA Article 19</p>
+          
+          <!-- Remediation SLA Guidance -->
+          <div style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: var(--border-radius-md); padding: 12px 16px; margin-top: 10px; font-size: 0.74rem; line-height: 1.45; color: var(--text-secondary);">
+            <strong style="color: #f59e0b; display: block; font-size: 0.8rem; margin-bottom: 4px;">⚠️ DORA Article 19 &amp; 26 Remediation SLA Guidance</strong>
+            Remediation timelines (9h, 24h, 48h) are prioritized based on active threat intelligence matrices (including CVSS &amp; Mythos exploitation frameworks). Compliance turnarounds are contractually bound under DORA; failure to resolve vulnerabilities within specified SLA windows triggers automatic supervisor notification rules and exposes the organization to significant operational penalties and reputation damage. <strong>Tech stack, active infrastructure, and prioritized vulnerability records are included for each service node.</strong>
+          </div>
         </div>
 
-        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+        <!-- SLA Risk Ribbon -->
+        <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 15px; flex-wrap: wrap; width: 100%;">
+          <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(239, 68, 68, 0.25); background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(0,0,0,0));">
+            <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">9-Hour SLA Target</span>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
+              <span id="kri-sla-9h" style="font-size: 1.2rem; font-weight: 700; color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);">0 Services</span>
+            </div>
+            <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #ef4444;"></div>
+          </div>
+          <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(245, 158, 11, 0.25); background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(0,0,0,0));">
+            <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">24-Hour SLA Target</span>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
+              <span id="kri-sla-24h" style="font-size: 1.2rem; font-weight: 700; color: #f59e0b; text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);">0 Services</span>
+            </div>
+            <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #f59e0b;"></div>
+          </div>
+          <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(251, 191, 36, 0.25); background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(0,0,0,0));">
+            <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">48-Hour SLA Target</span>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
+              <span id="kri-sla-48h" style="font-size: 1.2rem; font-weight: 700; color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);">0 Services</span>
+            </div>
+            <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #fbbf24;"></div>
+          </div>
+          <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(16, 185, 129, 0.25); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(0,0,0,0));">
+            <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Nominal (Standard SLA)</span>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
+              <span id="kri-sla-nominal" style="font-size: 1.2rem; font-weight: 700; color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">0 Services</span>
+            </div>
+            <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #10b981;"></div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
           <!-- Left Column: Service Selector Tree -->
           <div class="dashboard-card" style="flex: 1; min-width: 320px; max-width: 380px; display: flex; flex-direction: column; height: 700px; padding: 15px;">
             <div style="margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
@@ -1402,8 +1440,10 @@
                 </select>
                 <select id="navigator-filter-status" onchange="filterNavigatorServices()" style="flex: 1; padding: 6px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); background-color: rgba(22, 26, 43, 0.95); color: var(--text-secondary); font-size: 0.72rem; cursor: pointer;">
                   <option value="all">All Statuses</option>
-                  <option value="Active">Active</option>
-                  <option value="Warning">Warning</option>
+                  <option value="9h SLA">9h SLA</option>
+                  <option value="24h SLA">24h SLA</option>
+                  <option value="48h SLA">48h SLA</option>
+                  <option value="Nominal">Nominal</option>
                 </select>
               </div>
             </div>
