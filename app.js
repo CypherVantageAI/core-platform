@@ -5817,15 +5817,21 @@ window.renderServiceNavigator = function() {
     let statusBadgeColor = '#10b981'; // Green
     let statusTextColor = '#ffffff';
     
-    if (sys.status === '9h SLA (Urgent)' || sys.status === '7d SLA (High)') {
+    if (sys.status === '9h SLA (Urgent)') {
       statusBadgeColor = '#ef4444'; // Red
       statusTextColor = '#ffffff';
-    } else if (sys.status === '24h SLA (Critical)' || sys.status === '30d SLA (Medium)') {
+    } else if (sys.status === '24h SLA (Critical)') {
       statusBadgeColor = '#f97316'; // Bright Orange
       statusTextColor = '#ffffff';
     } else if (sys.status === '48h SLA (Critical)') {
       statusBadgeColor = '#eab308'; // Rich Yellow
       statusTextColor = '#0b0f19'; // High-contrast Dark Navy text!
+    } else if (sys.status === '7d SLA (High)') {
+      statusBadgeColor = '#ec4899'; // Vibrant Pink
+      statusTextColor = '#ffffff';
+    } else if (sys.status === '30d SLA (Medium)') {
+      statusBadgeColor = '#8b5cf6'; // Royal Purple
+      statusTextColor = '#ffffff';
     } else if (sys.status === '90d SLA (Low)') {
       statusBadgeColor = '#10b981'; // Green
       statusTextColor = '#ffffff';
@@ -6076,9 +6082,11 @@ window.selectNavigatorService = function(serviceName, element) {
 
   // SLA status color coding for details header with high-contrast solid backgrounds
   let statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);';
-  if (targetSys.status === '9h SLA (Urgent)' || targetSys.status === '7d SLA (High)') statusBadgeStyle = 'background: #ef4444; color: #ffffff; font-weight: 700;';
-  else if (targetSys.status === '24h SLA (Critical)' || targetSys.status === '30d SLA (Medium)') statusBadgeStyle = 'background: #f97316; color: #ffffff; font-weight: 700;';
+  if (targetSys.status === '9h SLA (Urgent)') statusBadgeStyle = 'background: #ef4444; color: #ffffff; font-weight: 700;';
+  else if (targetSys.status === '24h SLA (Critical)') statusBadgeStyle = 'background: #f97316; color: #ffffff; font-weight: 700;';
   else if (targetSys.status === '48h SLA (Critical)') statusBadgeStyle = 'background: #eab308; color: #0b0f19; font-weight: 700;';
+  else if (targetSys.status === '7d SLA (High)') statusBadgeStyle = 'background: #ec4899; color: #ffffff; font-weight: 700;';
+  else if (targetSys.status === '30d SLA (Medium)') statusBadgeStyle = 'background: #8b5cf6; color: #ffffff; font-weight: 700;';
   else if (targetSys.status === '90d SLA (Low)') statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 700;';
 
   // Build details header HTML
