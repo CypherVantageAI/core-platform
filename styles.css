@@ -1307,7 +1307,7 @@ body.dark-mode {
 
 .supplier-portal-panels {
   display: grid;
-  grid-template-columns: 3fr 1.5fr;
+  grid-template-columns: 3.5fr 1fr;
   gap: 24px;
 }
 
