@@ -5629,5 +5629,204 @@ window.selectNavigatorService = function(serviceName, element) {
     `;
     treeContainer.appendChild(concentrationAlert);
   }
+
+  // 6. Populate Tech Stack & Security Profile Panel (Sub-Tab 2)
+  const profile = getServiceSecurityProfile(serviceName, targetSys.serviceType);
+
+  let infraHtml = profile.infra.map(item => `<span style="font-size: 0.7rem; color: var(--text-primary); background: rgba(255,255,255,0.03); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">${item}</span>`).join('');
+  let stackHtml = profile.stack.map(item => `<span style="font-size: 0.7rem; color: var(--color-cyan); background: rgba(6, 182, 212, 0.04); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.15);">${item}</span>`).join('');
+
+  let vulnsHtml = '';
+  if (profile.vulnerabilities && profile.vulnerabilities.length > 0) {
+    vulnsHtml = profile.vulnerabilities.map(v => `
+      <div style="background: rgba(239, 68, 68, 0.02); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(239,68,68,0.15); padding-bottom: 6px;">
+          <span style="font-weight: 700; font-size: 0.76rem; color: #ef4444;">${v.id}: ${v.title}</span>
+          <span style="font-size: 0.65rem; font-weight: 700; color: #fff; background: #ef4444; padding: 2px 6px; border-radius: 4px;">${v.severity}</span>
+        </div>
+        
+        <!-- Mythos Game-Changer Alert Block -->
+        <div style="background: rgba(239, 68, 68, 0.06); border-left: 3px solid #ef4444; padding: 8px 10px; font-size: 0.7rem; color: #f8fafc; font-weight: 600; border-radius: 0 4px 4px 0;">
+          ⚠️ ${v.mythosImpact}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.7rem; margin-top: 4px;">
+          <div>
+            <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Turnaround SLA:</strong>
+            <span style="color: var(--color-warning); font-weight: 600;">${v.turnaround}</span>
+          </div>
+          <div>
+            <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Suggested Fix:</strong>
+            <span style="color: var(--text-secondary); line-height: 1.3;">${v.remediation}</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.7rem; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 8px; margin-top: 2px;">
+          <div>
+            <strong style="color: #ef4444; display: block; margin-bottom: 2px;">Potential Financial Impact:</strong>
+            <span style="color: var(--text-secondary); line-height: 1.3;">${v.financialImpact}</span>
+          </div>
+          <div>
+            <strong style="color: #ef4444; display: block; margin-bottom: 2px;">Reputational Impact:</strong>
+            <span style="color: var(--text-secondary); line-height: 1.3;">${v.reputationalImpact}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    vulnsHtml = `
+      <div style="color: #10b981; font-weight: 600; font-size: 0.72rem; padding: 12px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 8px; text-align: center;">
+        ✅ No vulnerabilities currently identified requiring active remediation.
+      </div>
+    `;
+  }
+
+  const securityProfileContainer = document.getElementById('navigator-security-profile');
+  if (securityProfileContainer) {
+    securityProfileContainer.innerHTML = `
+      <div>
+        <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; letter-spacing: 0.05em;">Infrastructure Components</h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          ${infraHtml}
+        </div>
+      </div>
+
+      <div style="margin-top: 10px;">
+        <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; letter-spacing: 0.05em;">Technology Stack</h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          ${stackHtml}
+        </div>
+      </div>
+
+      <div style="margin-top: 15px;">
+        <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 2px; letter-spacing: 0.05em;">Vulnerability Remediation Register</h4>
+        <p style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 8px;">Active issues analyzed by AI Compliance Engine &amp; Mythos threat matrix.</p>
+        ${vulnsHtml}
+      </div>
+    `;
+  }
+
+  // Reset sub-tab display to 'tree' whenever a new service is selected
+  switchNavigatorSubTab('tree');
 };
+
+// =================================------------------------------------------
+// 17. NAVIGATOR SUB-TAB SWITCHING CONTROL & SECURITY PROFILE MOCK DATABASE
+// =================================------------------------------------------
+window.switchNavigatorSubTab = function(subTabId) {
+  const treeTab = document.getElementById('navigator-sub-tab-tree');
+  const securityTab = document.getElementById('navigator-sub-tab-security');
+  const treeContainer = document.getElementById('navigator-dependency-tree');
+  const securityContainer = document.getElementById('navigator-security-profile');
+
+  if (!treeTab || !securityTab || !treeContainer || !securityContainer) return;
+
+  if (subTabId === 'tree') {
+    treeTab.classList.add('active');
+    securityTab.classList.remove('active');
+    treeContainer.classList.remove('hidden');
+    securityContainer.classList.add('hidden');
+  } else if (subTabId === 'security') {
+    treeTab.classList.remove('active');
+    securityTab.classList.add('active');
+    treeContainer.classList.add('hidden');
+    securityContainer.classList.remove('hidden');
+  }
+};
+
+function getServiceSecurityProfile(serviceName, serviceType) {
+  const serviceSecurityProfiles = {
+    'AWS us-east-1a (IBS Payments)': {
+      infra: ['AWS Application Load Balancer', 'ECS Fargate Containers', 'Amazon Aurora PostgreSQL', 'AWS KMS HSM'],
+      stack: ['Java 21', 'Spring Boot 3.2', 'Hibernate', 'PostgreSQL', 'Docker'],
+      vulnerabilities: [
+        {
+          id: 'CVE-2026-9912',
+          title: 'Spring Framework Remote Code Execution',
+          severity: 'Critical (CVSS 9.8)',
+          mythosImpact: 'Mythos Threat Vector Alert: Game-changer automated exploit code released in wild. CVSS adjusted to 10.0 due to immediate replication risk.',
+          turnaround: '24 Hours (Immediate Action)',
+          remediation: 'Upgrade Spring Boot to version 3.2.5+ immediately, restrict actuator ports, and apply strict input filtering.',
+          financialImpact: 'High exposure. Modeled potential outage cost of £75,000/hr + credit network SLA fines.',
+          reputationalImpact: 'Severe breach of payment processing integrity. Risk of merchant churn and PCI DSS compliance suspension.'
+        }
+      ]
+    },
+    'AWS eu-central-1 (IBS Clearing Portal)': {
+      infra: ['AWS CloudFront CDN', 'EKS Kubernetes Cluster', 'Amazon RDS Oracle EE', 'AWS Shield Advanced'],
+      stack: ['React 18', 'Node.js 20', 'Express', 'Oracle DB', 'Helm/Kubernetes'],
+      vulnerabilities: [
+        {
+          id: 'CVE-2026-1044',
+          title: 'Node.js HTTP/2 Express DoS Vulnerability',
+          severity: 'High (CVSS 8.2)',
+          mythosImpact: 'Mythos Impact: Active botnets exploiting HTTP/2 frame stream limits. Priority elevated to Critical.',
+          turnaround: '48 Hours (Urgent Action)',
+          remediation: 'Rebuild Docker containers using Node.js v20.12.2+ or deploy Cloudflare/Shield WAF HTTP/2 rate limits.',
+          financialImpact: 'Outage exposure modeled at £75,000/hr. Backlog penalty of £150,000 baseline.',
+          reputationalImpact: 'High risk of clearing delays impacting European stock exchanges. Major negative press coverage.'
+        }
+      ]
+    },
+    'Infosys Core DB Ledger (CIS Database Backup)': {
+      infra: ['Infosys Secure Private Cloud VM', 'Oracle WebLogic Server', 'Immutable Cohesity Backup Cluster'],
+      stack: ['Java 17', 'WebLogic', 'Oracle Database 19c', 'Cohesity DataProtect'],
+      vulnerabilities: [
+        {
+          id: 'CVE-2026-3829',
+          title: 'Oracle WebLogic Server Remote Command Execution',
+          severity: 'Critical (CVSS 9.8)',
+          mythosImpact: 'Mythos Alert: Automated script attacks bypassing standard WebLogic serialization filters (Urgency: Critical)',
+          turnaround: '24 Hours (Immediate Action)',
+          remediation: 'Apply Oracle Critical Patch Update (CPU) April 2026 and restrict port 7001 to local admin interfaces.',
+          financialImpact: 'Loss of regulatory audit trail. Fines up to £100,000 per day under DORA Article 50.',
+          reputationalImpact: 'Audit failure report filed with FCA. Potential downgrading of supplier trust index.'
+        }
+      ]
+    }
+  };
+
+  // If explicitly defined, return it
+  if (serviceSecurityProfiles[serviceName]) {
+    return serviceSecurityProfiles[serviceName];
+  }
+  
+  // Otherwise, generate a realistic profile
+  const isCis = serviceType === 'cis';
+  const prefix = serviceName.split(' ')[0] || 'Cloud';
+  
+  const generatedInfra = [
+    `${prefix} Load Balancer`,
+    `${prefix} Virtual Machine instances (t3.xlarge)`,
+    'Nginx Reverse Proxy',
+    'Encrypted block storage volumes'
+  ];
+  
+  const generatedStack = [
+    'Python 3.11',
+    'FastAPI 0.100',
+    'Uvicorn / Gunicorn',
+    'PostgreSQL 15',
+    'Debian Linux'
+  ];
+  
+  const generatedVulnerabilities = [
+    {
+      id: 'CVE-2026-7781',
+      title: `${prefix} Unauthorized Access in API Endpoints`,
+      severity: 'High (CVSS 8.5)',
+      mythosImpact: 'Mythos Threat Index: Monitored scanning activity detected. Mythos urgency indicates patch deployment within standard window.',
+      turnaround: '7 Days (SLA)',
+      remediation: 'Enforce Bearer JWT token validations on all public API controllers and enable strict CORS headers.',
+      financialImpact: 'Potential data leakage risk. Modeled regulatory impact up to £50,000.',
+      reputationalImpact: 'Low-to-moderate risk of client API error reports. Remediate to maintain nominal supplier security tier.'
+    }
+  ];
+  
+  return {
+    infra: generatedInfra,
+    stack: generatedStack,
+    vulnerabilities: generatedVulnerabilities
+  };
+}
 

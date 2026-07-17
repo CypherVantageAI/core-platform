@@ -174,6 +174,22 @@
     .dependency-tree-node.subcontractor-node > .node-content {
       border-left: 3px solid #ef4444;
     }
+    
+    .navigator-sub-tab-btn {
+      background: none !important;
+      border: none !important;
+      padding: 8px 16px !important;
+      font-size: 0.74rem !important;
+      font-weight: 600 !important;
+      color: #94a3b8 !important;
+      cursor: pointer !important;
+      border-bottom: 2px solid transparent !important;
+      transition: all 0.2s ease !important;
+    }
+    .navigator-sub-tab-btn.active {
+      color: #06b6d4 !important;
+      border-bottom: 2px solid #06b6d4 !important;
+    }
   </style>
 </head>
 <body class="dark-mode">
@@ -1416,9 +1432,24 @@
                 <!-- Populated dynamically in app.js -->
               </div>
 
+              <!-- Navigator Sub-Tabs -->
+              <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0;">
+                <button id="navigator-sub-tab-tree" class="navigator-sub-tab-btn active" onclick="switchNavigatorSubTab('tree')">
+                  Dependency Mapping
+                </button>
+                <button id="navigator-sub-tab-security" class="navigator-sub-tab-btn" onclick="switchNavigatorSubTab('security')">
+                  Tech Stack &amp; Security Profile
+                </button>
+              </div>
+
               <!-- Collapsible Dependency Tree container -->
               <div id="navigator-dependency-tree" style="display: flex; flex-direction: column; gap: 10px;">
                 <!-- Mapped components in tree layout -->
+              </div>
+
+              <!-- Tech Stack & Security Profile Container -->
+              <div id="navigator-security-profile" class="hidden" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+                <!-- Dynamic tech stack and vulnerability register populated in app.js -->
               </div>
             </div>
           </div>
