@@ -5320,7 +5320,9 @@ window.renderServiceNavigator = function() {
     if (curr.cities) Object.values(curr.cities).forEach(normalizeHierarchyStatuses);
     if (curr.subdivisions) Object.values(curr.subdivisions).forEach(normalizeHierarchyStatuses);
   }
-  normalizeHierarchyStatuses(state.resilience.hierarchy);
+  Object.values(state.resilience.hierarchy).forEach(region => {
+    normalizeHierarchyStatuses(region);
+  });
 
   traverse(state.resilience.hierarchy);
 
