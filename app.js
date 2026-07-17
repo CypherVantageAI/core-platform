@@ -5666,6 +5666,11 @@ window.onload = function() {
       }
     }
   }
+
+  // Force update manager inbox badge on load
+  if (typeof updateManagerInboxBadge === 'function') {
+    updateManagerInboxBadge();
+  }
 };
 
 // =================================------------------------------------------
@@ -6780,9 +6785,12 @@ window.renderManagerInbox = function() {
         <span style="font-size: 0.68rem; color: var(--text-muted);">${act.dateCreated}</span>
       </div>
       
-      <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.35; margin: 4px 0;">${act.gapDetails}</p>
-      
       ${contentHTML}
+
+      <div style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4; margin: 4px 0; background: rgba(0,0,0,0.15); padding: 8px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.03); width: 100%;">
+        <span style="color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 2px; text-transform: uppercase; font-size: 0.58rem; letter-spacing: 0.03em;">⚠️ Dispatched Threat Profile Details</span>
+        ${act.gapDetails}
+      </div>
 
       ${impactPanelHTML}
 
