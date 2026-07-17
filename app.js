@@ -70,6 +70,7 @@ const supplierSurfaceData = {
 // 1. MOCK DATABASE STATE (15 Reference Control Modules Mapping)
 // --------------------------------------------------------------------------
 let state = {
+  version: 5,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Currently active supplier for Supplier Portal
   dlpProxyEnabled: true,    // LLM DLP Outbound Gateway default state
@@ -375,7 +376,13 @@ window.loadState = function() {
   const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (saved) {
     try {
-      state = JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      if (!parsed.version || parsed.version < 5) {
+        console.warn("Outdated state version detected. Clearing local storage to apply updates.");
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+      } else {
+        state = parsed;
+      }
     } catch (e) {
       console.error("Failed to load persisted state, resetting.", e);
       localStorage.removeItem(LOCAL_STORAGE_KEY);
@@ -1207,6 +1214,8 @@ window.loadState = function() {
   if (state.resilience.activeReportIndex === undefined) {
     state.resilience.activeReportIndex = 0;
   }
+  
+  saveState();
 };
 loadState();
 
