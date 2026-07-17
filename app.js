@@ -5827,13 +5827,13 @@ window.renderServiceNavigator = function() {
       statusBadgeColor = '#eab308'; // Rich Yellow
       statusTextColor = '#0b0f19'; // High-contrast Dark Navy text!
     } else if (sys.status === '7d SLA (High)') {
-      statusBadgeColor = '#ec4899'; // Vibrant Pink
+      statusBadgeColor = '#14b8a6'; // Vibrant Mint / Light Teal
       statusTextColor = '#ffffff';
     } else if (sys.status === '30d SLA (Medium)') {
-      statusBadgeColor = '#8b5cf6'; // Royal Purple
+      statusBadgeColor = '#059669'; // Medium Teal / Sage
       statusTextColor = '#ffffff';
     } else if (sys.status === '90d SLA (Low)') {
-      statusBadgeColor = '#10b981'; // Green
+      statusBadgeColor = '#15803d'; // Deep Forest Green
       statusTextColor = '#ffffff';
     }
 
@@ -6085,9 +6085,9 @@ window.selectNavigatorService = function(serviceName, element) {
   if (targetSys.status === '9h SLA (Urgent)') statusBadgeStyle = 'background: #ef4444; color: #ffffff; font-weight: 700;';
   else if (targetSys.status === '24h SLA (Critical)') statusBadgeStyle = 'background: #f97316; color: #ffffff; font-weight: 700;';
   else if (targetSys.status === '48h SLA (Critical)') statusBadgeStyle = 'background: #eab308; color: #0b0f19; font-weight: 700;';
-  else if (targetSys.status === '7d SLA (High)') statusBadgeStyle = 'background: #ec4899; color: #ffffff; font-weight: 700;';
-  else if (targetSys.status === '30d SLA (Medium)') statusBadgeStyle = 'background: #8b5cf6; color: #ffffff; font-weight: 700;';
-  else if (targetSys.status === '90d SLA (Low)') statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 700;';
+  else if (targetSys.status === '7d SLA (High)') statusBadgeStyle = 'background: #14b8a6; color: #ffffff; font-weight: 700;';
+  else if (targetSys.status === '30d SLA (Medium)') statusBadgeStyle = 'background: #059669; color: #ffffff; font-weight: 700;';
+  else if (targetSys.status === '90d SLA (Low)') statusBadgeStyle = 'background: #15803d; color: #ffffff; font-weight: 700;';
 
   // Build details header HTML
   const headerContainer = document.getElementById('navigator-details-header');
