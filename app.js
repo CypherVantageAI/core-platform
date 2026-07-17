@@ -52,10 +52,10 @@ const supplierSurfaceData = {
       { num: '3389 (RDP)', status: 'Closed (Secure)' }
     ]
   },
-  acme: {
+  workday: {
     assets: [
-      { name: 'acme.org', type: 'Primary Domain', status: 'Secure' },
-      { name: 'mail.acme.org', type: 'Mail Server Host', status: 'Secure' }
+      { name: 'workday.com', type: 'Primary Domain', status: 'Secure' },
+      { name: 'impl.workday.com', type: 'Implementation Portal', status: 'Secure' }
     ],
     ports: [
       { num: '80 (HTTP)', status: 'Closed (Redirect)' },
@@ -216,32 +216,32 @@ let state = {
         { type: 'evidence-uploaded', title: 'Quarterly Check Complete', body: 'AI Evidence Collector verified Slack certificates. 100% compliant.', user: 'AI Risk Officer', date: '2026-07-04 10:20' }
       ]
     },
-    'acme': {
-      id: 'acme',
-      name: 'Acme Corp Solutions',
-      riskTier: 'Low',
+    'workday': {
+      id: 'workday',
+      name: 'Workday, Inc. (SaaS HR & ERP)',
+      riskTier: 'High',
       scoVersion: 'CV Framework',
       complianceScore: 80,
-      status: 'Compliant',
-      contactName: 'Wile E. Coyote',
-      contactEmail: 'wecoyote@acme.com',
-      avatar: 'AC',
-      primarySupportLocation: 'Phoenix, AZ (USA)',
-      secondarySupportLocation: 'Singapore',
-      subcontractors: [],
+      status: 'Gaps Identified',
+      contactName: 'Marcus Vance',
+      contactEmail: 'compliance@workday.com',
+      avatar: 'WD',
+      primarySupportLocation: 'Pleasanton, CA (USA)',
+      secondarySupportLocation: 'Dublin, Ireland',
+      subcontractors: ['AWS (Hosting Infrastructure)', 'Cloudflare (Edge Delivery)'],
       documents: [
-        { name: 'Acme_Security_Framework_v2.pdf', type: 'Policy Document', date: '2024-08-11', scanned: '2026-07-05', status: 'Valid' },
-        { name: 'Acme_BCP_TestDoc_2025.pdf', type: 'Resilience Evidence', date: '2025-06-01', scanned: '2026-07-05', status: 'Valid' }
+        { name: 'Workday_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-02-15', scanned: '2026-07-05', status: 'Valid' },
+        { name: 'Workday_BCP_TestDoc_2025.pdf', type: 'Resilience Evidence', date: '2025-06-01', scanned: '2026-07-05', status: 'Valid' }
       ],
       assessments: [
-        { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'Acme_Security_Framework_v2.pdf', snippet: 'Administrative controls require physical key cards or authenticator app confirmations.' },
-        { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Met', document: 'Acme_Security_Framework_v2.pdf', snippet: 'Data stored on servers uses BitLocker hardware encryption (AES-256 equivalent).' },
-        { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Met', document: 'Acme_BCP_TestDoc_2025.pdf', snippet: 'Backup restore testing executed and verified on June 1, 2025.' },
-        { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Gap', document: 'None', snippet: 'No subcontractor evaluation process exists (Deemed Acceptable risk due to Low risk classification of Acme Services).' },
-        { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'Acme_Security_Framework_v2.pdf', snippet: 'Acme services do not store, process, or transmit cardholder data.' }
+        { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'Workday_SOC_2_Type_II_2025.pdf', snippet: 'Administrative controls require physical MFA tokens or secure Authenticator app confirmation.' },
+        { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Met', document: 'Workday_SOC_2_Type_II_2025.pdf', snippet: 'Data stored on persistent database volumes is encrypted at rest using AES-256 bit keys.' },
+        { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Met', document: 'Workday_BCP_TestDoc_2025.pdf', snippet: 'Full environment backup restore and DR testing executed and verified on June 1, 2025.' },
+        { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Gap', document: 'None', snippet: 'Sub-processor compliance assessment forms and NDAs are missing for downstream service organizations.' },
+        { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'Workday_SOC_2_Type_II_2025.pdf', snippet: 'Workday Core Services do not store or transmit cardholder payment data directly.' }
       ],
       history: [
-        { type: 'evidence-uploaded', title: 'Low Risk Exemption Logged', body: 'Subcontractor gap accepted by Risk Lead based on Low Tier risk posture.', user: 'Sarah Jenkins', date: '2026-07-05 14:15' }
+        { type: 'evidence-uploaded', title: 'Compliance Gap Logged', body: 'AI Evidence Collector identified gap in subcontractor evaluation audits.', user: 'AI Risk Officer', date: '2026-07-05 14:15' }
       ]
     }
   },
@@ -331,11 +331,11 @@ Third-Party Risk Assurance, Cypher Vantage Team`,
     },
     {
       id: 'act-005',
-      supplierId: 'acme',
+      supplierId: 'workday',
       domain: 'ICT Security',
       controlId: 'c5.3',
       title: 'Subcontractor Security Evaluation Gap',
-      gapDetails: 'Acme Services has not submitted contract sign-offs or NDAs for subcontractors. Section 14.0 requires all downstream sub-processors to be bound by equivalent security guidelines.',
+      gapDetails: 'Workday, Inc. has not submitted contract sign-offs or NDAs for downstream sub-processors. Section 14.0 requires all downstream sub-processors to be bound by equivalent security guidelines.',
       status: 'Open Gap',
       dateCreated: '2026-07-05',
       emailDraft: '',
@@ -381,6 +381,43 @@ window.loadState = function() {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
   }
+  // Migrate Acme Corp to Workday for persistence compatibility
+  if (state && state.suppliers) {
+    if (state.suppliers['acme']) {
+      delete state.suppliers['acme'];
+    }
+    if (!state.suppliers['workday']) {
+      state.suppliers['workday'] = {
+        id: 'workday',
+        name: 'Workday, Inc. (SaaS HR & ERP)',
+        riskTier: 'High',
+        scoVersion: 'CV Framework',
+        complianceScore: 80,
+        status: 'Gaps Identified',
+        contactName: 'Marcus Vance',
+        contactEmail: 'compliance@workday.com',
+        avatar: 'WD',
+        primarySupportLocation: 'Pleasanton, CA (USA)',
+        secondarySupportLocation: 'Dublin, Ireland',
+        subcontractors: ['AWS (Hosting Infrastructure)', 'Cloudflare (Edge Delivery)'],
+        documents: [
+          { name: 'Workday_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-02-15', scanned: '2026-07-05', status: 'Valid' },
+          { name: 'Workday_BCP_TestDoc_2025.pdf', type: 'Resilience Evidence', date: '2025-06-01', scanned: '2026-07-05', status: 'Valid' }
+        ],
+        assessments: [
+          { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'Workday_SOC_2_Type_II_2025.pdf', snippet: 'Administrative controls require physical MFA tokens or secure Authenticator app confirmation.' },
+          { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Met', document: 'Workday_SOC_2_Type_II_2025.pdf', snippet: 'Data stored on persistent database volumes is encrypted at rest using AES-256 bit keys.' },
+          { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Met', document: 'Workday_BCP_TestDoc_2025.pdf', snippet: 'Full environment backup restore and DR testing executed and verified on June 1, 2025.' },
+          { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Gap', document: 'None', snippet: 'Sub-processor compliance assessment forms and NDAs are missing for downstream service organizations.' },
+          { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'Workday_SOC_2_Type_II_2025.pdf', snippet: 'Workday Core Services do not store or transmit cardholder payment data directly.' }
+        ],
+        history: [
+          { type: 'evidence-uploaded', title: 'Compliance Gap Logged', body: 'AI Evidence Collector identified gap in subcontractor evaluation audits.', user: 'AI Risk Officer', date: '2026-07-05 14:15' }
+        ]
+      };
+    }
+  }
+
   // Repair any invalid action controlIds from older local storage sessions
   if (state && state.actions) {
     state.actions.forEach(act => {
@@ -2027,6 +2064,115 @@ function renderCollectorResults(supplierId) {
 // --------------------------------------------------------------------------
 // 11. SUPPLIER PORTAL VIEW: PORTAL DASHBOARD
 // --------------------------------------------------------------------------
+function createSupplierActionCard(act) {
+  const card = document.createElement('div');
+  card.className = 'action-card';
+
+  let actionFormHTML = '';
+  if (act.status === 'Awaiting Response') {
+    if (act.isVulnerabilityRemediation) {
+      actionFormHTML = `
+        <div class="supplier-response-form-box mt-3" id="form-container-${act.id}">
+          <div style="background: rgba(249, 115, 22, 0.03); border: 1px solid rgba(249, 115, 22, 0.15); border-radius: 6px; padding: 10px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+            <strong style="color: #f97316; display: block; margin-bottom: 2px;">⚠️ SLA Vulnerability Remediation Mandate</strong>
+            Under DORA guidelines, you are required to submit an Executive Summary detailing your immediate remediation action plan, followed by a formal Root Cause Analysis (RCA) to restore compliance.
+          </div>
+          
+          <div class="form-group">
+            <label for="resp-plan-${act.id}">Executive Summary &amp; Remediation Action Plan</label>
+            <textarea id="resp-plan-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Describe the remediation actions taken, patches applied, or configurations updated..."></textarea>
+          </div>
+          
+          <div class="form-group mt-3">
+            <label for="resp-rca-${act.id}">Root Cause Analysis (RCA)</label>
+            <textarea id="resp-rca-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Identify the root cause of the vulnerability exposure and prevention strategies..."></textarea>
+          </div>
+
+          <button class="btn btn-accent btn-sm mt-3" onclick="submitSupplierVulnerabilityResponse('${act.id}')" style="background: #f97316; border-color: #f97316; color: #ffffff;">
+            Submit Remediation Sign-off
+          </button>
+        </div>
+      `;
+    } else {
+      actionFormHTML = `
+        <div class="supplier-response-form-box mt-3" id="form-container-${act.id}">
+          <div class="form-group">
+            <label for="resp-msg-${act.id}">Response Statement</label>
+            <textarea id="resp-msg-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Provide details on how this gap has been addressed..."></textarea>
+          </div>
+          
+          <div class="form-group mt-3">
+            <label>Upload Supporting Evidence Document</label>
+            <div class="file-upload-simulated" onclick="triggerSimulatedFileUpload('${act.id}')">
+              <svg viewBox="0 0 24 24"><path d="M19 13h-6V7h-2v6H5v2h6v6h2v-6h6z" fill="currentColor"/></svg>
+              <span>Click to simulate uploading PDF evidence</span>
+            </div>
+            <div id="file-indicator-${act.id}" class="uploaded-filename-indicator hidden">
+              <span>Selected: <b id="filename-${act.id}">None</b></span>
+              <button class="btn btn-secondary py-0 px-2" style="height: 20px" onclick="clearSimulatedFileUpload('${act.id}')">Remove</button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary mt-3 py-1 px-4" onclick="submitResponseToManager('${act.id}')">Submit Evidence</button>
+        </div>
+      `;
+    }
+  } else if (act.status === 'Pending Review') {
+    if (act.isVulnerabilityRemediation) {
+      actionFormHTML = `
+        <div class="supplier-response-box mt-3" style="background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px; padding: 10px; width: 100%;">
+          <div class="supplier-response-header" style="color: #10b981; font-weight: 700; font-size: 0.72rem; margin-bottom: 6px; display: flex; justify-content: space-between;">
+            <span>✅ Remediation Sign-off Response Submitted</span>
+            <span style="opacity: 0.8;">Awaiting Audit</span>
+          </div>
+          <div style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.45;">
+            <div style="margin-bottom: 6px;"><strong>Remediation Plan:</strong> ${act.remediationPlan}</div>
+            <div><strong>RCA:</strong> ${act.rootCauseAnalysis}</div>
+          </div>
+          <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 8px; font-style: italic; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px;">Awaiting verification review audit by Sarah Jenkins.</div>
+        </div>
+      `;
+    } else {
+      actionFormHTML = `
+        <div class="supplier-response-box mt-3">
+          <div class="supplier-response-header">
+            <span>Evidence Submitted</span>
+            <span>Awaiting Verification</span>
+          </div>
+          <p class="supplier-response-body">"${act.responseMessage}"</p>
+          <div class="supplier-response-attachment mt-2">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg>
+            <span>Attached file: <b>${act.responseAttachment}</b></span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  const badgeColor = act.isVulnerabilityRemediation ? 'rgba(239, 68, 68, 0.12)' : 'rgba(249, 115, 22, 0.12)';
+  const badgeTextColor = act.isVulnerabilityRemediation ? '#ef4444' : '#f97316';
+  const badgeTextStr = act.isVulnerabilityRemediation ? 'Urgent Vulnerability SLA Directive' : 'Standard Compliance Gap Request';
+
+  card.innerHTML = `
+    <div class="action-info" style="grid-column: 1 / span 2; width: 100%;">
+      <span class="badge mb-1" style="background: ${badgeColor}; color: ${badgeTextColor}; border: 1px solid rgba(${act.isVulnerabilityRemediation ? '239,68,68' : '249,115,22'}, 0.25); font-weight: 700; text-transform: uppercase; font-size: 0.58rem; letter-spacing: 0.05em; padding: 2px 6px;">${badgeTextStr}</span>
+      <h4 style="margin-top: 3px;">${act.title}</h4>
+      <p style="margin-top: 4px; line-height: 1.35;">${act.gapDetails}</p>
+      
+      ${act.emailDraft ? `
+      <div class="email-copy-box mt-3 p-3 bg-secondary rounded border" style="background-color: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.06);">
+        <small class="block text-muted font-bold" style="font-size: 0.58rem; letter-spacing: 0.05em;">MESSAGE FROM SARAH JENKINS (CYPHER VANTAGE RISK LEAD):</small>
+        <p class="text-xs mt-1 text-secondary" style="white-space: pre-wrap; line-height: 1.35; opacity: 0.85;">${act.emailDraft}</p>
+      </div>
+      ` : ''}
+
+      ${actionFormHTML}
+    </div>
+  `;
+
+  return card;
+}
+
 function renderSupplierPortalDashboard() {
   const container = document.getElementById('supplier-pending-actions-list');
   container.innerHTML = '';
@@ -2062,92 +2208,39 @@ function renderSupplierPortalDashboard() {
     return;
   }
 
-  sActions.forEach(act => {
-    const card = document.createElement('div');
-    card.className = 'action-card';
+  // Split urgent vs standard actions
+  const vulnActions = sActions.filter(a => a.isVulnerabilityRemediation);
+  const standardActions = sActions.filter(a => !a.isVulnerabilityRemediation);
 
-    let actionFormHTML = '';
-    if (act.status === 'Awaiting Response') {
-      if (act.isVulnerabilityRemediation) {
-        actionFormHTML = `
-          <div class="supplier-response-form-box mt-3" id="form-container-${act.id}">
-            <div style="background: rgba(249, 115, 22, 0.03); border: 1px solid rgba(249, 115, 22, 0.15); border-radius: 6px; padding: 10px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
-              <strong style="color: #f97316; display: block; margin-bottom: 2px;">⚠️ SLA Vulnerability Remediation Mandate</strong>
-              Under DORA guidelines, you are required to submit an Executive Summary detailing your immediate remediation action plan, followed by a formal Root Cause Analysis (RCA) to restore compliance.
-            </div>
-            
-            <div class="form-group">
-              <label for="resp-plan-${act.id}">Executive Summary &amp; Remediation Action Plan</label>
-              <textarea id="resp-plan-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Describe the remediation actions taken, patches applied, or configurations updated..."></textarea>
-            </div>
-            
-            <div class="form-group mt-3">
-              <label for="resp-rca-${act.id}">Root Cause Analysis (RCA)</label>
-              <textarea id="resp-rca-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Identify the root cause of the vulnerability exposure and prevention strategies..."></textarea>
-            </div>
-
-            <button class="btn btn-accent btn-sm mt-3" onclick="submitSupplierVulnerabilityResponse('${act.id}')" style="background: #f97316; border-color: #f97316; color: #ffffff;">
-              Submit Remediation Sign-off
-            </button>
-          </div>
-        `;
-      } else {
-        actionFormHTML = `
-          <div class="supplier-response-form-box mt-3" id="form-container-${act.id}">
-            <div class="form-group">
-              <label for="resp-msg-${act.id}">Response Statement</label>
-              <textarea id="resp-msg-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Provide details on how this gap has been addressed..."></textarea>
-            </div>
-            
-            <div class="form-group mt-3">
-              <label>Upload Supporting Evidence Document</label>
-              <div class="file-upload-simulated" onclick="triggerSimulatedFileUpload('${act.id}')">
-                <svg viewBox="0 0 24 24"><path d="M19 13h-6V7h-2v6H5v2h6v6h2v-6h6z" fill="currentColor"/></svg>
-                <span>Click to simulate uploading PDF evidence</span>
-              </div>
-              <div id="file-indicator-${act.id}" class="uploaded-filename-indicator hidden">
-                <span>Selected: <b id="filename-${act.id}">None</b></span>
-                <button class="btn btn-secondary py-0 px-2" style="height: 20px" onclick="clearSimulatedFileUpload('${act.id}')">Remove</button>
-              </div>
-            </div>
-
-            <button class="btn btn-primary mt-3 py-1 px-4" onclick="submitResponseToManager('${act.id}')">Submit Evidence</button>
-          </div>
-        `;
-      }
-    } else if (act.status === 'Pending Review') {
-      actionFormHTML = `
-        <div class="supplier-response-box mt-3">
-          <div class="supplier-response-header">
-            <span>Evidence Submitted</span>
-            <span>Awaiting Verification</span>
-          </div>
-          <p class="supplier-response-body">"${act.responseMessage}"</p>
-          <div class="supplier-response-attachment mt-2">
-            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg>
-            <span>Attached file: <b>${act.responseAttachment}</b></span>
-          </div>
-        </div>
-      `;
-    }
-
-    card.innerHTML = `
-      <div class="action-info" style="grid-column: 1 / span 2;">
-        <span class="badge badge-danger mb-1">Response Requested</span>
-        <h4>${act.title}</h4>
-        <p>${act.gapDetails}</p>
-        
-        <div class="email-copy-box mt-3 p-3 bg-secondary rounded border" style="background-color: rgba(0,0,0,0.2)">
-          <small class="block text-muted font-bold">MESSAGE FROM SARAH JENKINS (CYPHER VANTAGE RISK LEAD):</small>
-          <p class="text-xs mt-1 text-secondary" style="white-space: pre-wrap;">${act.emailDraft}</p>
-        </div>
-
-        ${actionFormHTML}
-      </div>
+  if (vulnActions.length > 0) {
+    const vulnHeader = document.createElement('div');
+    vulnHeader.innerHTML = `
+      <h4 style="color: #ef4444; font-size: 0.72rem; margin-top: 10px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding-bottom: 6px;">
+        ⚠️ URGENT VULNERABILITY SLA DIRECTIVES (Action Required)
+      </h4>
     `;
+    container.appendChild(vulnHeader);
+    
+    vulnActions.forEach(act => {
+      const card = createSupplierActionCard(act);
+      container.appendChild(card);
+    });
+  }
 
-    container.appendChild(card);
-  });
+  if (standardActions.length > 0) {
+    const stdHeader = document.createElement('div');
+    stdHeader.innerHTML = `
+      <h4 style="color: #f97316; font-size: 0.72rem; margin-top: 24px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px solid rgba(249, 115, 22, 0.2); padding-bottom: 6px;">
+        📋 Standard Compliance &amp; Assessment Gaps
+      </h4>
+    `;
+    container.appendChild(stdHeader);
+
+    standardActions.forEach(act => {
+      const card = createSupplierActionCard(act);
+      container.appendChild(card);
+    });
+  }
 }
 
 let simulatedUploads = {};
@@ -2683,8 +2776,8 @@ window.discoverInternalEndpoints = function() {
       { name: 'api-internal-teams.slack.net', type: 'API Gateway', status: 'Secure' },
       { name: 'slack-stage-portal.net', type: 'Internal Host', status: 'Secure' }
     ],
-    acme: [
-      { name: 'acme-intranet.local', type: 'Internal Host', status: 'Vulnerable' }
+    workday: [
+      { name: 'workday-intranet.local', type: 'Internal Host', status: 'Vulnerable' }
     ]
   };
 
@@ -3711,12 +3804,12 @@ window.renderResilienceDashboard = function() {
   if (p4Tooltip) {
     const infosys = state.suppliers['infosys'];
     const infoSubGap = infosys && infosys.assessments.find(a => a.id === 'c5.3' && a.status === 'Gap');
-    const acme = state.suppliers['acme'];
-    const acmeSubGap = acme && acme.assessments.find(a => a.id === 'c5.3' && a.status === 'Gap');
+    const workday = state.suppliers['workday'];
+    const workdaySubGap = workday && workday.assessments.find(a => a.id === 'c5.3' && a.status === 'Gap');
     
     let gaps = [];
     if (infoSubGap) gaps.push(`Infosys Subcontractor evaluation audit (Control 5.3) is missing.`);
-    if (acmeSubGap) gaps.push(`Acme Corp subcontractor evaluation sign-offs are missing.`);
+    if (workdaySubGap) gaps.push(`Workday, Inc. subcontractor evaluation sign-offs are missing.`);
     
     if (gaps.length > 0) {
       p4Tooltip.innerHTML = `<strong>Active Gaps:</strong><ul style="margin: 4px 0 0 12px; padding: 0;">${gaps.map(g => `<li>${g}</li>`).join('')}</ul>`;
