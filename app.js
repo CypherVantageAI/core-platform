@@ -2255,25 +2255,89 @@ function renderSupplierPortalDashboard() {
 
   const sActions = state.actions.filter(a => a.supplierId === state.activeSupplierId && a.status !== 'Closed');
 
-  const circle = document.getElementById('supplier-radial-progress');
-  const pctText = document.getElementById('supplier-percentage-text');
-  const statusBadge = document.getElementById('supplier-overall-status');
+  // Inject styles for flashing blink animation dynamically if missing
+  if (!document.getElementById('live-blink-style')) {
+    const style = document.createElement('style');
+    style.id = 'live-blink-style';
+    style.innerHTML = `
+      @keyframes blink {
+        0% { opacity: 1; }
+        50% { opacity: 0.35; }
+        100% { opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
 
-  const score = getSupplierComplianceScore(s);
-  pctText.innerText = `${score}%`;
-  
-  const offset = 251.2 - (251.2 * score / 100);
-  circle.setAttribute('stroke-dashoffset', offset);
+  // Populate dynamic SLA deadlines countdown panel
+  const slaPanel = document.getElementById('supplier-sla-status-panel');
+  if (slaPanel) {
+    const activeVulns = state.actions.filter(a => a.supplierId === state.activeSupplierId && a.isVulnerabilityRemediation && a.status !== 'Closed');
+    const activeStandards = state.actions.filter(a => a.supplierId === state.activeSupplierId && !a.isVulnerabilityRemediation && a.status !== 'Closed');
 
-  if (score === 100) {
-    statusBadge.className = 'badge badge-success';
-    statusBadge.innerText = 'Compliant';
-  } else if (score >= 75) {
-    statusBadge.className = 'badge badge-accent';
-    statusBadge.innerText = 'Action Needed';
-  } else {
-    statusBadge.className = 'badge badge-danger';
-    statusBadge.innerText = 'High Risk Gaps';
+    if (activeVulns.length === 0 && activeStandards.length === 0) {
+      slaPanel.innerHTML = `
+        <div style="background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.15); padding: 12px; border-radius: 6px; text-align: center;">
+          <span style="font-size: 1.2rem; display: block; margin-bottom: 4px;">✅</span>
+          <span style="font-size: 0.72rem; color: #10b981; font-weight: 700; text-transform: uppercase; display: block;">100% SLA Compliant</span>
+          <span style="font-size: 0.65rem; color: var(--text-secondary); display: block; margin-top: 4px; line-height: 1.3;">No active remediation tasks or audit actions pending.</span>
+        </div>
+      `;
+    } else {
+      let itemsHTML = '';
+
+      activeVulns.forEach(act => {
+        // Compute target time: assume dispatched at 9:00 AM on dateCreated
+        const createdTime = new Date(`${act.dateCreated}T09:00:00Z`).getTime();
+        let slaHours = 48;
+        if (act.title.includes('9 Hours') || act.gapDetails.includes('9 Hours') || act.id === 'act-vuln-pre') {
+          slaHours = 9;
+        } else if (act.title.includes('24 Hours') || act.gapDetails.includes('24 Hours')) {
+          slaHours = 24;
+        }
+        const dueTime = createdTime + (slaHours * 60 * 60 * 1000);
+        const dueDateStr = new Date(dueTime).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+
+        itemsHTML += `
+          <div style="background: rgba(239, 68, 68, 0.03); border: 1px solid rgba(239, 68, 68, 0.15); padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+              <span style="font-size: 0.58rem; font-weight: 700; color: #ef4444; text-transform: uppercase; background: rgba(239, 68, 68, 0.08); padding: 1px 4px; border-radius: 3px; border: 1px solid rgba(239,68,68,0.2);">Urgent SLA Alert</span>
+              <span style="font-size: 0.62rem; color: var(--text-muted);">Due: ${dueDateStr}</span>
+            </div>
+            <strong style="font-size: 0.72rem; color: var(--text-primary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">${act.title}</strong>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 4px; width: 100%;">
+              <span style="font-size: 0.65rem; color: var(--text-muted);">Time Remaining:</span>
+              <span class="supplier-live-countdown" data-due-time="${dueTime}" style="font-size: 0.7rem; font-weight: 700; color: #ef4444;">--h --m --s</span>
+            </div>
+          </div>
+        `;
+      });
+
+      activeStandards.forEach(act => {
+        // Standards have 14 days due window
+        const createdTime = new Date(`${act.dateCreated}T09:00:00Z`).getTime();
+        const dueTime = createdTime + (14 * 24 * 60 * 60 * 1000);
+        const dueDateStr = new Date(dueTime).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        const daysLeft = Math.max(0, Math.ceil((dueTime - Date.now()) / (1000 * 60 * 60 * 24)));
+
+        itemsHTML += `
+          <div style="background: rgba(249, 115, 22, 0.02); border: 1px solid rgba(249, 115, 22, 0.15); padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+              <span style="font-size: 0.58rem; font-weight: 700; color: #f97316; text-transform: uppercase; background: rgba(249, 115, 22, 0.08); padding: 1px 4px; border-radius: 3px; border: 1px solid rgba(249,115,22,0.2);">Standard Audit Gap</span>
+              <span style="font-size: 0.62rem; color: var(--text-muted);">Due: ${dueDateStr}</span>
+            </div>
+            <strong style="font-size: 0.72rem; color: var(--text-primary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">${act.title}</strong>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 4px; width: 100%;">
+              <span style="font-size: 0.65rem; color: var(--text-muted);">Time Remaining:</span>
+              <span style="font-size: 0.7rem; font-weight: 700; color: #f97316;">${daysLeft} Days</span>
+            </div>
+          </div>
+        `;
+      });
+
+      slaPanel.innerHTML = itemsHTML;
+      startSupplierSlaCountdown();
+    }
   }
 
   // Update left nav badges dynamically
@@ -6617,5 +6681,44 @@ window.approveSupplierRca = function(actionId) {
   saveState();
   alert('Remediation verified and audit successfully closed. This vulnerability has been marked as Remediated on the Service Navigator.');
   renderManagerInbox();
+};
+
+window.startSupplierSlaCountdown = function() {
+  if (window.supplierSlaIntervalId) {
+    clearInterval(window.supplierSlaIntervalId);
+  }
+
+  function updateTimers() {
+    const timerEls = document.querySelectorAll('.supplier-live-countdown');
+    if (timerEls.length === 0) {
+      clearInterval(window.supplierSlaIntervalId);
+      window.supplierSlaIntervalId = null;
+      return;
+    }
+
+    timerEls.forEach(el => {
+      const targetTime = parseInt(el.getAttribute('data-due-time'));
+      const now = Date.now();
+      const diff = targetTime - now;
+
+      if (diff <= 0) {
+        el.innerHTML = `<span style="color: #ef4444; font-weight: 700; animation: blink 1s infinite;">🔴 SLA EXPIRED (OVERDUE)</span>`;
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      const hourStr = String(hours).padStart(2, '0');
+      const minStr = String(mins).padStart(2, '0');
+      const secStr = String(secs).padStart(2, '0');
+
+      el.innerHTML = `<span style="color: #ef4444; font-weight: 700; animation: blink 1s infinite;">⏳ ${hourStr}h ${minStr}m ${secStr}s</span>`;
+    });
+  }
+
+  updateTimers();
+  window.supplierSlaIntervalId = setInterval(updateTimers, 1000);
 };
 
