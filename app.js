@@ -5362,11 +5362,19 @@ window.renderServiceNavigator = function() {
     const typeLabel = isCis ? 'CIS' : 'IBS';
     const badgeColor = isCis ? '#8b5cf6' : 'var(--color-cyan)';
     
-    // SLA status color coding
+    // SLA status color coding with high-contrast readable text colors
     let statusBadgeColor = '#10b981'; // Green
-    if (sys.status === '9h SLA') statusBadgeColor = '#ef4444'; // Red
-    else if (sys.status === '24h SLA') statusBadgeColor = '#f59e0b'; // Orange
-    else if (sys.status === '48h SLA') statusBadgeColor = '#fbbf24'; // Yellow
+    let statusTextColor = '#ffffff';
+    if (sys.status === '9h SLA') {
+      statusBadgeColor = '#ef4444'; // Red
+      statusTextColor = '#ffffff';
+    } else if (sys.status === '24h SLA') {
+      statusBadgeColor = '#f97316'; // Bright Orange
+      statusTextColor = '#ffffff';
+    } else if (sys.status === '48h SLA') {
+      statusBadgeColor = '#eab308'; // Rich Yellow
+      statusTextColor = '#0b0f19'; // High-contrast Dark Navy text!
+    }
 
     const item = document.createElement('div');
     item.className = `navigator-list-item ${isCis ? 'cis' : ''}`;
@@ -5380,7 +5388,7 @@ window.renderServiceNavigator = function() {
         <span style="font-weight: 600; font-size: 0.74rem; color: var(--text-primary);">${sys.name}</span>
         <div style="display: flex; gap: 4px; align-items: center;">
           <span style="font-size: 0.55rem; font-weight: 700; color: #fff; background: ${badgeColor}; padding: 1px 4px; border-radius: 3px;">${typeLabel}</span>
-          <span style="font-size: 0.55rem; font-weight: 700; color: #fff; background: ${statusBadgeColor}; padding: 1px 4px; border-radius: 3px;">${sys.status}</span>
+          <span style="font-size: 0.55rem; font-weight: 700; color: ${statusTextColor}; background: ${statusBadgeColor}; padding: 1px 4px; border-radius: 3px;">${sys.status}</span>
         </div>
       </div>
       <div style="font-size: 0.64rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px;">
@@ -5389,6 +5397,51 @@ window.renderServiceNavigator = function() {
     `;
     listContainer.appendChild(item);
   });
+
+  // Populate the Live Threat Feed
+  renderThreatFeed();
+};
+
+window.renderThreatFeed = function() {
+  const container = document.getElementById('navigator-threat-feed');
+  if (!container) return;
+
+  const threats = [
+    {
+      source: 'CISA Warning',
+      time: '10m ago',
+      color: '#ef4444',
+      message: 'Active exploitation of Oracle WebLogic deserialization (CVE-2026-3829) observed in the wild targeting audit log hubs.'
+    },
+    {
+      source: 'FS-ISAC Warning',
+      time: '42m ago',
+      color: '#f97316',
+      message: 'Persistent DDoS campaigns abusing HTTP/2 stream boundaries (CVE-2026-1044) targeting European clearing portal endpoints.'
+    },
+    {
+      source: 'NVD Critical Alert',
+      time: '2h ago',
+      color: '#eab308',
+      message: 'Mythos framework updates automate prompt-injection toolchains against public API gateway and routing systems.'
+    },
+    {
+      source: 'ENISA Bulletin',
+      time: '4h ago',
+      color: '#94a3b8',
+      message: 'Standard patching advisory issued for Spring Boot CVE-2026-9912. Actuator exposure on public IPs flagged.'
+    }
+  ];
+
+  container.innerHTML = threats.map(t => `
+    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 6px; padding: 8px 10px; font-size: 0.68rem; line-height: 1.35; display: flex; flex-direction: column; gap: 4px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 700; color: ${t.color}; text-transform: uppercase; font-size: 0.58rem; letter-spacing: 0.03em;">${t.source}</span>
+        <span style="color: var(--text-muted); font-size: 0.55rem;">${t.time}</span>
+      </div>
+      <div style="color: var(--text-secondary);">${t.message}</div>
+    </div>
+  `).join('');
 };
 
 window.filterNavigatorServices = function() {
@@ -5566,11 +5619,11 @@ window.selectNavigatorService = function(serviceName, element) {
     `;
   }
 
-  // SLA status color coding for details header
+  // SLA status color coding for details header with high-contrast solid backgrounds
   let statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);';
-  if (targetSys.status === '9h SLA') statusBadgeStyle = 'background: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);';
-  else if (targetSys.status === '24h SLA') statusBadgeStyle = 'background: rgba(245, 158, 11, 0.08); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);';
-  else if (targetSys.status === '48h SLA') statusBadgeStyle = 'background: rgba(251, 191, 36, 0.08); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2);';
+  if (targetSys.status === '9h SLA') statusBadgeStyle = 'background: #ef4444; color: #ffffff; font-weight: 700;';
+  else if (targetSys.status === '24h SLA') statusBadgeStyle = 'background: #f97316; color: #ffffff; font-weight: 700;';
+  else if (targetSys.status === '48h SLA') statusBadgeStyle = 'background: #eab308; color: #0b0f19; font-weight: 700;';
 
   // Build details header HTML
   const headerContainer = document.getElementById('navigator-details-header');
