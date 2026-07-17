@@ -2022,28 +2022,53 @@ function renderSupplierPortalDashboard() {
 
     let actionFormHTML = '';
     if (act.status === 'Awaiting Response') {
-      actionFormHTML = `
-        <div class="supplier-response-form-box mt-3" id="form-container-${act.id}">
-          <div class="form-group">
-            <label for="resp-msg-${act.id}">Response Statement</label>
-            <textarea id="resp-msg-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Provide details on how this gap has been addressed..."></textarea>
-          </div>
-          
-          <div class="form-group mt-3">
-            <label>Upload Supporting Evidence Document</label>
-            <div class="file-upload-simulated" onclick="triggerSimulatedFileUpload('${act.id}')">
-              <svg viewBox="0 0 24 24"><path d="M19 13h-6V7h-2v6H5v2h6v6h2v-6h6z" fill="currentColor"/></svg>
-              <span>Click to simulate uploading PDF evidence</span>
+      if (act.isVulnerabilityRemediation) {
+        actionFormHTML = `
+          <div class="supplier-response-form-box mt-3" id="form-container-${act.id}">
+            <div style="background: rgba(249, 115, 22, 0.03); border: 1px solid rgba(249, 115, 22, 0.15); border-radius: 6px; padding: 10px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+              <strong style="color: #f97316; display: block; margin-bottom: 2px;">⚠️ SLA Vulnerability Remediation Mandate</strong>
+              Under DORA guidelines, you are required to submit an Executive Summary detailing your immediate remediation action plan, followed by a formal Root Cause Analysis (RCA) to restore compliance.
             </div>
-            <div id="file-indicator-${act.id}" class="uploaded-filename-indicator hidden">
-              <span>Selected: <b id="filename-${act.id}">None</b></span>
-              <button class="btn btn-secondary py-0 px-2" style="height: 20px" onclick="clearSimulatedFileUpload('${act.id}')">Remove</button>
+            
+            <div class="form-group">
+              <label for="resp-plan-${act.id}">Executive Summary &amp; Remediation Action Plan</label>
+              <textarea id="resp-plan-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Describe the remediation actions taken, patches applied, or configurations updated..."></textarea>
             </div>
-          </div>
+            
+            <div class="form-group mt-3">
+              <label for="resp-rca-${act.id}">Root Cause Analysis (RCA)</label>
+              <textarea id="resp-rca-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Identify the root cause of the vulnerability exposure and prevention strategies..."></textarea>
+            </div>
 
-          <button class="btn btn-primary mt-3 py-1 px-4" onclick="submitResponseToManager('${act.id}')">Submit Evidence</button>
-        </div>
-      `;
+            <button class="btn btn-accent btn-sm mt-3" onclick="submitSupplierVulnerabilityResponse('${act.id}')" style="background: #f97316; border-color: #f97316; color: #ffffff;">
+              Submit Remediation Sign-off
+            </button>
+          </div>
+        `;
+      } else {
+        actionFormHTML = `
+          <div class="supplier-response-form-box mt-3" id="form-container-${act.id}">
+            <div class="form-group">
+              <label for="resp-msg-${act.id}">Response Statement</label>
+              <textarea id="resp-msg-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Provide details on how this gap has been addressed..."></textarea>
+            </div>
+            
+            <div class="form-group mt-3">
+              <label>Upload Supporting Evidence Document</label>
+              <div class="file-upload-simulated" onclick="triggerSimulatedFileUpload('${act.id}')">
+                <svg viewBox="0 0 24 24"><path d="M19 13h-6V7h-2v6H5v2h6v6h2v-6h6z" fill="currentColor"/></svg>
+                <span>Click to simulate uploading PDF evidence</span>
+              </div>
+              <div id="file-indicator-${act.id}" class="uploaded-filename-indicator hidden">
+                <span>Selected: <b id="filename-${act.id}">None</b></span>
+                <button class="btn btn-secondary py-0 px-2" style="height: 20px" onclick="clearSimulatedFileUpload('${act.id}')">Remove</button>
+              </div>
+            </div>
+
+            <button class="btn btn-primary mt-3 py-1 px-4" onclick="submitResponseToManager('${act.id}')">Submit Evidence</button>
+          </div>
+        `;
+      }
     } else if (act.status === 'Pending Review') {
       actionFormHTML = `
         <div class="supplier-response-box mt-3">
@@ -5758,41 +5783,87 @@ window.selectNavigatorService = function(serviceName, element) {
 
   let vulnsHtml = '';
   if (profile.vulnerabilities && profile.vulnerabilities.length > 0) {
-    vulnsHtml = profile.vulnerabilities.map(v => `
-      <div style="background: rgba(239, 68, 68, 0.02); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(239,68,68,0.15); padding-bottom: 6px;">
-          <span style="font-weight: 700; font-size: 0.76rem; color: #ef4444;">${v.id}: ${v.title}</span>
-          <span style="font-size: 0.65rem; font-weight: 700; color: #fff; background: #ef4444; padding: 2px 6px; border-radius: 4px;">${v.severity}</span>
-        </div>
-        
-        <!-- Mythos Game-Changer Alert Block -->
-        <div style="background: rgba(239, 68, 68, 0.06); border-left: 3px solid #ef4444; padding: 8px 10px; font-size: 0.7rem; color: #f8fafc; font-weight: 600; border-radius: 0 4px 4px 0;">
-          ⚠️ ${v.mythosImpact}
-        </div>
+    vulnsHtml = profile.vulnerabilities.map(v => {
+      const hasSlaAlert = ['9 Hours', '24 Hours', '48 Hours'].some(term => v.turnaround.includes(term));
+      
+      // Look up if there's a corresponding action in state.actions
+      const relatedAction = state.actions.find(a => a.title.includes(v.id) && a.supplierId === supplierId);
+      
+      let dispatchStatusHtml = '';
+      let dispatchButtons = '';
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.7rem; margin-top: 4px;">
-          <div>
-            <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Turnaround SLA:</strong>
-            <span style="color: var(--color-warning); font-weight: 600;">${v.turnaround}</span>
-          </div>
-          <div>
-            <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Suggested Fix:</strong>
-            <span style="color: var(--text-secondary); line-height: 1.3;">${v.remediation}</span>
-          </div>
-        </div>
+      if (hasSlaAlert) {
+        if (relatedAction) {
+          if (relatedAction.status === 'Pending Review' || relatedAction.status === 'Closed') {
+            dispatchStatusHtml = `
+              <div style="background: rgba(16, 185, 129, 0.04); border-left: 3px solid #10b981; padding: 8px 10px; font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; line-height: 1.45; border-radius: 0 4px 4px 0;">
+                <strong style="color: #10b981; display: block; margin-bottom: 2px;">✅ Supplier Remediation Response Received</strong>
+                <span style="display: block; margin-top: 3px;"><strong>Plan:</strong> ${relatedAction.remediationPlan}</span>
+                <span style="display: block; margin-top: 3px;"><strong>Root Cause Analysis (RCA):</strong> ${relatedAction.rootCauseAnalysis}</span>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 6px;">Status: Awaiting Cypher Vantage Compliance Review Audit</div>
+              </div>
+            `;
+          } else {
+            dispatchStatusHtml = `
+              <div style="background: rgba(249, 115, 22, 0.04); border-left: 3px solid #f97316; padding: 8px 10px; font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; border-radius: 0 4px 4px 0;">
+                <strong style="color: #f97316; display: block; margin-bottom: 2px;">⏳ Dispatch Awaiting Supplier Action Plan</strong>
+                Remediation request has been active on the supplier portal since ${relatedAction.dateCreated}.
+              </div>
+            `;
+          }
+        }
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.7rem; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 8px; margin-top: 2px;">
-          <div>
-            <strong style="color: #ef4444; display: block; margin-bottom: 2px;">Potential Financial Impact:</strong>
-            <span style="color: var(--text-secondary); line-height: 1.3;">${v.financialImpact}</span>
+        const isDispatched = !!relatedAction;
+        dispatchButtons = `
+          <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; width: 100%;">
+            <button class="btn btn-secondary btn-sm" onclick="alertCSuite('${serviceName.replace(/'/g, "\\'")}', '${v.id}')" style="flex: 1; min-width: 130px; font-size: 0.65rem; padding: 4px 8px; background: rgba(6, 182, 212, 0.05); border-color: var(--color-cyan); color: var(--color-cyan);">
+              🚀 Alert Internal C-Suite
+            </button>
+            <button id="btn-dispatch-${v.id}" class="btn btn-primary btn-sm" onclick="dispatchSupplierRemediation('${serviceName.replace(/'/g, "\\'")}', '${v.id}', '${v.title.replace(/'/g, "\\'")}', '${supplierId}')" style="flex: 1.3; min-width: 160px; font-size: 0.65rem; padding: 4px 8px; background: ${isDispatched ? 'rgba(255,255,255,0.05)' : '#f97316'}; border-color: ${isDispatched ? 'rgba(255,255,255,0.05)' : '#f97316'}; color: ${isDispatched ? 'var(--text-secondary)' : '#ffffff'};" ${isDispatched ? 'disabled' : ''}>
+              ${isDispatched ? '✉️ Request Dispatched' : `✉️ Alert Supplier (${supplierName})`}
+            </button>
           </div>
-          <div>
-            <strong style="color: #ef4444; display: block; margin-bottom: 2px;">Reputational Impact:</strong>
-            <span style="color: var(--text-secondary); line-height: 1.3;">${v.reputationalImpact}</span>
+        `;
+      }
+
+      return `
+        <div style="background: rgba(239, 68, 68, 0.02); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(239,68,68,0.15); padding-bottom: 6px;">
+            <span style="font-weight: 700; font-size: 0.76rem; color: #ef4444;">${v.id}: ${v.title}</span>
+            <span style="font-size: 0.65rem; font-weight: 700; color: #fff; background: #ef4444; padding: 2px 6px; border-radius: 4px;">${v.severity}</span>
           </div>
+          
+          <!-- Mythos Game-Changer Alert Block -->
+          <div style="background: rgba(239, 68, 68, 0.06); border-left: 3px solid #ef4444; padding: 8px 10px; font-size: 0.7rem; color: #f8fafc; font-weight: 600; border-radius: 0 4px 4px 0;">
+            ⚠️ ${v.mythosImpact}
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.7rem; margin-top: 4px;">
+            <div>
+              <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Turnaround SLA:</strong>
+              <span style="color: var(--color-warning); font-weight: 600;">${v.turnaround}</span>
+            </div>
+            <div>
+              <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Suggested Fix:</strong>
+              <span style="color: var(--text-secondary); line-height: 1.3;">${v.remediation}</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.7rem; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 8px; margin-top: 2px;">
+            <div>
+              <strong style="color: #ef4444; display: block; margin-bottom: 2px;">Potential Financial Impact:</strong>
+              <span style="color: var(--text-secondary); line-height: 1.3;">${v.financialImpact}</span>
+            </div>
+            <div>
+              <strong style="color: #ef4444; display: block; margin-bottom: 2px;">Reputational Impact:</strong>
+              <span style="color: var(--text-secondary); line-height: 1.3;">${v.reputationalImpact}</span>
+            </div>
+          </div>
+          ${dispatchStatusHtml}
+          ${dispatchButtons}
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   } else {
     vulnsHtml = `
       <div style="color: #10b981; font-weight: 600; font-size: 0.72rem; padding: 12px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 8px; text-align: center;">
@@ -5965,4 +6036,71 @@ function getServiceSecurityProfile(serviceName, serviceType, serviceStatus) {
     vulnerabilities: generatedVulnerabilities
   };
 }
+
+// =================================------------------------------------------
+// 18. EXECUTIVE VULNERABILITY ALERT DISPATCH & SUPPLIER REMEDIATION ROUTING
+// =================================------------------------------------------
+window.alertCSuite = function(serviceName, cveId) {
+  alert(`📢 C-Suite Notification Triggered:\n\nEmail and SMS alerts broadcasted to Chief Risk Officer (CRO), Chief Information Security Officer (CISO), and Chief Operations Officer (COO) detailing the critical threat posture on "${serviceName}" (${cveId}).`);
+};
+
+window.dispatchSupplierRemediation = function(serviceName, cveId, cveTitle, supplierId) {
+  const s = state.suppliers[supplierId];
+  const supplierName = s ? s.name : 'Primary Supplier';
+
+  const exists = state.actions.some(a => a.title.includes(cveId) && a.supplierId === supplierId);
+  if (exists) return;
+
+  const newAction = {
+    id: 'act-vuln-' + Date.now(),
+    supplierId: supplierId,
+    domain: 'Vulnerability Remediation',
+    controlId: 'c5.3',
+    title: `${cveId} - SLA Remediation Request: ${serviceName}`,
+    gapDetails: `A critical vulnerability (${cveId}: ${cveTitle}) has been identified on your hosted service node supporting "${serviceName}". Under DORA Article 19, you must provide an immediate remediation action plan, root cause analysis, and execute patches within the agreed SLA.`,
+    status: 'Awaiting Response',
+    dateCreated: new Date().toISOString().split('T')[0],
+    isVulnerabilityRemediation: true,
+    cveId: cveId,
+    serviceName: serviceName,
+    execSummary: '',
+    remediationPlan: '',
+    rootCauseAnalysis: ''
+  };
+
+  state.actions.unshift(newAction);
+  saveState();
+
+  alert(`✉️ Dispatch Complete:\n\nRemediation request successfully sent to ${supplierName}'s compliance operations portal. SLA countdown is active.`);
+
+  renderServiceNavigator();
+  
+  const activeItem = document.querySelector('.navigator-list-item.active');
+  if (activeItem) {
+    selectNavigatorService(serviceName, activeItem);
+  }
+};
+
+window.submitSupplierVulnerabilityResponse = function(actionId) {
+  const planVal = document.getElementById(`resp-plan-${actionId}`).value.trim();
+  const rcaVal = document.getElementById(`resp-rca-${actionId}`).value.trim();
+
+  if (!planVal || !rcaVal) {
+    alert('Please provide both the Remediation Action Plan and the Root Cause Analysis before submitting.');
+    return;
+  }
+
+  const act = state.actions.find(a => a.id === actionId);
+  if (!act) return;
+
+  act.status = 'Pending Review';
+  act.remediationPlan = planVal;
+  act.rootCauseAnalysis = rcaVal;
+  act.responseMessage = `Remediation executed. Plan: ${planVal.substring(0, 100)}... RCA: ${rcaVal.substring(0, 100)}...`;
+
+  saveState();
+  alert('Remediation sign-off submitted successfully. The Cypher Vantage risk assurance team has been notified for validation audit.');
+
+  renderSupplierPortalDashboard();
+};
 
