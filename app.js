@@ -6512,7 +6512,7 @@ window.submitSupplierRca = function(actionId) {
 window.updateManagerInboxBadge = function() {
   const badge = document.getElementById('badge-manager-inbox');
   if (!badge) return;
-  const count = state.actions.filter(a => a.isVulnerabilityRemediation && (a.status === 'Plan Submitted' || a.status === 'RCA Submitted')).length;
+  const count = state.actions.filter(a => a.isVulnerabilityRemediation && a.status !== 'Closed').length;
   badge.innerText = count;
   badge.style.display = count > 0 ? 'inline-block' : 'none';
 };
@@ -6526,6 +6526,7 @@ window.renderManagerInbox = function() {
   summaryBox.innerHTML = '';
 
   const vulnActions = state.actions.filter(a => a.isVulnerabilityRemediation);
+  const activeActions = vulnActions.filter(a => a.status !== 'Closed');
   const pendingActions = vulnActions.filter(a => a.status === 'Plan Submitted' || a.status === 'RCA Submitted');
   const awaitingSupplier = vulnActions.filter(a => a.status === 'Awaiting Response' || a.status === 'Awaiting RCA');
 
@@ -6549,16 +6550,16 @@ window.renderManagerInbox = function() {
     </div>
   `;
 
-  if (pendingActions.length === 0) {
+  if (activeActions.length === 0) {
     listContainer.innerHTML = `
       <div class="p-8 text-center text-muted font-medium" style="border: 1px dashed rgba(255,255,255,0.06); border-radius: var(--border-radius-lg); background: rgba(255,255,255,0.01); width: 100%;">
-        ✨ No supplier remediation plan or RCA audits are currently pending review. Your inbox is clean.
+        ✨ No active vulnerability actions or SLA remediations in progress. Your queue is clean.
       </div>
     `;
     return;
   }
 
-  pendingActions.forEach(act => {
+  activeActions.forEach(act => {
     const s = state.suppliers[act.supplierId];
     const supplierName = s ? s.name : 'Unknown';
 
@@ -6566,16 +6567,35 @@ window.renderManagerInbox = function() {
     card.className = 'action-card';
     card.style.flexDirection = 'column';
     card.style.gap = '10px';
-    card.style.background = 'rgba(255,255,255,0.02)';
-    card.style.border = '1px solid rgba(255,255,255,0.05)';
     card.style.borderRadius = 'var(--border-radius-md)';
     card.style.padding = '15px';
     card.style.width = '100%';
 
+    const isAwaitingSupplier = act.status === 'Awaiting Response' || act.status === 'Awaiting RCA';
+
+    if (isAwaitingSupplier) {
+      card.style.background = 'rgba(255, 255, 255, 0.005)';
+      card.style.border = '1px dashed rgba(255, 255, 255, 0.05)';
+      card.style.opacity = '0.7';
+    } else {
+      card.style.background = 'rgba(239, 68, 68, 0.02)';
+      card.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+    }
+
     let contentHTML = '';
     let buttonsHTML = '';
+    let statusBadgeHTML = '';
 
-    if (act.status === 'Plan Submitted') {
+    if (act.status === 'Awaiting Response') {
+      statusBadgeHTML = `<span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase;">⏳ Awaiting Supplier Plan</span>`;
+      contentHTML = `
+        <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 8px 10px; border-radius: 4px; font-size: 0.7rem; color: var(--text-muted); width: 100%;">
+          <strong>No action required:</strong> Waiting for ${supplierName} to submit their Stage 1 Remediation Action Plan.
+          ${act.revisionComment ? `<div style="color: #ef4444; margin-top: 4px; font-weight: 600;">Revision Feedback Sent: "${act.revisionComment}"</div>` : ''}
+        </div>
+      `;
+    } else if (act.status === 'Plan Submitted') {
+      statusBadgeHTML = `<span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.58rem; text-transform: uppercase;">🚨 Action Required: Review Plan</span>`;
       contentHTML = `
         <div style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 6px; padding: 10px; font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); width: 100%;">
           <strong style="color: #f59e0b; display: block; margin-bottom: 4px;">📂 SUBMITTED: Stage 1 Remediation Action Plan</strong>
@@ -6588,12 +6608,22 @@ window.renderManagerInbox = function() {
           <button class="btn btn-secondary btn-sm" onclick="requestSupplierPlanRevision('${act.id}')">Request Plan Revision</button>
         </div>
       `;
+    } else if (act.status === 'Awaiting RCA') {
+      statusBadgeHTML = `<span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase;">⏳ Awaiting Supplier RCA</span>`;
+      contentHTML = `
+        <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 8px 10px; border-radius: 4px; font-size: 0.7rem; color: var(--text-muted); width: 100%;">
+          <strong>No action required:</strong> Stage 1 Plan approved. Waiting for ${supplierName} to submit their Stage 2 Root Cause Analysis (RCA).
+          <div style="margin-top: 4px; font-size: 0.65rem;">Approved Plan: "${act.remediationPlan}"</div>
+          ${act.revisionComment ? `<div style="color: #ef4444; margin-top: 4px; font-weight: 600;">Revision Feedback Sent: "${act.revisionComment}"</div>` : ''}
+        </div>
+      `;
     } else if (act.status === 'RCA Submitted') {
+      statusBadgeHTML = `<span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.58rem; text-transform: uppercase;">🚨 Action Required: Review RCA</span>`;
       contentHTML = `
         <div style="background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px; padding: 10px; font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); width: 100%;">
           <strong style="color: #10b981; display: block; margin-bottom: 4px;">📂 SUBMITTED: Stage 2 Root Cause Analysis (RCA)</strong>
-          <div style="margin-bottom: 4px;"><strong>Remediation Plan:</strong> ${act.remediationPlan}</div>
-          <div><strong>RCA:</strong> ${act.rootCauseAnalysis}</div>
+          <div style="margin-bottom: 4px;"><strong>Approved Action Plan:</strong> ${act.remediationPlan}</div>
+          <div><strong>Submitted RCA:</strong> ${act.rootCauseAnalysis}</div>
         </div>
       `;
       buttonsHTML = `
@@ -6607,7 +6637,7 @@ window.renderManagerInbox = function() {
     card.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
         <div>
-          <span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.58rem; text-transform: uppercase;">${act.cveId} SLA Alert</span>
+          ${statusBadgeHTML}
           <h4 style="margin-top: 4px; font-size: 0.85rem;">${act.title}</h4>
           <span style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 2px;">Supplier: <b>${supplierName}</b> | Node: <b>${act.serviceName}</b></span>
         </div>
