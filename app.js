@@ -1282,7 +1282,19 @@ window.switchTab = function(tabId) {
     renderServiceNavigator();
   } else if (tabId === 'manager-reports') {
     renderSimulationReports();
+  } else if (tabId === 'supplier-vulns' || tabId === 'supplier-compliance') {
+    state.activeSupplierSubTab = tabId === 'supplier-vulns' ? 'vulns' : 'compliance';
+    const targetPane = document.getElementById('view-supplier-dashboard');
+    if (targetPane) {
+      targetPane.classList.add('active');
+    }
+    const activeNav = document.getElementById(`nav-${tabId}`);
+    if (activeNav) {
+      activeNav.classList.add('active');
+    }
+    renderSupplierPortalDashboard();
   } else if (tabId === 'supplier-dashboard') {
+    state.activeSupplierSubTab = 'all';
     renderSupplierPortalDashboard();
   } else if (tabId === 'supplier-evidence') {
     renderSupplierVaultTable();
@@ -1323,7 +1335,7 @@ window.setPersona = function(persona) {
     // Populate active supplier switcher
     populateSupplierPortalSwitcher();
     updateSupplierPortalIdentity();
-    switchTab('supplier-dashboard');
+    switchTab('supplier-vulns');
   }
   saveState();
 };
@@ -2212,40 +2224,58 @@ function renderSupplierPortalDashboard() {
     statusBadge.innerText = 'High Risk Gaps';
   }
 
-  if (sActions.length === 0) {
-    container.innerHTML = `<div class="p-8 text-center text-muted font-medium">No active compliance action requests found. Your account is fully aligned.</div>`;
+  // Update left nav badges dynamically
+  const bVulns = document.getElementById('badge-supplier-vulns');
+  const bComp = document.getElementById('badge-supplier-compliance');
+  const activeVulnActions = sActions.filter(a => a.isVulnerabilityRemediation);
+  const activeStandardActions = sActions.filter(a => !a.isVulnerabilityRemediation);
+
+  if (bVulns) {
+    bVulns.innerText = activeVulnActions.length;
+    bVulns.style.display = activeVulnActions.length > 0 ? 'inline-block' : 'none';
+  }
+  if (bComp) {
+    bComp.innerText = activeStandardActions.length;
+    bComp.style.display = activeStandardActions.length > 0 ? 'inline-block' : 'none';
+  }
+
+  // Get active sub-tab filter
+  const filter = state.activeSupplierSubTab || 'all';
+
+  if (filter === 'vulns' && activeVulnActions.length === 0) {
+    container.innerHTML = `<div class="p-8 text-center text-muted font-medium">✅ No active urgent vulnerability SLA directives assigned to your organization.</div>`;
+    return;
+  }
+  if (filter === 'compliance' && activeStandardActions.length === 0) {
+    container.innerHTML = `<div class="p-8 text-center text-muted font-medium">✅ No active compliance gap or audit evidence requests pending response.</div>`;
     return;
   }
 
-  // Split urgent vs standard actions
-  const vulnActions = sActions.filter(a => a.isVulnerabilityRemediation);
-  const standardActions = sActions.filter(a => !a.isVulnerabilityRemediation);
-
-  if (vulnActions.length > 0) {
+  if (activeVulnActions.length > 0 && (filter === 'all' || filter === 'vulns')) {
     const vulnHeader = document.createElement('div');
     vulnHeader.innerHTML = `
       <h4 style="color: #ef4444; font-size: 0.72rem; margin-top: 10px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding-bottom: 6px;">
-        ⚠️ URGENT VULNERABILITY SLA DIRECTIVES (Action Required)
+        ⚠️ URGENT VULNERABILITY SLA DIRECTIVES (Immediate Action Required)
       </h4>
     `;
     container.appendChild(vulnHeader);
     
-    vulnActions.forEach(act => {
+    activeVulnActions.forEach(act => {
       const card = createSupplierActionCard(act);
       container.appendChild(card);
     });
   }
 
-  if (standardActions.length > 0) {
+  if (activeStandardActions.length > 0 && (filter === 'all' || filter === 'compliance')) {
     const stdHeader = document.createElement('div');
     stdHeader.innerHTML = `
       <h4 style="color: #f97316; font-size: 0.72rem; margin-top: 24px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px solid rgba(249, 115, 22, 0.2); padding-bottom: 6px;">
-        📋 Standard Compliance &amp; Assessment Gaps
+        📋 Standard Compliance &amp; Assessment Gaps (Action Required)
       </h4>
     `;
     container.appendChild(stdHeader);
 
-    standardActions.forEach(act => {
+    activeStandardActions.forEach(act => {
       const card = createSupplierActionCard(act);
       container.appendChild(card);
     });
@@ -5394,6 +5424,7 @@ window.printDoraIncidentReport = function() {
 // 22. INITIALIZATION
 // --------------------------------------------------------------------------
 window.onload = function() {
+  console.warn("🚀 CYPHER VANTAGE APP INITIALIZED - Version 5.0 (Workday SaaS / Dynamic Scores / Divided Queues)");
   // Load state from db
   loadState();
   
