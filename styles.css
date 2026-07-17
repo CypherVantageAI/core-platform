@@ -462,6 +462,39 @@ body.dark-mode {
   color: var(--color-danger);
 }
 
+/* Supplier Rating Justification Tooltip */
+.supplier-tooltip-trigger {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.supplier-tooltip-trigger .supplier-tooltip {
+  visibility: hidden;
+  width: 240px;
+  background-color: #0f172a;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 8px 10px;
+  position: absolute;
+  z-index: 100;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s, visibility 0.2s;
+  font-size: 11px;
+  line-height: 1.4;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.supplier-tooltip-trigger:hover .supplier-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

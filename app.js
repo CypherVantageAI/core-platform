@@ -80,6 +80,7 @@ let state = {
       id: 'aws',
       name: 'Amazon Web Services (AWS)',
       riskTier: 'Critical',
+      riskTierExplanation: 'Hosts core transactional infrastructure and clearing portals. Outage directly triggers bank operational RTO failover protocols.',
       scoVersion: 'CV Framework',
       complianceScore: 80,
       status: 'Awaiting Response', // 'Compliant' | 'Awaiting Response' | 'Pending Review' | 'Gaps Identified'
@@ -88,7 +89,10 @@ let state = {
       avatar: 'AWS',
       primarySupportLocation: 'Seattle, WA (USA)',
       secondarySupportLocation: 'Frankfurt, Germany',
-      subcontractors: ['Cloudflare (Edge CDN)', 'Equinix (Colocation)'],
+      subcontractors: [
+        { name: 'Cloudflare', role: 'Edge CDN & DNS Security', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'Frankfurt, Germany', additionalLocations: 'Singapore, Tokyo, Sydney' },
+        { name: 'Equinix', role: 'Physical Colocation Facilities', primaryLocation: 'Redwood City, CA (USA)', secondaryLocation: 'London, United Kingdom', additionalLocations: 'Dublin, Amsterdam' }
+      ],
       documents: [
         { name: 'AWS_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-02-10', scanned: '2026-07-01', status: 'Valid' },
         { name: 'ISO_27001_Certificate_AWS.pdf', type: 'ISO Certificate', date: '2024-11-05', scanned: '2026-07-01', status: 'Valid' },
@@ -111,6 +115,7 @@ let state = {
       id: 'salesforce',
       name: 'Salesforce Inc.',
       riskTier: 'High',
+      riskTierExplanation: 'Processes high volumes of sensitive customer PII and sales records. Data exposure carries significant regulatory GDPR audit risk.',
       scoVersion: 'CV Framework',
       complianceScore: 100,
       status: 'Compliant',
@@ -119,7 +124,10 @@ let state = {
       avatar: 'SF',
       primarySupportLocation: 'San Francisco, CA (USA)',
       secondarySupportLocation: 'Dublin, Ireland',
-      subcontractors: ['AWS (Hosting Infrastructure)', 'Twilio (SMS Gateway)'],
+      subcontractors: [
+        { name: 'Amazon Web Services (AWS)', role: 'Hosting Infrastructure & Storage', primaryLocation: 'Seattle, WA (USA)', secondaryLocation: 'Dublin, Ireland', additionalLocations: 'Frankfurt, Tokyo' },
+        { name: 'Twilio', role: 'SMS Authentication Gateway', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'London, UK', additionalLocations: 'Sydney' }
+      ],
       documents: [
         { name: 'SFDC_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-03-01', scanned: '2026-07-02', status: 'Valid' },
         { name: 'Salesforce_BCP_ExecSummary_2025.pdf', type: 'Resilience Evidence', date: '2025-04-10', scanned: '2026-07-02', status: 'Valid' }
@@ -139,6 +147,7 @@ let state = {
       id: 'servicenow',
       name: 'ServiceNow Inc.',
       riskTier: 'High',
+      riskTierExplanation: 'Hosts corporate service desks, access provisioning logs, and internal operation registries.',
       scoVersion: 'CV Framework',
       complianceScore: 90,
       status: 'Compliant',
@@ -147,7 +156,10 @@ let state = {
       avatar: 'SN',
       primarySupportLocation: 'Santa Clara, CA (USA)',
       secondarySupportLocation: 'Munich, Germany',
-      subcontractors: ['Wrangu (Privacy Compliance)', 'Microsoft Azure (Hosting)'],
+      subcontractors: [
+        { name: 'Wrangu', role: 'Privacy Compliance Integrations', primaryLocation: 'Amsterdam, Netherlands', secondaryLocation: 'London, UK', additionalLocations: 'Munich' },
+        { name: 'Microsoft Azure', role: 'Hosting Infrastructure', primaryLocation: 'Redmond, WA (USA)', secondaryLocation: 'Frankfurt, Germany', additionalLocations: 'Singapore' }
+      ],
       documents: [
         { name: 'ServiceNow_SOC_2_Report.pdf', type: 'SOC 2 Report', date: '2025-04-10', scanned: '2026-07-06', status: 'Valid' }
       ],
@@ -166,6 +178,7 @@ let state = {
       id: 'infosys',
       name: 'Infosys Limited',
       riskTier: 'High',
+      riskTierExplanation: 'Critical systems integration partner. Holds elevated developer credential routing into bank internal staging grids.',
       scoVersion: 'CV Framework',
       complianceScore: 60,
       status: 'Gaps Identified',
@@ -174,7 +187,10 @@ let state = {
       avatar: 'INF',
       primarySupportLocation: 'Bangalore (India)',
       secondarySupportLocation: 'London, United Kingdom',
-      subcontractors: ['Wipro Ltd (Systems Integration)', 'TATA Consultancy (Operations)'],
+      subcontractors: [
+        { name: 'Wipro Ltd', role: 'Systems Integration Support', primaryLocation: 'Bangalore, India', secondaryLocation: 'London, UK', additionalLocations: 'New York' },
+        { name: 'TATA Consultancy Services', role: 'Global Operations Helpdesk', primaryLocation: 'Mumbai, India', secondaryLocation: 'London, UK', additionalLocations: 'Toronto' }
+      ],
       documents: [
         { name: 'Infosys_Cyber_Policy_2025.pdf', type: 'Policy Document', date: '2025-01-15', scanned: '2026-07-03', status: 'Valid' }
       ],
@@ -193,6 +209,7 @@ let state = {
       id: 'slack',
       name: 'Slack Technologies',
       riskTier: 'Medium',
+      riskTierExplanation: 'Collaborative messaging system. Hosts operational chats but excluded from transactional networks and core ledgers.',
       scoVersion: 'CV Framework',
       complianceScore: 100,
       status: 'Compliant',
@@ -201,7 +218,10 @@ let state = {
       avatar: 'SL',
       primarySupportLocation: 'San Francisco, CA (USA)',
       secondarySupportLocation: 'Melbourne, Australia',
-      subcontractors: ['AWS (Hosting Infrastructure)', 'Fastly (Edge Delivery)'],
+      subcontractors: [
+        { name: 'Amazon Web Services (AWS)', role: 'Hosting Infrastructure', primaryLocation: 'Seattle, WA (USA)', secondaryLocation: 'Frankfurt, Germany', additionalLocations: 'Dublin' },
+        { name: 'Fastly', role: 'Edge Content Delivery (CDN)', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'London, UK', additionalLocations: 'Tokyo' }
+      ],
       documents: [
         { name: 'Slack_SOC_3_Report_2025.pdf', type: 'SOC 2/3 Report', date: '2025-02-15', scanned: '2026-07-04', status: 'Valid' },
         { name: 'Slack_BCP_Failover_2025.pdf', type: 'Resilience Evidence', date: '2025-05-20', scanned: '2026-07-04', status: 'Valid' }
@@ -220,7 +240,8 @@ let state = {
     'workday': {
       id: 'workday',
       name: 'Workday, Inc. (SaaS HR & ERP)',
-      riskTier: 'High',
+      riskTier: 'Critical',
+      riskTierExplanation: 'Hosts core enterprise ledger and employee payroll system of record. High business impact on operational continuity.',
       scoVersion: 'CV Framework',
       complianceScore: 80,
       status: 'Gaps Identified',
@@ -229,7 +250,10 @@ let state = {
       avatar: 'WD',
       primarySupportLocation: 'Pleasanton, CA (USA)',
       secondarySupportLocation: 'Dublin, Ireland',
-      subcontractors: ['AWS (Hosting Infrastructure)', 'Cloudflare (Edge Delivery)'],
+      subcontractors: [
+        { name: 'Amazon Web Services (AWS)', role: 'Hosting & Core Cloud Storage', primaryLocation: 'Seattle, WA (USA)', secondaryLocation: 'Frankfurt, Germany', additionalLocations: 'Dublin' },
+        { name: 'Akamai Technologies', role: 'Edge Delivery & DDoS Shielding', primaryLocation: 'Cambridge, MA (USA)', secondaryLocation: 'Munich, Germany', additionalLocations: 'Singapore' }
+      ],
       documents: [
         { name: 'Workday_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-02-15', scanned: '2026-07-05', status: 'Valid' },
         { name: 'Workday_BCP_TestDoc_2025.pdf', type: 'Resilience Evidence', date: '2025-06-01', scanned: '2026-07-05', status: 'Valid' }
@@ -1456,8 +1480,16 @@ function renderSuppliersTable() {
                 <span class="collapsible-trigger" style="font-size: 0.7rem; color: var(--color-cyan); cursor: pointer; text-decoration: underline;" onclick="toggleSubcontractorRow('${s.id}')">
                   📋 Sub-contractors (${s.subcontractors.length}) ▾
                 </span>
-                <div id="subcontractors-list-${s.id}" class="subcontractors-collapse hidden" style="margin-top: 4px; font-size: 0.68rem; color: var(--text-secondary); background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 4px; border-left: 2px solid var(--color-cyan);">
-                  ${s.subcontractors.map(sub => `• ${sub}`).join('<br>')}
+                <div id="subcontractors-list-${s.id}" class="subcontractors-collapse hidden" style="margin-top: 4px; font-size: 0.68rem; color: var(--text-secondary); background: rgba(0,0,0,0.25); padding: 8px; border-radius: 4px; border-left: 2px solid var(--color-cyan); display: flex; flex-direction: column; gap: 6px; width: 100%;">
+                  ${s.subcontractors.map(sub => `
+                    <div>
+                      <strong style="color: var(--text-primary);">${sub.name}</strong> (${sub.role})
+                      <div style="margin-top: 2px; color: var(--text-muted); font-size: 0.65rem; line-height: 1.35;">
+                        📍 <strong>Primary:</strong> ${sub.primaryLocation} | <strong>Secondary:</strong> ${sub.secondaryLocation}
+                        ${sub.additionalLocations ? `<br>➕ <strong>Additional:</strong> ${sub.additionalLocations}` : ''}
+                      </div>
+                    </div>
+                  `).join('')}
                 </div>
               </div>
             ` : `
@@ -1468,7 +1500,15 @@ function renderSuppliersTable() {
           </div>
         </div>
       </td>
-      <td><span class="badge ${s.riskTier === 'Critical' ? 'badge-danger' : s.riskTier === 'High' ? 'badge-warning' : 'badge-accent'}">${s.riskTier}</span></td>
+      <td>
+        <div class="supplier-tooltip-trigger">
+          <span class="badge ${s.riskTier === 'Critical' ? 'badge-danger' : s.riskTier === 'High' ? 'badge-warning' : 'badge-accent'}">${s.riskTier}</span>
+          <span class="supplier-tooltip">
+            <strong style="display: block; margin-bottom: 2px; color: var(--color-cyan);">Rating Justification:</strong>
+            ${s.riskTierExplanation || 'Standard risk assessment based on operational dependencies.'}
+          </span>
+        </div>
+      </td>
       <td><span class="text-secondary" style="font-size: 0.78rem;">${s.primarySupportLocation || 'N/A'}</span></td>
       <td><span class="text-secondary" style="font-size: 0.78rem;">${s.secondarySupportLocation || 'N/A'}</span></td>
       <td><span class="table-score ${getSupplierComplianceScore(s) === 100 ? 'text-success' : getSupplierComplianceScore(s) >= 75 ? 'text-accent' : 'text-danger'}">${getSupplierComplianceScore(s)}%</span></td>
@@ -6509,12 +6549,43 @@ window.submitSupplierRca = function(actionId) {
   renderSupplierPortalDashboard();
 };
 
-window.updateManagerInboxBadge = function() {
-  const badge = document.getElementById('badge-manager-inbox');
-  if (!badge) return;
-  const count = state.actions.filter(a => a.isVulnerabilityRemediation && a.status !== 'Closed').length;
-  badge.innerText = count;
-  badge.style.display = count > 0 ? 'inline-block' : 'none';
+window.startManagerSlaCountdown = function() {
+  if (window.managerSlaIntervalId) {
+    clearInterval(window.managerSlaIntervalId);
+  }
+
+  function updateTimers() {
+    const timerEls = document.querySelectorAll('.manager-live-countdown');
+    if (timerEls.length === 0) {
+      clearInterval(window.managerSlaIntervalId);
+      window.managerSlaIntervalId = null;
+      return;
+    }
+
+    timerEls.forEach(el => {
+      const targetTime = parseInt(el.getAttribute('data-due-time'));
+      const now = Date.now();
+      const diff = targetTime - now;
+
+      if (diff <= 0) {
+        el.innerHTML = `<span style="color: #ef4444; font-weight: 700; animation: blink 1s infinite;">🔴 SLA EXPIRED (OVERDUE)</span>`;
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      const hourStr = String(hours).padStart(2, '0');
+      const minStr = String(mins).padStart(2, '0');
+      const secStr = String(secs).padStart(2, '0');
+
+      el.innerHTML = `<span style="color: #ef4444; font-weight: 700; animation: blink 1s infinite;">⏳ ${hourStr}h ${minStr}m ${secStr}s</span>`;
+    });
+  }
+
+  updateTimers();
+  window.managerSlaIntervalId = setInterval(updateTimers, 1000);
 };
 
 window.renderManagerInbox = function() {
@@ -6573,6 +6644,20 @@ window.renderManagerInbox = function() {
   activeActions.forEach(act => {
     const s = state.suppliers[act.supplierId];
     const supplierName = s ? s.name : 'Unknown';
+
+    // Fetch vulnerability details for this urgent action to extract impact rationales
+    const profile = getServiceSecurityProfile(act.serviceName, 'ibs');
+    const v = profile && profile.vulnerabilities ? profile.vulnerabilities.find(vuln => vuln.id === act.cveId) : null;
+
+    const createdTime = new Date(`${act.dateCreated}T09:00:00Z`).getTime();
+    let slaHours = 48;
+    if (act.title.includes('9 Hours') || act.gapDetails.includes('9 Hours') || act.id === 'act-vuln-pre') {
+      slaHours = 9;
+    } else if (act.title.includes('24 Hours') || act.gapDetails.includes('24 Hours')) {
+      slaHours = 24;
+    }
+    const dueTime = createdTime + (slaHours * 60 * 60 * 1000);
+    const dueDateStr = new Date(dueTime).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
 
     const card = document.createElement('div');
     card.className = 'action-card';
@@ -6645,6 +6730,26 @@ window.renderManagerInbox = function() {
       `;
     }
 
+    let impactPanelHTML = '';
+    if (v) {
+      impactPanelHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px; font-size: 0.7rem; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 10px; margin-top: 8px; width: 100%;">
+          <div>
+            <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Remediation SLA Deadline:</strong>
+            <span class="manager-live-countdown" data-due-time="${dueTime}" style="color: #ef4444; font-weight: 700; font-size: 0.72rem;">--h --m --s</span>
+            <span style="color: var(--text-muted); font-size: 0.65rem; display: block; margin-top: 2px;">Target: ${dueDateStr} (${slaHours}h SLA)</span>
+          </div>
+          <div>
+            <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Impact Assessment Rationale:</strong>
+            <div style="line-height: 1.4; color: var(--text-secondary); font-size: 0.68rem;">
+              <div>💸 <strong>Financial:</strong> ${v.financialImpact}</div>
+              <div style="margin-top: 3px;">🛡️ <strong>Reputational &amp; Regulatory:</strong> ${v.reputationalImpact}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     card.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
         <div>
@@ -6658,6 +6763,8 @@ window.renderManagerInbox = function() {
       <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.35; margin: 4px 0;">${act.gapDetails}</p>
       
       ${contentHTML}
+
+      ${impactPanelHTML}
 
       ${buttonsHTML}
 
@@ -6674,6 +6781,9 @@ window.renderManagerInbox = function() {
 
     listContainer.appendChild(card);
   });
+
+  // Start countdown timer loop for Risk Manager inbox
+  startManagerSlaCountdown();
 };
 
 window.approveSupplierPlan = function(actionId) {
