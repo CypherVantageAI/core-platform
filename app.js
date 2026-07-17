@@ -6530,22 +6530,33 @@ window.renderManagerInbox = function() {
   const pendingActions = vulnActions.filter(a => a.status === 'Plan Submitted' || a.status === 'RCA Submitted');
   const awaitingSupplier = vulnActions.filter(a => a.status === 'Awaiting Response' || a.status === 'Awaiting RCA');
 
-  // Update summary sidebar
+  // Update summary sidebar into a combined SLA Dashboard card
   summaryBox.innerHTML = `
-    <div style="display: grid; grid-template-columns: 1fr; gap: 8px; width: 100%;">
-      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; text-align: center;">
-        <span class="block text-xs text-secondary" style="font-size: 0.65rem; text-transform: uppercase;">Awaiting Your Audit</span>
-        <strong style="font-size: 1.6rem; color: #ef4444; display: block; margin-top: 2px;">${pendingActions.length}</strong>
+    <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; width: 100%;">
+      <div style="text-align: center; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 10px;">
+        <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: block;">Active SLA Remediations</span>
+        <strong style="font-size: 1.8rem; color: #ef4444; display: block; margin-top: 2px;">${activeActions.length}</strong>
       </div>
       
-      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; text-align: center;">
-        <span class="block text-xs text-secondary" style="font-size: 0.65rem; text-transform: uppercase;">Awaiting Supplier Action</span>
-        <strong style="font-size: 1.4rem; color: #f59e0b; display: block; margin-top: 2px;">${awaitingSupplier.length}</strong>
-      </div>
-      
-      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; text-align: center;">
-        <span class="block text-xs text-secondary" style="font-size: 0.65rem; text-transform: uppercase;">Total Dispatched Threats</span>
-        <strong style="font-size: 1.4rem; color: var(--color-cyan); display: block; margin-top: 2px;">${vulnActions.length}</strong>
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.72rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span style="color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+            <span style="color: #ef4444; font-size: 0.5rem; line-height: 1;">●</span> Awaiting Your Audit:
+          </span>
+          <strong style="color: #ef4444;">${pendingActions.length}</strong>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span style="color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+            <span style="color: #f59e0b; font-size: 0.5rem; line-height: 1;">●</span> Awaiting Supplier Action:
+          </span>
+          <strong style="color: #f59e0b;">${awaitingSupplier.length}</strong>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px; margin-top: 2px; width: 100%;">
+          <span style="color: var(--text-muted);">Resolved &amp; Closed:</span>
+          <strong style="color: #10b981;">${vulnActions.filter(a => a.status === 'Closed').length}</strong>
+        </div>
       </div>
     </div>
   `;
