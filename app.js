@@ -5635,6 +5635,11 @@ window.onload = function() {
   console.warn("🚀 CYPHER VANTAGE APP INITIALIZED - Version 5.0 (Workday SaaS / Dynamic Scores / Divided Queues)");
   // Load state from db
   loadState();
+
+  // Update manager badge immediately on load
+  if (typeof updateManagerInboxBadge === 'function') {
+    updateManagerInboxBadge();
+  }
   
   const selector = document.getElementById('currency-selector');
   if (selector && state.resilience.selectedCurrency) {
@@ -5644,7 +5649,8 @@ window.onload = function() {
   renderComplianceDashboard();
   renderSuppliersTable();
   updateCollectorDropdown();
-  const defaultSupplier = document.getElementById('collector-target-supplier').value;
+  const targetSel = document.getElementById('collector-target-supplier');
+  const defaultSupplier = targetSel ? targetSel.value : null;
   if (defaultSupplier) {
     initAttackSurfaceView(defaultSupplier);
   }
@@ -6133,20 +6139,27 @@ window.selectNavigatorService = function(serviceName, element) {
     subcontractors.forEach(sub => {
       const subNode = document.createElement('div');
       subNode.className = 'dependency-tree-node subcontractor-node';
-      // Mock subcontractor location based on subcontractor name
+      
+      const subName = typeof sub === 'object' ? sub.name : sub;
+      const subRole = typeof sub === 'object' ? sub.role : 'Subcontractor Operations';
+      
       let subLoc = 'Global Operations';
-      if (sub.includes('Equinix')) subLoc = 'Ashburn, VA / London, UK / Singapore (Datacenter Hubs)';
-      else if (sub.includes('Cloudflare')) subLoc = 'Global Edge CDN Nodes (200+ Cities)';
-      else if (sub.includes('Twilio')) subLoc = 'San Francisco, California (USA)';
-      else if (sub.includes('Wipro')) subLoc = 'Bangalore, India';
-      else if (sub.includes('TATA')) subLoc = 'Mumbai, India';
-      else if (sub.includes('AWS')) subLoc = 'Seattle, Washington (USA)';
-      else if (sub.includes('Microsoft')) subLoc = 'Redmond, Washington (USA)';
+      if (typeof sub === 'object') {
+        subLoc = `${sub.primaryLocation} / ${sub.secondaryLocation}`;
+      } else {
+        if (sub.includes('Equinix')) subLoc = 'Ashburn, VA / London, UK / Singapore (Datacenter Hubs)';
+        else if (sub.includes('Cloudflare')) subLoc = 'Global Edge CDN Nodes (200+ Cities)';
+        else if (sub.includes('Twilio')) subLoc = 'San Francisco, California (USA)';
+        else if (sub.includes('Wipro')) subLoc = 'Bangalore, India';
+        else if (sub.includes('TATA')) subLoc = 'Mumbai, India';
+        else if (sub.includes('AWS')) subLoc = 'Seattle, Washington (USA)';
+        else if (sub.includes('Microsoft')) subLoc = 'Redmond, Washington (USA)';
+      }
 
       subNode.innerHTML = `
         <div class="node-content">
           <span class="node-label">Tier 4 (N-th Party Subcontractor)</span>
-          <span class="node-title">${sub}</span>
+          <span class="node-title">${subName} ${subRole ? `(${subRole})` : ''}</span>
           <span class="node-meta">Location: ${subLoc} | SLA Binding: Enforced | Security Audit: Passed</span>
         </div>
       `;
