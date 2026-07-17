@@ -5734,7 +5734,29 @@ window.renderServiceNavigator = function() {
         } else if (sys.name === 'Google Cloud SG (CIS API Gateway Routing)') {
           sys.status = '48h SLA';
         } else {
-          sys.status = 'Nominal';
+          const profile = getServiceSecurityProfile(sys.name, sys.serviceType);
+          const activeVuln = profile && profile.vulnerabilities ? profile.vulnerabilities.find(v => v.status !== 'Remediated') : null;
+          
+          if (activeVuln) {
+            const turnaround = activeVuln.turnaround;
+            if (turnaround.includes('Hour') || turnaround.includes('h')) {
+              if (turnaround.includes('9')) sys.status = '9h SLA';
+              else if (turnaround.includes('24')) sys.status = '24h SLA';
+              else sys.status = '48h SLA';
+            } else {
+              const daysMatch = turnaround.match(/(\d+)\s*Day/i);
+              const days = daysMatch ? parseInt(daysMatch[1]) : 7;
+              if (days >= 90) {
+                sys.status = '90d Low Risk';
+              } else if (days >= 30) {
+                sys.status = '30d Medium Risk';
+              } else {
+                sys.status = '7d High Risk';
+              }
+            }
+          } else {
+            sys.status = '90d Low Risk';
+          }
         }
       });
     }
@@ -5788,15 +5810,18 @@ window.renderServiceNavigator = function() {
     // SLA status color coding with high-contrast readable text colors
     let statusBadgeColor = '#10b981'; // Green
     let statusTextColor = '#ffffff';
-    if (sys.status === '9h SLA') {
+    if (sys.status === '9h SLA' || sys.status === '7d High Risk') {
       statusBadgeColor = '#ef4444'; // Red
       statusTextColor = '#ffffff';
-    } else if (sys.status === '24h SLA') {
+    } else if (sys.status === '24h SLA' || sys.status === '30d Medium Risk') {
       statusBadgeColor = '#f97316'; // Bright Orange
       statusTextColor = '#ffffff';
     } else if (sys.status === '48h SLA') {
       statusBadgeColor = '#eab308'; // Rich Yellow
       statusTextColor = '#0b0f19'; // High-contrast Dark Navy text!
+    } else if (sys.status === '90d Low Risk') {
+      statusBadgeColor = '#10b981'; // Green
+      statusTextColor = '#ffffff';
     }
 
     const item = document.createElement('div');
@@ -6044,9 +6069,10 @@ window.selectNavigatorService = function(serviceName, element) {
 
   // SLA status color coding for details header with high-contrast solid backgrounds
   let statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);';
-  if (targetSys.status === '9h SLA') statusBadgeStyle = 'background: #ef4444; color: #ffffff; font-weight: 700;';
-  else if (targetSys.status === '24h SLA') statusBadgeStyle = 'background: #f97316; color: #ffffff; font-weight: 700;';
+  if (targetSys.status === '9h SLA' || targetSys.status === '7d High Risk') statusBadgeStyle = 'background: #ef4444; color: #ffffff; font-weight: 700;';
+  else if (targetSys.status === '24h SLA' || targetSys.status === '30d Medium Risk') statusBadgeStyle = 'background: #f97316; color: #ffffff; font-weight: 700;';
   else if (targetSys.status === '48h SLA') statusBadgeStyle = 'background: #eab308; color: #0b0f19; font-weight: 700;';
+  else if (targetSys.status === '90d Low Risk') statusBadgeStyle = 'background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 700;';
 
   // Build details header HTML
   const headerContainer = document.getElementById('navigator-details-header');
@@ -6569,6 +6595,14 @@ window.submitSupplierRca = function(actionId) {
   saveState();
   alert('Stage 2 Root Cause Analysis (RCA) has been submitted successfully for final verification audit.');
   renderSupplierPortalDashboard();
+};
+
+window.updateManagerInboxBadge = function() {
+  const badge = document.getElementById('badge-manager-inbox');
+  if (!badge) return;
+  const count = state.actions.filter(a => a.isVulnerabilityRemediation && a.status !== 'Closed').length;
+  badge.innerText = count;
+  badge.style.display = count > 0 ? 'inline-block' : 'none';
 };
 
 window.startManagerSlaCountdown = function() {
