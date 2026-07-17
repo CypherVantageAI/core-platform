@@ -248,6 +248,22 @@ let state = {
 
   actions: [
     {
+      id: 'act-vuln-pre',
+      supplierId: 'aws',
+      domain: 'Vulnerability Remediation',
+      controlId: 'c5.3',
+      title: 'CVE-2026-9912 - SLA Remediation Request: AWS us-east-1a (IBS Payments)',
+      gapDetails: 'A critical vulnerability (CVE-2026-9912: Spring Framework Remote Code Execution) has been identified on your hosted service node supporting "AWS us-east-1a (IBS Payments)". Under DORA Article 19, you must provide an immediate remediation action plan, root cause analysis, and execute patches within the agreed SLA.',
+      status: 'Awaiting Response',
+      dateCreated: '2026-07-17',
+      isVulnerabilityRemediation: true,
+      cveId: 'CVE-2026-9912',
+      serviceName: 'AWS us-east-1a (IBS Payments)',
+      execSummary: '',
+      remediationPlan: '',
+      rootCauseAnalysis: ''
+    },
+    {
       id: 'act-001',
       supplierId: 'aws',
       domain: 'Resilience',
@@ -372,6 +388,27 @@ window.loadState = function() {
         act.controlId = 'c5.3';
       }
     });
+    
+    // Inject pre-dispatched vulnerability remediation action for immediate visibility in AWS portal
+    const hasPreVuln = state.actions.some(a => a.id === 'act-vuln-pre');
+    if (!hasPreVuln) {
+      state.actions.unshift({
+        id: 'act-vuln-pre',
+        supplierId: 'aws',
+        domain: 'Vulnerability Remediation',
+        controlId: 'c5.3',
+        title: 'CVE-2026-9912 - SLA Remediation Request: AWS us-east-1a (IBS Payments)',
+        gapDetails: 'A critical vulnerability (CVE-2026-9912: Spring Framework Remote Code Execution) has been identified on your hosted service node supporting "AWS us-east-1a (IBS Payments)". Under DORA Article 19, you must provide an immediate remediation action plan, root cause analysis, and execute patches within the agreed SLA.',
+        status: 'Awaiting Response',
+        dateCreated: '2026-07-17',
+        isVulnerabilityRemediation: true,
+        cveId: 'CVE-2026-9912',
+        serviceName: 'AWS us-east-1a (IBS Payments)',
+        execSummary: '',
+        remediationPlan: '',
+        rootCauseAnalysis: ''
+      });
+    }
   }
   if (!state.supplierSurfaceData) {
     state.supplierSurfaceData = JSON.parse(JSON.stringify(supplierSurfaceData));
@@ -1281,13 +1318,22 @@ function updateSupplierPortalIdentity() {
 // --------------------------------------------------------------------------
 // 5. MANAGER VIEW: OVERVIEW DASHBOARD
 // --------------------------------------------------------------------------
+window.getSupplierComplianceScore = function(s) {
+  if (!s) return 100;
+  if (!s.assessments || s.assessments.length === 0) {
+    return s.complianceScore || 100;
+  }
+  const metCount = s.assessments.filter(a => a.status === 'Met').length;
+  return Math.round((metCount / s.assessments.length) * 100);
+};
+
 function renderComplianceDashboard() {
   const suppliersList = Object.values(state.suppliers);
   const totalCount = suppliersList.length;
   
   let totalScoreSum = 0;
   suppliersList.forEach(s => {
-    totalScoreSum += s.complianceScore;
+    totalScoreSum += getSupplierComplianceScore(s);
   });
 
   const avgCompliance = Math.round(totalScoreSum / totalCount);
@@ -1359,7 +1405,7 @@ function renderSuppliersTable() {
       <td><span class="badge ${s.riskTier === 'Critical' ? 'badge-danger' : s.riskTier === 'High' ? 'badge-warning' : 'badge-accent'}">${s.riskTier}</span></td>
       <td><span class="text-secondary" style="font-size: 0.78rem;">${s.primarySupportLocation || 'N/A'}</span></td>
       <td><span class="text-secondary" style="font-size: 0.78rem;">${s.secondarySupportLocation || 'N/A'}</span></td>
-      <td><span class="table-score ${s.complianceScore === 100 ? 'text-success' : s.complianceScore >= 75 ? 'text-accent' : 'text-danger'}">${s.complianceScore}%</span></td>
+      <td><span class="table-score ${getSupplierComplianceScore(s) === 100 ? 'text-success' : getSupplierComplianceScore(s) >= 75 ? 'text-accent' : 'text-danger'}">${getSupplierComplianceScore(s)}%</span></td>
       <td><span class="text-secondary font-semibold">${gapCount} Gaps</span></td>
       <td><span class="badge ${statusClass}">${s.status}</span></td>
       <td>
@@ -1411,7 +1457,7 @@ window.openSupplierModal = function(supplierId) {
 
   document.getElementById('modal-supplier-name').innerText = s.name;
   document.getElementById('modal-supplier-risk').innerText = `${s.riskTier} Risk Tier`;
-  document.getElementById('modal-compliance-score').innerText = `${s.complianceScore}%`;
+  document.getElementById('modal-compliance-score').innerText = `${getSupplierComplianceScore(s)}%`;
   document.getElementById('modal-sco-version').innerText = s.scoVersion;
   
   const metCount = s.assessments.filter(a => a.status === 'Met').length;
@@ -1994,11 +2040,11 @@ function renderSupplierPortalDashboard() {
   const pctText = document.getElementById('supplier-percentage-text');
   const statusBadge = document.getElementById('supplier-overall-status');
 
-  const score = s.complianceScore;
+  const score = getSupplierComplianceScore(s);
   pctText.innerText = `${score}%`;
   
   const offset = 251.2 - (251.2 * score / 100);
-  circle.style.strokeDashoffset = offset;
+  circle.setAttribute('stroke-dashoffset', offset);
 
   if (score === 100) {
     statusBadge.className = 'badge badge-success';
