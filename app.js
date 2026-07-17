@@ -5928,7 +5928,7 @@ window.filterNavigatorServices = function() {
     const matchesSearch = nameAttr.includes(search);
     const matchesType = type === 'all' || typeAttr === type;
     const matchesRegion = region === 'all' || regionAttr === region;
-    const matchesStatus = status === 'all' || statusAttr === status;
+    const matchesStatus = status === 'all' || statusAttr.includes(status);
 
     if (matchesSearch && matchesType && matchesRegion && matchesStatus) {
       item.style.display = 'flex';
