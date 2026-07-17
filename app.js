@@ -363,6 +363,9 @@ window.saveState = function() {
   if (badge && state && state.actions) {
     badge.innerText = state.actions.length;
   }
+  if (typeof updateManagerInboxBadge === 'function') {
+    updateManagerInboxBadge();
+  }
 };
 
 window.resetDatabase = function() {
@@ -453,6 +456,9 @@ window.loadState = function() {
         rootCauseAnalysis: ''
       });
     }
+  }
+  if (!state.remediatedVulnerabilities) {
+    state.remediatedVulnerabilities = [];
   }
   if (!state.supplierSurfaceData) {
     state.supplierSurfaceData = JSON.parse(JSON.stringify(supplierSurfaceData));
@@ -1282,6 +1288,8 @@ window.switchTab = function(tabId) {
     renderServiceNavigator();
   } else if (tabId === 'manager-reports') {
     renderSimulationReports();
+  } else if (tabId === 'manager-inbox') {
+    renderManagerInbox();
   } else if (tabId === 'supplier-vulns' || tabId === 'supplier-compliance') {
     state.activeSupplierSubTab = tabId === 'supplier-vulns' ? 'vulns' : 'compliance';
     const targetPane = document.getElementById('view-supplier-dashboard');
@@ -2090,33 +2098,93 @@ function createSupplierActionCard(act) {
   card.className = 'action-card';
 
   let actionFormHTML = '';
-  if (act.status === 'Awaiting Response') {
-    if (act.isVulnerabilityRemediation) {
+  if (act.isVulnerabilityRemediation) {
+    let revisionCommentHtml = '';
+    if (act.revisionComment) {
+      revisionCommentHtml = `
+        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 6px; padding: 10px; font-size: 0.72rem; color: #ef4444; margin-bottom: 12px; line-height: 1.45; width: 100%;">
+          <strong style="color: #ef4444; display: flex; align-items: center; gap: 4px;">💬 REVISION REQUEST FEEDBACK:</strong>
+          "${act.revisionComment}"
+        </div>
+      `;
+    }
+
+    if (act.status === 'Awaiting Response') {
       actionFormHTML = `
-        <div class="supplier-response-form-box mt-3" id="form-container-${act.id}">
+        <div class="supplier-response-form-box mt-3" id="form-container-${act.id}" style="width: 100%;">
+          ${revisionCommentHtml}
           <div style="background: rgba(249, 115, 22, 0.03); border: 1px solid rgba(249, 115, 22, 0.15); border-radius: 6px; padding: 10px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
-            <strong style="color: #f97316; display: block; margin-bottom: 2px;">⚠️ SLA Vulnerability Remediation Mandate</strong>
-            Under DORA guidelines, you are required to submit an Executive Summary detailing your immediate remediation action plan, followed by a formal Root Cause Analysis (RCA) to restore compliance.
+            <strong style="color: #f97316; display: block; margin-bottom: 2px;">⚠️ Stage 1: Remediation Action Plan</strong>
+            Under DORA guidelines, you must submit an immediate Executive Summary of your remediation action plan. Once approved, you will proceed to Stage 2 (Root Cause Analysis).
           </div>
           
           <div class="form-group">
             <label for="resp-plan-${act.id}">Executive Summary &amp; Remediation Action Plan</label>
-            <textarea id="resp-plan-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Describe the remediation actions taken, patches applied, or configurations updated..."></textarea>
-          </div>
-          
-          <div class="form-group mt-3">
-            <label for="resp-rca-${act.id}">Root Cause Analysis (RCA)</label>
-            <textarea id="resp-rca-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Identify the root cause of the vulnerability exposure and prevention strategies..."></textarea>
+            <textarea id="resp-plan-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Describe the remediation actions taken, patches applied, or configurations updated...">${act.remediationPlan || ''}</textarea>
           </div>
 
-          <button class="btn btn-accent btn-sm mt-3" onclick="submitSupplierVulnerabilityResponse('${act.id}')" style="background: #f97316; border-color: #f97316; color: #ffffff;">
-            Submit Remediation Sign-off
+          <button class="btn btn-accent btn-sm mt-3" onclick="submitSupplierRemediationPlan('${act.id}')" style="background: #f97316; border-color: #f97316; color: #ffffff;">
+            Submit Remediation Plan
           </button>
         </div>
       `;
-    } else {
+    } else if (act.status === 'Plan Submitted') {
       actionFormHTML = `
-        <div class="supplier-response-form-box mt-3" id="form-container-${act.id}">
+        <div class="supplier-response-box mt-3" style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 6px; padding: 10px; width: 100%;">
+          ${revisionCommentHtml}
+          <div class="supplier-response-header" style="color: #f59e0b; font-weight: 700; font-size: 0.72rem; margin-bottom: 6px; display: flex; justify-content: space-between;">
+            <span>⏳ Stage 1: Remediation Plan Submitted</span>
+            <span>Awaiting Audit</span>
+          </div>
+          <div style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.45;">
+            <div><strong>Remediation Plan:</strong> ${act.remediationPlan}</div>
+          </div>
+          <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 8px; font-style: italic; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px;">Awaiting verification review audit by Sarah Jenkins. Once approved, Stage 2 (RCA) will unlock.</div>
+        </div>
+      `;
+    } else if (act.status === 'Awaiting RCA') {
+      actionFormHTML = `
+        <div class="supplier-response-form-box mt-3" id="form-container-${act.id}" style="width: 100%;">
+          ${revisionCommentHtml}
+          <div style="background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px; padding: 10px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+            <strong style="color: #10b981; display: block; margin-bottom: 2px;">✅ Stage 1 Approved &mdash; Stage 2: Root Cause Analysis (RCA)</strong>
+            Sarah Jenkins has approved your Action Plan. Please provide the Root Cause Analysis (RCA) and long-term prevention strategy below.
+          </div>
+          
+          <div style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.45; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 8px; border-radius: 4px; margin-bottom: 12px;">
+            <strong>Approved Action Plan:</strong> ${act.remediationPlan}
+          </div>
+
+          <div class="form-group">
+            <label for="resp-rca-${act.id}">Root Cause Analysis (RCA) &amp; Preventive Strategy</label>
+            <textarea id="resp-rca-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Identify the root cause of the vulnerability exposure and prevention strategies...">${act.rootCauseAnalysis || ''}</textarea>
+          </div>
+
+          <button class="btn btn-accent btn-sm mt-3" onclick="submitSupplierRca('${act.id}')" style="background: #10b981; border-color: #10b981; color: #ffffff;">
+            Submit Root Cause Analysis (RCA)
+          </button>
+        </div>
+      `;
+    } else if (act.status === 'RCA Submitted') {
+      actionFormHTML = `
+        <div class="supplier-response-box mt-3" style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 6px; padding: 10px; width: 100%;">
+          ${revisionCommentHtml}
+          <div class="supplier-response-header" style="color: #f59e0b; font-weight: 700; font-size: 0.72rem; margin-bottom: 6px; display: flex; justify-content: space-between;">
+            <span>⏳ Stage 2: Root Cause Analysis (RCA) Submitted</span>
+            <span>Awaiting Audit</span>
+          </div>
+          <div style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.45;">
+            <div style="margin-bottom: 6px;"><strong>Approved Action Plan:</strong> ${act.remediationPlan}</div>
+            <div><strong>Submitted RCA:</strong> ${act.rootCauseAnalysis}</div>
+          </div>
+          <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 8px; font-style: italic; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px;">Awaiting final validation audit by Sarah Jenkins.</div>
+        </div>
+      `;
+    }
+  } else {
+    if (act.status === 'Awaiting Response') {
+      actionFormHTML = `
+        <div class="supplier-response-form-box mt-3" id="form-container-${act.id}" style="width: 100%;">
           <div class="form-group">
             <label for="resp-msg-${act.id}">Response Statement</label>
             <textarea id="resp-msg-${act.id}" class="textarea-input mt-1" rows="3" placeholder="Provide details on how this gap has been addressed..."></textarea>
@@ -2137,25 +2205,9 @@ function createSupplierActionCard(act) {
           <button class="btn btn-primary mt-3 py-1 px-4" onclick="submitResponseToManager('${act.id}')">Submit Evidence</button>
         </div>
       `;
-    }
-  } else if (act.status === 'Pending Review') {
-    if (act.isVulnerabilityRemediation) {
+    } else if (act.status === 'Pending Review') {
       actionFormHTML = `
-        <div class="supplier-response-box mt-3" style="background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px; padding: 10px; width: 100%;">
-          <div class="supplier-response-header" style="color: #10b981; font-weight: 700; font-size: 0.72rem; margin-bottom: 6px; display: flex; justify-content: space-between;">
-            <span>✅ Remediation Sign-off Response Submitted</span>
-            <span style="opacity: 0.8;">Awaiting Audit</span>
-          </div>
-          <div style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.45;">
-            <div style="margin-bottom: 6px;"><strong>Remediation Plan:</strong> ${act.remediationPlan}</div>
-            <div><strong>RCA:</strong> ${act.rootCauseAnalysis}</div>
-          </div>
-          <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 8px; font-style: italic; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px;">Awaiting verification review audit by Sarah Jenkins.</div>
-        </div>
-      `;
-    } else {
-      actionFormHTML = `
-        <div class="supplier-response-box mt-3">
+        <div class="supplier-response-box mt-3" style="width: 100%;">
           <div class="supplier-response-header">
             <span>Evidence Submitted</span>
             <span>Awaiting Verification</span>
@@ -5963,30 +6015,67 @@ window.selectNavigatorService = function(serviceName, element) {
   let vulnsHtml = '';
   if (profile.vulnerabilities && profile.vulnerabilities.length > 0) {
     vulnsHtml = profile.vulnerabilities.map(v => {
-      const hasSlaAlert = ['9 Hours', '24 Hours', '48 Hours'].some(term => v.turnaround.includes(term));
-      
       // Look up if there's a corresponding action in state.actions
       const relatedAction = state.actions.find(a => a.title.includes(v.id) && a.supplierId === supplierId);
+
+      if (v.status === 'Remediated') {
+        return `
+          <div style="background: rgba(16, 185, 129, 0.02); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(16,185,129,0.15); padding-bottom: 6px;">
+              <span style="font-weight: 700; font-size: 0.76rem; color: #10b981;">✅ ${v.id}: ${v.title}</span>
+              <span style="font-size: 0.65rem; font-weight: 700; color: #fff; background: #10b981; padding: 2px 6px; border-radius: 4px;">REMEDIATED</span>
+            </div>
+            
+            <div style="background: rgba(16, 185, 129, 0.05); border-left: 3px solid #10b981; padding: 8px 10px; font-size: 0.7rem; color: var(--text-secondary); border-radius: 0 4px 4px 0; width: 100%;">
+              <strong>Remediation Audit Complete</strong> &mdash; verified by Sarah Jenkins under DORA requirements.
+              ${relatedAction ? `
+                <div style="margin-top: 4px;"><strong>Plan:</strong> "${relatedAction.remediationPlan}"</div>
+                <div style="margin-top: 2px;"><strong>RCA:</strong> "${relatedAction.rootCauseAnalysis}"</div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      const hasSlaAlert = ['9 Hours', '24 Hours', '48 Hours'].some(term => v.turnaround.includes(term));
       
       let dispatchStatusHtml = '';
       let dispatchButtons = '';
 
       if (hasSlaAlert) {
         if (relatedAction) {
-          if (relatedAction.status === 'Pending Review' || relatedAction.status === 'Closed') {
+          if (relatedAction.status === 'Closed') {
             dispatchStatusHtml = `
-              <div style="background: rgba(16, 185, 129, 0.04); border-left: 3px solid #10b981; padding: 8px 10px; font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; line-height: 1.45; border-radius: 0 4px 4px 0;">
-                <strong style="color: #10b981; display: block; margin-bottom: 2px;">✅ Supplier Remediation Response Received</strong>
-                <span style="display: block; margin-top: 3px;"><strong>Plan:</strong> ${relatedAction.remediationPlan}</span>
-                <span style="display: block; margin-top: 3px;"><strong>Root Cause Analysis (RCA):</strong> ${relatedAction.rootCauseAnalysis}</span>
-                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 6px;">Status: Awaiting Cypher Vantage Compliance Review Audit</div>
+              <div style="background: rgba(16, 185, 129, 0.05); border-left: 3px solid #10b981; padding: 8px 10px; font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; line-height: 1.45; border-radius: 0 4px 4px 0; width: 100%;">
+                <strong style="color: #10b981; display: block; margin-bottom: 2px;">✅ Remediation Completed &amp; Verified</strong>
+                <span style="display: block; margin-top: 2px;"><strong>Plan:</strong> ${relatedAction.remediationPlan}</span>
+                <span style="display: block; margin-top: 2px;"><strong>RCA:</strong> ${relatedAction.rootCauseAnalysis}</span>
+              </div>
+            `;
+          } else if (relatedAction.status === 'Plan Submitted' || relatedAction.status === 'RCA Submitted') {
+            const stageText = relatedAction.status === 'Plan Submitted' ? 'Stage 1: Action Plan Submitted' : 'Stage 2: Root Cause Analysis (RCA) Submitted';
+            dispatchStatusHtml = `
+              <div style="background: rgba(6, 182, 212, 0.05); border-left: 3px solid var(--color-cyan); padding: 8px 10px; font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; line-height: 1.45; border-radius: 0 4px 4px 0; width: 100%;">
+                <strong style="color: var(--color-cyan); display: block; margin-bottom: 2px;">⏳ ${stageText}</strong>
+                ${relatedAction.remediationPlan ? `<span style="display: block; margin-top: 2px;"><strong>Plan:</strong> ${relatedAction.remediationPlan}</span>` : ''}
+                ${relatedAction.rootCauseAnalysis ? `<span style="display: block; margin-top: 2px;"><strong>RCA:</strong> ${relatedAction.rootCauseAnalysis}</span>` : ''}
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">Awaiting Risk Manager Audit (See Vulnerability Inbox)</div>
+              </div>
+            `;
+          } else if (relatedAction.status === 'Awaiting RCA') {
+            dispatchStatusHtml = `
+              <div style="background: rgba(245, 158, 11, 0.05); border-left: 3px solid #f59e0b; padding: 8px 10px; font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; line-height: 1.45; border-radius: 0 4px 4px 0; width: 100%;">
+                <strong style="color: #f59e0b; display: block; margin-bottom: 2px;">⏳ Stage 1 Approved &mdash; Awaiting Stage 2 RCA</strong>
+                <span style="display: block; margin-top: 2px;"><strong>Plan (Approved):</strong> ${relatedAction.remediationPlan}</span>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">Supplier has been notified to submit Root Cause Analysis.</div>
               </div>
             `;
           } else {
             dispatchStatusHtml = `
-              <div style="background: rgba(249, 115, 22, 0.04); border-left: 3px solid #f97316; padding: 8px 10px; font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; border-radius: 0 4px 4px 0;">
+              <div style="background: rgba(249, 115, 22, 0.04); border-left: 3px solid #f97316; padding: 8px 10px; font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; border-radius: 0 4px 4px 0; width: 100%;">
                 <strong style="color: #f97316; display: block; margin-bottom: 2px;">⏳ Dispatch Awaiting Supplier Action Plan</strong>
                 Remediation request has been active on the supplier portal since ${relatedAction.dateCreated}.
+                ${relatedAction.revisionComment ? `<div style="color: #ef4444; font-size: 0.65rem; margin-top: 4px; font-weight: 600;">Revision requested: "${relatedAction.revisionComment}"</div>` : ''}
               </div>
             `;
           }
@@ -6209,10 +6298,18 @@ function getServiceSecurityProfile(serviceName, serviceType, serviceStatus) {
     }
   ];
   
+  const resultVulnerabilities = generatedVulnerabilities.map(v => {
+    const key = `${serviceName}-${v.id}`;
+    if (state.remediatedVulnerabilities && state.remediatedVulnerabilities.includes(key)) {
+      return { ...v, status: 'Remediated' };
+    }
+    return v;
+  });
+
   return {
     infra: generatedInfra,
     stack: generatedStack,
-    vulnerabilities: generatedVulnerabilities
+    vulnerabilities: resultVulnerabilities
   };
 }
 
@@ -6260,26 +6357,265 @@ window.dispatchSupplierRemediation = function(serviceName, cveId, cveTitle, supp
   }
 };
 
-window.submitSupplierVulnerabilityResponse = function(actionId) {
+window.submitSupplierRemediationPlan = function(actionId) {
   const planVal = document.getElementById(`resp-plan-${actionId}`).value.trim();
-  const rcaVal = document.getElementById(`resp-rca-${actionId}`).value.trim();
 
-  if (!planVal || !rcaVal) {
-    alert('Please provide both the Remediation Action Plan and the Root Cause Analysis before submitting.');
+  if (!planVal) {
+    alert('Please enter your Remediation Action Plan details.');
     return;
   }
 
   const act = state.actions.find(a => a.id === actionId);
   if (!act) return;
 
-  act.status = 'Pending Review';
+  act.status = 'Plan Submitted';
   act.remediationPlan = planVal;
-  act.rootCauseAnalysis = rcaVal;
-  act.responseMessage = `Remediation executed. Plan: ${planVal.substring(0, 100)}... RCA: ${rcaVal.substring(0, 100)}...`;
+  act.revisionComment = ''; // Clear comments
 
   saveState();
-  alert('Remediation sign-off submitted successfully. The Cypher Vantage risk assurance team has been notified for validation audit.');
-
+  alert('Stage 1 Remediation Action Plan has been submitted successfully to Sarah Jenkins for review.');
   renderSupplierPortalDashboard();
+};
+
+window.submitSupplierRca = function(actionId) {
+  const rcaVal = document.getElementById(`resp-rca-${actionId}`).value.trim();
+
+  if (!rcaVal) {
+    alert('Please enter your Root Cause Analysis details.');
+    return;
+  }
+
+  const act = state.actions.find(a => a.id === actionId);
+  if (!act) return;
+
+  act.status = 'RCA Submitted';
+  act.rootCauseAnalysis = rcaVal;
+  act.revisionComment = ''; // Clear comments
+
+  saveState();
+  alert('Stage 2 Root Cause Analysis (RCA) has been submitted successfully for final verification audit.');
+  renderSupplierPortalDashboard();
+};
+
+window.updateManagerInboxBadge = function() {
+  const badge = document.getElementById('badge-manager-inbox');
+  if (!badge) return;
+  const count = state.actions.filter(a => a.isVulnerabilityRemediation && (a.status === 'Plan Submitted' || a.status === 'RCA Submitted')).length;
+  badge.innerText = count;
+  badge.style.display = count > 0 ? 'inline-block' : 'none';
+};
+
+window.renderManagerInbox = function() {
+  const listContainer = document.getElementById('manager-inbox-list');
+  const summaryBox = document.getElementById('manager-inbox-summary-box');
+  if (!listContainer || !summaryBox) return;
+
+  listContainer.innerHTML = '';
+  summaryBox.innerHTML = '';
+
+  const vulnActions = state.actions.filter(a => a.isVulnerabilityRemediation);
+  const pendingActions = vulnActions.filter(a => a.status === 'Plan Submitted' || a.status === 'RCA Submitted');
+  const awaitingSupplier = vulnActions.filter(a => a.status === 'Awaiting Response' || a.status === 'Awaiting RCA');
+
+  // Update summary sidebar
+  summaryBox.innerHTML = `
+    <div style="display: grid; grid-template-columns: 1fr; gap: 8px; width: 100%;">
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; text-align: center;">
+        <span class="block text-xs text-secondary" style="font-size: 0.65rem; text-transform: uppercase;">Awaiting Your Audit</span>
+        <strong style="font-size: 1.6rem; color: #ef4444; display: block; margin-top: 2px;">${pendingActions.length}</strong>
+      </div>
+      
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; text-align: center;">
+        <span class="block text-xs text-secondary" style="font-size: 0.65rem; text-transform: uppercase;">Awaiting Supplier Action</span>
+        <strong style="font-size: 1.4rem; color: #f59e0b; display: block; margin-top: 2px;">${awaitingSupplier.length}</strong>
+      </div>
+      
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; text-align: center;">
+        <span class="block text-xs text-secondary" style="font-size: 0.65rem; text-transform: uppercase;">Total Dispatched Threats</span>
+        <strong style="font-size: 1.4rem; color: var(--color-cyan); display: block; margin-top: 2px;">${vulnActions.length}</strong>
+      </div>
+    </div>
+  `;
+
+  if (pendingActions.length === 0) {
+    listContainer.innerHTML = `
+      <div class="p-8 text-center text-muted font-medium" style="border: 1px dashed rgba(255,255,255,0.06); border-radius: var(--border-radius-lg); background: rgba(255,255,255,0.01); width: 100%;">
+        ✨ No supplier remediation plan or RCA audits are currently pending review. Your inbox is clean.
+      </div>
+    `;
+    return;
+  }
+
+  pendingActions.forEach(act => {
+    const s = state.suppliers[act.supplierId];
+    const supplierName = s ? s.name : 'Unknown';
+
+    const card = document.createElement('div');
+    card.className = 'action-card';
+    card.style.flexDirection = 'column';
+    card.style.gap = '10px';
+    card.style.background = 'rgba(255,255,255,0.02)';
+    card.style.border = '1px solid rgba(255,255,255,0.05)';
+    card.style.borderRadius = 'var(--border-radius-md)';
+    card.style.padding = '15px';
+    card.style.width = '100%';
+
+    let contentHTML = '';
+    let buttonsHTML = '';
+
+    if (act.status === 'Plan Submitted') {
+      contentHTML = `
+        <div style="background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 6px; padding: 10px; font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); width: 100%;">
+          <strong style="color: #f59e0b; display: block; margin-bottom: 4px;">📂 SUBMITTED: Stage 1 Remediation Action Plan</strong>
+          "${act.remediationPlan}"
+        </div>
+      `;
+      buttonsHTML = `
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <button class="btn btn-primary btn-sm" onclick="approveSupplierPlan('${act.id}')" style="background: #10b981; border-color: #10b981; color: white;">Approve Action Plan</button>
+          <button class="btn btn-secondary btn-sm" onclick="requestSupplierPlanRevision('${act.id}')">Request Plan Revision</button>
+        </div>
+      `;
+    } else if (act.status === 'RCA Submitted') {
+      contentHTML = `
+        <div style="background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px; padding: 10px; font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); width: 100%;">
+          <strong style="color: #10b981; display: block; margin-bottom: 4px;">📂 SUBMITTED: Stage 2 Root Cause Analysis (RCA)</strong>
+          <div style="margin-bottom: 4px;"><strong>Remediation Plan:</strong> ${act.remediationPlan}</div>
+          <div><strong>RCA:</strong> ${act.rootCauseAnalysis}</div>
+        </div>
+      `;
+      buttonsHTML = `
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <button class="btn btn-primary btn-sm" onclick="approveSupplierRca('${act.id}')" style="background: #10b981; border-color: #10b981; color: white;">Approve &amp; Close Incident</button>
+          <button class="btn btn-secondary btn-sm" onclick="requestSupplierRcaRevision('${act.id}')">Request RCA Revision</button>
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+        <div>
+          <span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.58rem; text-transform: uppercase;">${act.cveId} SLA Alert</span>
+          <h4 style="margin-top: 4px; font-size: 0.85rem;">${act.title}</h4>
+          <span style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 2px;">Supplier: <b>${supplierName}</b> | Node: <b>${act.serviceName}</b></span>
+        </div>
+        <span style="font-size: 0.68rem; color: var(--text-muted);">${act.dateCreated}</span>
+      </div>
+      
+      <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.35; margin: 4px 0;">${act.gapDetails}</p>
+      
+      ${contentHTML}
+
+      ${buttonsHTML}
+
+      <!-- Comment Section for Revision Requests (Initially Hidden) -->
+      <div id="revision-box-${act.id}" class="hidden" style="margin-top: 10px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+        <label for="revision-comment-${act.id}" style="font-size: 0.72rem; font-weight: 600; color: #ef4444; display: block; margin-bottom: 4px;">Revision Audit Feedback / Comments</label>
+        <textarea id="revision-comment-${act.id}" class="textarea-input" rows="2" placeholder="Specify why the submission was rejected and what revisions are needed..." style="font-size: 0.72rem;"></textarea>
+        <div style="display: flex; gap: 6px; margin-top: 6px;">
+          <button class="btn btn-danger btn-sm" onclick="submitRevisionRequest('${act.id}', '${act.status}')" style="background: #ef4444; border-color: #ef4444; color: white;">Send Revision Request</button>
+          <button class="btn btn-secondary btn-sm" onclick="cancelInboxRevision('${act.id}')">Cancel</button>
+        </div>
+      </div>
+    `;
+
+    listContainer.appendChild(card);
+  });
+};
+
+window.approveSupplierPlan = function(actionId) {
+  const act = state.actions.find(a => a.id === actionId);
+  if (!act) return;
+
+  act.status = 'Awaiting RCA';
+  act.revisionComment = ''; // Clear comments
+
+  state.activityLog.unshift({
+    time: 'Just Now',
+    text: `Sarah Jenkins approved <b>${getSupplierName(act.supplierId)}</b> Stage 1 Plan for ${act.cveId}.`
+  });
+
+  saveState();
+  alert('Remediation Action Plan approved. The supplier has been notified to proceed to Stage 2 (RCA).');
+  renderManagerInbox();
+};
+
+window.requestSupplierPlanRevision = function(actionId) {
+  const box = document.getElementById(`revision-box-${actionId}`);
+  if (box) box.classList.remove('hidden');
+};
+
+window.requestSupplierRcaRevision = function(actionId) {
+  const box = document.getElementById(`revision-box-${actionId}`);
+  if (box) box.classList.remove('hidden');
+};
+
+window.cancelInboxRevision = function(actionId) {
+  const box = document.getElementById(`revision-box-${actionId}`);
+  if (box) box.classList.add('hidden');
+};
+
+window.submitRevisionRequest = function(actionId, currentStatus) {
+  const comment = document.getElementById(`revision-comment-${actionId}`).value.trim();
+  if (!comment) {
+    alert('Please enter revision comments detailing your audit findings.');
+    return;
+  }
+
+  const act = state.actions.find(a => a.id === actionId);
+  if (!act) return;
+
+  // If plan was submitted, send back to Awaiting Response. If RCA was submitted, send back to Awaiting RCA!
+  act.status = currentStatus === 'Plan Submitted' ? 'Awaiting Response' : 'Awaiting RCA';
+  act.revisionComment = comment;
+
+  state.activityLog.unshift({
+    time: 'Just Now',
+    text: `Sarah Jenkins requested revision on <b>${getSupplierName(act.supplierId)}</b> ${currentStatus === 'Plan Submitted' ? 'Plan' : 'RCA'} for ${act.cveId}.`
+  });
+
+  saveState();
+  alert('Revision request sent successfully to the supplier with audit feedback.');
+  renderManagerInbox();
+};
+
+window.approveSupplierRca = function(actionId) {
+  const act = state.actions.find(a => a.id === actionId);
+  if (!act) return;
+
+  // Approve control assessment
+  const s = state.suppliers[act.supplierId];
+  if (s) {
+    const c = s.assessments.find(a => a.id === act.controlId);
+    if (c) {
+      c.status = 'Met';
+      c.snippet = `SLA Remediation complete. Plan: "${act.remediationPlan.slice(0, 50)}..." RCA: "${act.rootCauseAnalysis.slice(0, 50)}..." Verified by Sarah Jenkins.`;
+    }
+  }
+
+  // Remove the vulnerability threat badge from navigator details view!
+  if (!state.remediatedVulnerabilities) {
+    state.remediatedVulnerabilities = [];
+  }
+  const key = `${act.serviceName}-${act.cveId}`;
+  if (!state.remediatedVulnerabilities.includes(key)) {
+    state.remediatedVulnerabilities.push(key);
+  }
+
+  act.status = 'Closed';
+
+  state.activityLog.unshift({
+    time: 'Just Now',
+    text: `Sarah Jenkins verified and closed <b>${getSupplierName(act.supplierId)}</b> remediation audit for ${act.cveId}.`
+  });
+
+  state.activityLog.unshift({
+    time: 'Just Now',
+    text: `Node <b>${act.serviceName}</b> security profile vulnerability ${act.cveId} marked as Remediated.`
+  });
+
+  saveState();
+  alert('Remediation verified and audit successfully closed. This vulnerability has been marked as Remediated on the Service Navigator.');
+  renderManagerInbox();
 };
 
