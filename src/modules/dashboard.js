@@ -24,8 +24,11 @@ export function renderExecutiveDashboard() {
   const partialObligations = state.obligations.filter(ob => ob.status === 'Partial').length;
   const doraScore = Math.round(((compliantObligations + (partialObligations * 0.5)) / totalObligations) * 100);
 
+  // Convert state.suppliers object to array for dashboard statistics
+  const suppliersList = Object.values(state.suppliers || {});
+
   // Compute Resilience score based on findings, incidents, and supplier ratings
-  const avgSupplierScore = state.suppliers.reduce((sum, s) => sum + s.complianceScore, 0) / state.suppliers.length;
+  const avgSupplierScore = suppliersList.length ? (suppliersList.reduce((sum, s) => sum + s.complianceScore, 0) / suppliersList.length) : 100;
   const resilienceScore = Math.round(avgSupplierScore * 0.8 + (100 - openRisks * 5 - openFindings * 3) * 0.2);
 
   // Compute Recovery Readiness based on tests
@@ -34,10 +37,10 @@ export function renderExecutiveDashboard() {
   const readinessScore = Math.round((passedTests / totalTests) * 100);
 
   // Supplier risk tier breakdowns for the Heat-donut
-  const criticalSuppliers = state.suppliers.filter(s => s.riskTier === 'Critical').length;
-  const highSuppliers = state.suppliers.filter(s => s.riskTier === 'High').length;
-  const mediumSuppliers = state.suppliers.filter(s => s.riskTier === 'Medium').length;
-  const lowSuppliers = state.suppliers.filter(s => s.riskTier === 'Low' || s.riskTier.includes('Low')).length;
+  const criticalSuppliers = suppliersList.filter(s => s.riskTier === 'Critical').length;
+  const highSuppliers = suppliersList.filter(s => s.riskTier === 'High').length;
+  const mediumSuppliers = suppliersList.filter(s => s.riskTier === 'Medium').length;
+  const lowSuppliers = suppliersList.filter(s => s.riskTier === 'Low' || s.riskTier.includes('Low')).length;
 
   // 2. Build layout grid
   container.innerHTML = `

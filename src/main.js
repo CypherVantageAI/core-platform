@@ -8,6 +8,10 @@ import { switchTab, setPersona } from './core/router.js';
 // Import app.js legacy operations module to bind its functions to window
 import '../app.js';
 
+// Bind routing controls to window for inline HTML onclick triggers
+window.switchTab = switchTab;
+window.setPersona = setPersona;
+
 window.onload = function() {
   console.log("🚀 Cypher Vantage Core Platform Bootstrap Initiated");
 

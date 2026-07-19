@@ -80,6 +80,7 @@ window.populateSupplierPortalSwitcher = () => { if (typeof populateSupplierPorta
 window.updateSupplierPortalIdentity = () => { if (typeof updateSupplierPortalIdentity === 'function') updateSupplierPortalIdentity(); };
 window.updateCollectorDropdown = () => { if (typeof updateCollectorDropdown === 'function') updateCollectorDropdown(); };
 window.renderManagerActions = () => { if (typeof renderManagerActions === 'function') renderManagerActions(); };
+window.initTlptUI = () => { if (typeof initTlptUI === 'function') initTlptUI(); };
 
 
 // --------------------------------------------------------------------------
@@ -3974,6 +3975,31 @@ window.stopTlptSimulation = function() {
   }
 };
 
+function initTlptUI() {
+  const active = state.resilience.tlptActive;
+  const launchBtn = document.getElementById('btn-launch-tlpt');
+  const stopBtn = document.getElementById('btn-stop-tlpt');
+  const statusEl = document.getElementById('tlpt-status');
+  
+  if (active) {
+    if (launchBtn) launchBtn.classList.add('hidden');
+    if (stopBtn) stopBtn.classList.remove('hidden');
+    if (statusEl) {
+      statusEl.innerText = state.resilience.tlptPhase ? state.resilience.tlptPhase.toUpperCase() : 'RUNNING';
+      statusEl.className = 'terminal-badge running';
+    }
+    updateTlptTrackerUI(state.resilience.tlptPhase || 'prep');
+  } else {
+    if (launchBtn) launchBtn.classList.remove('hidden');
+    if (stopBtn) stopBtn.classList.add('hidden');
+    if (statusEl) {
+      statusEl.innerText = 'IDLE';
+      statusEl.className = 'terminal-badge';
+    }
+    updateTlptTrackerUI('prep');
+  }
+}
+
 function updateTlptTrackerUI(phase) {
   const steps = ['prep', 'intel', 'exec', 'close'];
   steps.forEach(p => {
@@ -5650,7 +5676,7 @@ window.approveSupplierRca = function(actionId) {
   });
 
   saveState();
-  alert('Remediation verified and audit successfully closed. This vulnerability has been marked as Remediated on the Service Navigator.');
+  alert('Remediation verified and audit successfully closed. This vulnerability has been marked as Remediated on the SLA Monitor.');
   renderManagerInbox();
 };
 

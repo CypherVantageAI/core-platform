@@ -104,17 +104,15 @@ function renderServicesTable(criticalityFilter = 'all') {
 
   createTable('services-table-container', services, columns, {
     searchPlaceholder: 'Search business services...',
-    pageSize: 6
-  });
-
-  // Bind select buttons
-  document.querySelectorAll('.select-srv-btn').forEach(btn => {
-    btn.onclick = () => {
-      selectedServiceId = btn.getAttribute('data-id');
+    pageSize: 6,
+    selectedRowId: selectedServiceId,
+    onRowClick: (row) => {
+      selectedServiceId = row.id;
       isAdding = false;
       isEditing = false;
       renderDetailPane();
-    };
+      renderServicesTable(); // refreshes highlighters
+    }
   });
 }
 
@@ -247,7 +245,8 @@ function renderDetailPane() {
     appAssets = [state.assets[0]];
   }
 
-  const supplier = state.suppliers.find(sup => appAssets.some(ast => ast.supplierId === sup.id));
+  const suppliersList = Object.values(state.suppliers || {});
+  const supplier = suppliersList.find(sup => appAssets.some(ast => ast.supplierId === sup.id));
 
   // Build tree nodes HTML
   let treeNodesHtml = `

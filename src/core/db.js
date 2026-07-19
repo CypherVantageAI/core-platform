@@ -185,82 +185,201 @@ const DEFAULT_STATE = {
     }
   ],
 
-  suppliers: [
-    {
+  suppliers: {
+    'aws': {
       id: 'aws',
       name: 'Amazon Web Services (AWS)',
       riskTier: 'Critical',
       riskTierExplanation: 'Hosts core transactional infrastructure and clearing portals. Outage directly triggers bank operational RTO failover protocols.',
+      scoVersion: 'CV Framework',
       complianceScore: 80,
+      status: 'Awaiting Response', // 'Compliant' | 'Awaiting Response' | 'Pending Review' | 'Gaps Identified'
       contactName: 'David Vance',
       contactEmail: 'compliance@aws.amazon.com',
-      primaryLocation: 'Seattle, WA (USA)',
-      secondaryLocation: 'Frankfurt, Germany',
+      avatar: 'AWS',
+      primarySupportLocation: 'Seattle, WA (USA)',
+      secondarySupportLocation: 'Frankfurt, Germany',
       subcontractors: [
         { name: 'Cloudflare', role: 'Edge CDN & DNS Security', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'Frankfurt, Germany', additionalLocations: 'Singapore, Tokyo, Sydney' },
         { name: 'Equinix', role: 'Physical Colocation Facilities', primaryLocation: 'Redwood City, CA (USA)', secondaryLocation: 'London, United Kingdom', additionalLocations: 'Dublin, Amsterdam' }
+      ],
+      documents: [
+        { name: 'AWS_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-02-10', scanned: '2026-07-01', status: 'Valid' },
+        { name: 'ISO_27001_Certificate_AWS.pdf', type: 'ISO Certificate', date: '2024-11-05', scanned: '2026-07-01', status: 'Valid' },
+        { name: 'AWS_DR_Testing_Plan_2024.pdf', type: 'Resilience Evidence', date: '2024-05-12', scanned: '2026-07-01', status: 'Outdated' }
+      ],
+      assessments: [
+        { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'AWS_SOC_2_Type_II_2025.pdf', snippet: 'MFA is enforced on all logical administrative consoles and API access gateways via hardware tokens or virtual authenticator systems (Page 24).' },
+        { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Met', document: 'AWS_SOC_2_Type_II_2025.pdf', snippet: 'Data stored in EBS volumes, S3, and RDS is encrypted at rest using AES-256 via KMS keys managed by customer or AWS (Page 41).' },
+        { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Gap', document: 'AWS_DR_Testing_Plan_2024.pdf', snippet: 'Disaster recovery execution and failover testing successfully completed on October 14, 2024. Next scheduled test Q4 2025 (Outdated; current date is mid-2026).' },
+        { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Met', document: 'AWS_SOC_2_Type_II_2025.pdf', snippet: 'AWS Third-Party Vendor management program conducts annual risk assessments and enforces master services NDAs for all sub-service organizations (Page 18).' },
+        { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'ISO_27001_Certificate_AWS.pdf', snippet: 'AWS is certified as a PCI DSS Level 1 Service Provider. Current Attestation of Compliance (AoC) is active through 2026.' }
+      ],
+      history: [
+        { type: 'evidence-uploaded', title: 'SOC 2 Report Uploaded', body: 'AWS uploaded file AWS_SOC_2_Type_II_2025.pdf', user: 'David Vance (AWS)', date: '2025-02-10 14:32' },
+        { type: 'action-raised', title: 'Assessment Run - Gap Identified', body: 'AI Evidence Collector detected outdated Recovery Planning evidence.', user: 'AI Risk Officer', date: '2026-07-01 09:12' },
+        { type: 'action-raised', title: 'Follow-up Sent by Risk Manager', body: 'Sarah Jenkins requested 2025 DR testing report evidence.', user: 'Sarah Jenkins', date: '2026-07-01 10:15' }
       ]
     },
-    {
-      id: 'microsoft',
-      name: 'Microsoft Corporation (Azure)',
-      riskTier: 'Critical',
-      riskTierExplanation: 'Hosts key identity access directories and disaster recovery mirror sites. Sub-processor downtime isolates administrative access.',
-      complianceScore: 95,
+    'salesforce': {
+      id: 'salesforce',
+      name: 'Salesforce Inc.',
+      riskTier: 'High',
+      riskTierExplanation: 'Processes high volumes of sensitive customer PII and sales records. Data exposure carries significant regulatory GDPR audit risk.',
+      scoVersion: 'CV Framework',
+      complianceScore: 100,
+      status: 'Compliant',
       contactName: 'Elena Rostova',
-      contactEmail: 'security@microsoft.com',
-      primaryLocation: 'Redmond, WA (USA)',
-      secondaryLocation: 'Dublin, Ireland',
+      contactEmail: 'security@salesforce.com',
+      avatar: 'SF',
+      primarySupportLocation: 'San Francisco, CA (USA)',
+      secondarySupportLocation: 'Dublin, Ireland',
       subcontractors: [
-        { name: 'Cloudflare', role: 'DNS/Edge Infrastructure', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'Dublin, Ireland', additionalLocations: 'Singapore' },
-        { name: 'Equinix', role: 'Data Centers Colocation', primaryLocation: 'Redwood City, CA (USA)', secondaryLocation: 'Amsterdam, NL', additionalLocations: 'Tokyo' }
+        { name: 'Amazon Web Services (AWS)', role: 'Hosting Infrastructure & Storage', primaryLocation: 'Seattle, WA (USA)', secondaryLocation: 'Dublin, Ireland', additionalLocations: 'Frankfurt, Tokyo' },
+        { name: 'Twilio', role: 'SMS Authentication Gateway', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'London, UK', additionalLocations: 'Sydney' }
+      ],
+      documents: [
+        { name: 'SFDC_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-03-01', scanned: '2026-07-02', status: 'Valid' },
+        { name: 'Salesforce_BCP_ExecSummary_2025.pdf', type: 'Resilience Evidence', date: '2025-04-10', scanned: '2026-07-02', status: 'Valid' }
+      ],
+      assessments: [
+        { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'SFDC_SOC_2_Type_II_2025.pdf', snippet: 'MFA is mandatory for all employee logins accessing infrastructure and customer production database environments (Page 19).' },
+        { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Met', document: 'SFDC_SOC_2_Type_II_2025.pdf', snippet: 'Salesforce Shield Platform Encryption enables native tables to be encrypted at rest using AES-256 bit tenant secrets (Page 30).' },
+        { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Met', document: 'Salesforce_BCP_ExecSummary_2025.pdf', snippet: 'Salesforce Core Platform DR drill successfully conducted on March 18, 2025, demonstrating secondary site failover RTO under 4 hours (Page 3).' },
+        { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Met', document: 'SFDC_SOC_2_Type_II_2025.pdf', snippet: 'Sub-processors undergo regular cyber audits and contractual alignment including standard contract clauses (SCCs) (Page 15).' },
+        { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'SFDC_SOC_2_Type_II_2025.pdf', snippet: 'Salesforce complies with PCIDSS standards for merchants, maintaining active SAQ-D merchant validation certificates.' }
+      ],
+      history: [
+        { type: 'evidence-uploaded', title: 'SOC 2 & BCP Documents Scanned', body: 'AI Evidence Collector successfully scanned Salesforce files. 100% compliance verified.', user: 'AI Risk Officer', date: '2026-07-02 11:45' }
       ]
     },
-    {
+    'servicenow': {
+      id: 'servicenow',
+      name: 'ServiceNow Inc.',
+      riskTier: 'High',
+      riskTierExplanation: 'Hosts corporate service desks, access provisioning logs, and internal operation registries.',
+      scoVersion: 'CV Framework',
+      complianceScore: 90,
+      status: 'Compliant',
+      contactName: 'John Miller',
+      contactEmail: 'governance@servicenow.com',
+      avatar: 'SN',
+      primarySupportLocation: 'Santa Clara, CA (USA)',
+      secondarySupportLocation: 'Munich, Germany',
+      subcontractors: [
+        { name: 'Wrangu', role: 'Privacy Compliance Integrations', primaryLocation: 'Amsterdam, Netherlands', secondaryLocation: 'London, UK', additionalLocations: 'Munich' },
+        { name: 'Microsoft Azure', role: 'Hosting Infrastructure', primaryLocation: 'Redmond, WA (USA)', secondaryLocation: 'Frankfurt, Germany', additionalLocations: 'Singapore' }
+      ],
+      documents: [
+        { name: 'ServiceNow_SOC_2_Report.pdf', type: 'SOC 2 Report', date: '2025-04-10', scanned: '2026-07-06', status: 'Valid' }
+      ],
+      assessments: [
+        { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'ServiceNow_SOC_2_Report.pdf', snippet: 'MFA is validated and enforced across all administrative accounts on customer instances (Page 14).' },
+        { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Met', document: 'ServiceNow_SOC_2_Report.pdf', snippet: 'Data stored in customer databases is encrypted at rest using AES-256 bit encryption keys (Page 22).' },
+        { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Met', document: 'ServiceNow_SOC_2_Report.pdf', snippet: 'Disaster recovery and high-availability database failover tests successfully completed in March 2025.' },
+        { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Met', document: 'ServiceNow_SOC_2_Report.pdf', snippet: 'ServiceNow conducts security assurance mapping for sub-processors including Wrangu compliance assessments (Page 31).' },
+        { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Gap', document: 'None', snippet: 'Exemption logged; ServiceNow does not process client payment data directly.' }
+      ],
+      history: [
+        { type: 'evidence-uploaded', title: 'SOC 2 Analysis Verified', body: 'AI Evidence Collector successfully scanned ServiceNow evidence document.', user: 'AI Risk Officer', date: '2026-07-06 10:45' }
+      ]
+    },
+    'infosys': {
       id: 'infosys',
       name: 'Infosys Limited',
       riskTier: 'High',
       riskTierExplanation: 'Critical systems integration partner. Holds elevated developer credential routing into bank internal staging grids.',
+      scoVersion: 'CV Framework',
       complianceScore: 60,
+      status: 'Gaps Identified',
       contactName: 'Rajesh Kumar',
       contactEmail: 'compliance_team@infosys.com',
-      primaryLocation: 'Bangalore (India)',
-      secondaryLocation: 'London, United Kingdom',
+      avatar: 'INF',
+      primarySupportLocation: 'Bangalore (India)',
+      secondarySupportLocation: 'London, United Kingdom',
       subcontractors: [
         { name: 'Wipro Ltd', role: 'Systems Integration Support', primaryLocation: 'Bangalore, India', secondaryLocation: 'London, UK', additionalLocations: 'New York' },
         { name: 'TATA Consultancy Services', role: 'Global Operations Helpdesk', primaryLocation: 'Mumbai, India', secondaryLocation: 'London, UK', additionalLocations: 'Toronto' }
+      ],
+      documents: [
+        { name: 'Infosys_Cyber_Policy_2025.pdf', type: 'Policy Document', date: '2025-01-15', scanned: '2026-07-03', status: 'Valid' }
+      ],
+      assessments: [
+        { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'Infosys_Cyber_Policy_2025.pdf', snippet: 'MFA authentication via secure tokens is required for all developer terminals accessing client staging systems.' },
+        { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Gap', document: 'Infosys_Cyber_Policy_2025.pdf', snippet: 'Encryption in transit is enforced; encryption of local staging databases at rest is configurable but not standard policy (Missing concrete AES-256 enforcement details).' },
+        { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Met', document: 'Infosys_Cyber_Policy_2025.pdf', snippet: 'Disaster recovery failover plans are tested semi-annually across global delivery centers, last completed Dec 2025.' },
+        { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Gap', document: 'None', snippet: 'No evidence document uploaded for sub-contractor NDAs or flow-down compliance audits.' },
+        { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'Infosys_Cyber_Policy_2025.pdf', snippet: 'Infosys global services division maintains active PCI DSS Level 1 certification for processing networks.' }
+      ],
+      history: [
+        { type: 'action-raised', title: 'Evidence Collector Assessment', body: 'AI Evidence Collector identified gaps in Data Management (encryption at rest) and Technology Risk (Subcontractors).', user: 'AI Risk Officer', date: '2026-07-03 16:30' }
       ]
     },
-    {
-      id: 'google',
-      name: 'Google Cloud Platform (GCP)',
-      riskTier: 'High',
-      riskTierExplanation: 'Secondary backup mirror for clearing and compliance logs. Interruption triggers secondary failovers.',
-      complianceScore: 92,
-      contactName: 'Sergey Brin',
-      contactEmail: 'gcp-compliance@google.com',
-      primaryLocation: 'Mountain View, CA (USA)',
-      secondaryLocation: 'Singapore',
+    'slack': {
+      id: 'slack',
+      name: 'Slack Technologies',
+      riskTier: 'Medium',
+      riskTierExplanation: 'Collaborative messaging system. Hosts operational chats but excluded from transactional networks and core ledgers.',
+      scoVersion: 'CV Framework',
+      complianceScore: 100,
+      status: 'Compliant',
+      contactName: 'Marcus Aurelius',
+      contactEmail: 'compliance@slack.com',
+      avatar: 'SL',
+      primarySupportLocation: 'San Francisco, CA (USA)',
+      secondarySupportLocation: 'Melbourne, Australia',
       subcontractors: [
-        { name: 'Intel Corporation', role: 'Custom Hardware Supply', primaryLocation: 'Santa Clara, CA (USA)', secondaryLocation: 'Penang, Malaysia', additionalLocations: 'Israel' }
+        { name: 'Amazon Web Services (AWS)', role: 'Hosting Infrastructure', primaryLocation: 'Seattle, WA (USA)', secondaryLocation: 'Frankfurt, Germany', additionalLocations: 'Dublin' },
+        { name: 'Fastly', role: 'Edge Content Delivery (CDN)', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'London, UK', additionalLocations: 'Tokyo' }
+      ],
+      documents: [
+        { name: 'Slack_SOC_3_Report_2025.pdf', type: 'SOC 2/3 Report', date: '2025-02-15', scanned: '2026-07-04', status: 'Valid' },
+        { name: 'Slack_BCP_Failover_2025.pdf', type: 'Resilience Evidence', date: '2025-05-20', scanned: '2026-07-04', status: 'Valid' }
+      ],
+      assessments: [
+        { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'Slack_SOC_3_Report_2025.pdf', snippet: 'SAML Single Sign-On and multi-factor authentication are mandatory for administration credentials (Page 12).' },
+        { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Met', document: 'Slack_SOC_3_Report_2025.pdf', snippet: 'Customer data is encrypted at rest using AES-256 and in transit using TLS 1.2 or higher (Page 16).' },
+        { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Met', document: 'Slack_BCP_Failover_2025.pdf', snippet: 'Slack conducts automated multi-region DR drills quarterly. Last successful drill concluded May 14, 2025.' },
+        { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Met', document: 'Slack_SOC_3_Report_2025.pdf', snippet: 'Slack reviews security postures of critical sub-processors on an annual basis.' },
+        { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'Slack_SOC_3_Report_2025.pdf', snippet: 'Payment gateways are hosted in PCI-compliant VPC infrastructure.' }
+      ],
+      history: [
+        { type: 'evidence-uploaded', title: 'Quarterly Check Complete', body: 'AI Evidence Collector verified Slack certificates. 100% compliant.', user: 'AI Risk Officer', date: '2026-07-04 10:20' }
       ]
     },
-    {
+    'workday': {
       id: 'workday',
       name: 'Workday, Inc. (SaaS HR & ERP)',
       riskTier: 'Critical',
       riskTierExplanation: 'Hosts core enterprise ledger and employee payroll system of record. High business impact on operational continuity.',
+      scoVersion: 'CV Framework',
       complianceScore: 80,
+      status: 'Gaps Identified',
       contactName: 'Marcus Vance',
       contactEmail: 'compliance@workday.com',
-      primaryLocation: 'Pleasanton, CA (USA)',
-      secondaryLocation: 'Dublin, Ireland',
+      avatar: 'WD',
+      primarySupportLocation: 'Pleasanton, CA (USA)',
+      secondarySupportLocation: 'Dublin, Ireland',
       subcontractors: [
         { name: 'Amazon Web Services (AWS)', role: 'Hosting & Core Cloud Storage', primaryLocation: 'Seattle, WA (USA)', secondaryLocation: 'Frankfurt, Germany', additionalLocations: 'Dublin' },
         { name: 'Akamai Technologies', role: 'Edge Delivery & DDoS Shielding', primaryLocation: 'Cambridge, MA (USA)', secondaryLocation: 'Munich, Germany', additionalLocations: 'Singapore' }
+      ],
+      documents: [
+        { name: 'Workday_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-02-15', scanned: '2026-07-05', status: 'Valid' },
+        { name: 'Workday_BCP_TestDoc_2025.pdf', type: 'Resilience Evidence', date: '2025-06-01', scanned: '2026-07-05', status: 'Valid' }
+      ],
+      assessments: [
+        { id: 'c2.1', section: 'Section 5.0', title: 'Information & Cyber Security', requirement: 'Implement Multi-Factor Authentication (MFA) on all admin and customer access endpoints.', status: 'Met', document: 'Workday_SOC_2_Type_II_2025.pdf', snippet: 'Administrative controls require physical MFA tokens or secure Authenticator app confirmation.' },
+        { id: 'c3.1', section: 'Section 3.0', title: 'Data Management', requirement: 'Encrypt all Cypher Vantage tenant proprietary data at rest and in transit using cryptographic algorithms of AES-256 or higher.', status: 'Met', document: 'Workday_SOC_2_Type_II_2025.pdf', snippet: 'Data stored on persistent database volumes is encrypted at rest using AES-256 bit keys.' },
+        { id: 'c4.2', section: 'Section 13.0', title: 'Recovery Planning', requirement: 'Provide executive summaries of business continuity and disaster recovery tests conducted within the last 12 months.', status: 'Met', document: 'Workday_BCP_TestDoc_2025.pdf', snippet: 'Full environment backup restore and DR testing executed and verified on June 1, 2025.' },
+        { id: 'c5.3', section: 'Section 14.0', title: 'Technology Risk Technical', requirement: 'Ensure all critical subcontractors are bound by non-disclosure agreements and undergo security evaluations equivalent to Cypher Vantage guidelines.', status: 'Gap', document: 'None', snippet: 'Sub-processor compliance assessment forms and NDAs are missing for downstream service organizations.' },
+        { id: 'c8.1', section: 'Section 8.0', title: 'PCIDSS Compliance', requirement: 'Provide annual certificate of compliance with the PCI DSS standard for payment tokenization systems.', status: 'Met', document: 'Workday_SOC_2_Type_II_2025.pdf', snippet: 'Workday Core Services do not store or transmit cardholder payment data directly.' }
+      ],
+      history: [
+        { type: 'evidence-uploaded', title: 'Compliance Gap Logged', body: 'AI Evidence Collector identified gap in subcontractor evaluation audits.', user: 'AI Risk Officer', date: '2026-07-05 14:15' }
       ]
     }
-  ],
+  },
 
   risks: [
     {

@@ -82,15 +82,19 @@ export function createTable(containerId, data, columns, options = {}) {
                 }).join('')}
               </tr>
             </thead>
-            <tbody>
-              ${paginatedData.length > 0 ? paginatedData.map((row, rIdx) => `
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.03); background: ${rIdx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)'}; hover: background: rgba(255,255,255,0.03);">
-                  ${columns.map(col => {
-                    const cellContent = col.render ? col.render(row) : (row[col.key] !== undefined ? row[col.key] : '--');
-                    return `<td style="padding: 10px 12px; color: var(--text-primary);">${cellContent}</td>`;
-                  }).join('')}
-                </tr>
-              `).join('') : `
+              ${paginatedData.length > 0 ? paginatedData.map((row, rIdx) => {
+                const isSelected = options.selectedRowId && String(row.id) === String(options.selectedRowId);
+                const bg = isSelected ? 'rgba(139, 92, 246, 0.08)' : (rIdx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)');
+                const borderLeft = isSelected ? '3px solid var(--color-violet)' : '3px solid transparent';
+                return `
+                  <tr class="${options.onRowClick ? 'clickable-row' : ''}" data-id="${row.id}" style="border-bottom: 1px solid rgba(255,255,255,0.03); background: ${bg}; border-left: ${borderLeft}; cursor: ${options.onRowClick ? 'pointer' : 'default'}; transition: all 0.2s;">
+                    ${columns.map(col => {
+                      const cellContent = col.render ? col.render(row) : (row[col.key] !== undefined ? row[col.key] : '--');
+                      return `<td style="padding: 10px 12px; color: var(--text-primary);">${cellContent}</td>`;
+                    }).join('')}
+                  </tr>
+                `;
+              }).join('') : `
                 <tr>
                   <td colspan="${columns.length}" style="padding: 20px; text-align: center; color: var(--text-muted);">No records found.</td>
                 </tr>
@@ -115,6 +119,26 @@ export function createTable(containerId, data, columns, options = {}) {
     container.innerHTML = tableHtml;
 
     // 5. Wire up event listeners
+    if (options.onRowClick) {
+      container.querySelectorAll('tbody tr').forEach(tr => {
+        tr.onclick = (e) => {
+          const isActionButton = (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.tagName === 'A');
+          const isSelectButton = e.target.classList.contains('select-srv-btn') || 
+                                 e.target.classList.contains('select-sup-btn') || 
+                                 e.target.closest('.select-srv-btn') || 
+                                 e.target.closest('.select-sup-btn');
+          if (isActionButton && !isSelectButton) {
+            return;
+          }
+          const rowId = tr.getAttribute('data-id');
+          const clickedRow = processedData.find(item => String(item.id) === String(rowId));
+          if (clickedRow) {
+            options.onRowClick(clickedRow);
+          }
+        };
+      });
+    }
+
     const searchInput = container.querySelector('.table-search-input');
     if (searchInput) {
       searchInput.oninput = (e) => {

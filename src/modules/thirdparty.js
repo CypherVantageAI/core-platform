@@ -76,18 +76,16 @@ function renderSuppliersTable() {
     }
   ];
 
-  createTable('suppliers-table-container', state.suppliers, columns, {
+  const suppliersList = Object.values(state.suppliers || {});
+  createTable('suppliers-table-container', suppliersList, columns, {
     searchPlaceholder: 'Search suppliers directory...',
-    pageSize: 6
-  });
-
-  // Bind select buttons
-  document.querySelectorAll('.select-sup-btn').forEach(btn => {
-    btn.onclick = () => {
-      selectedSupplierId = btn.getAttribute('data-id');
+    pageSize: 6,
+    selectedRowId: selectedSupplierId,
+    onRowClick: (row) => {
+      selectedSupplierId = row.id;
       renderSupplierDetails();
       renderSuppliersTable();
-    };
+    }
   });
 }
 
@@ -100,7 +98,7 @@ function renderSupplierDetails() {
   const bodyContainer = document.getElementById('supplier-detail-body');
   if (!headerContainer || !bodyContainer) return;
 
-  const sup = state.suppliers.find(s => s.id === selectedSupplierId);
+  const sup = (state.suppliers && state.suppliers[selectedSupplierId]) || null;
   if (!sup) {
     headerContainer.innerHTML = `<h3 style="font-size:0.8rem; margin:0;">No Supplier Selected</h3>`;
     bodyContainer.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Please select a supplier from the registry.</div>`;

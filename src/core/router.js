@@ -93,6 +93,9 @@ export function switchTab(tabId) {
         window.testDlpSanitizer();
         window.assessAiActCompliance();
       }
+      if (typeof window.initTlptUI === 'function') {
+        window.initTlptUI();
+      }
       break;
     case 'manager-inbox':
       if (typeof window.renderManagerInbox === 'function') {
