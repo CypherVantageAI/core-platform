@@ -196,9 +196,11 @@ export function createCard(containerId, options = {}) {
 
   const borderLeft = options.borderLeftColor ? `border-left: 4px solid ${options.borderLeftColor};` : '';
   const trendHtml = options.trendText ? `<span class="trend-badge ${options.trendClass || 'positive'}" style="font-size: 0.58rem; margin-left: 6px; font-weight: 700;">${options.trendText}</span>` : '';
+  const tooltipAttr = options.tooltip ? `title="${options.tooltip}"` : '';
+  const cursorStyle = (options.onClick || options.onclick) ? 'cursor: pointer; transform: translateY(0); transition: all 0.2s ease;' : '';
 
   container.innerHTML = `
-    <div class="dashboard-card" style="position: relative; display: flex; flex-direction: column; padding: 12px 16px; margin: 0; min-height: 80px; justify-content: center; ${borderLeft}">
+    <div class="dashboard-card" ${tooltipAttr} style="position: relative; display: flex; flex-direction: column; padding: 12px 16px; margin: 0; min-height: 80px; justify-content: center; ${borderLeft} ${cursorStyle}">
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <span style="font-size: 0.6rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
           ${options.title || 'Metrics'}
@@ -214,6 +216,15 @@ export function createCard(containerId, options = {}) {
       ${options.subtext ? `<div style="font-size: 0.64rem; color: var(--text-muted); margin-top: 2px;">${options.subtext}</div>` : ''}
     </div>
   `;
+
+  const cardElement = container.querySelector('.dashboard-card');
+  if (cardElement && (options.onClick || options.onclick)) {
+    const handler = options.onClick || options.onclick;
+    cardElement.onclick = handler;
+    // Add simple hover scale effect
+    cardElement.onmouseenter = () => { cardElement.style.transform = 'translateY(-2px)'; cardElement.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)'; };
+    cardElement.onmouseleave = () => { cardElement.style.transform = 'translateY(0)'; cardElement.style.boxShadow = 'none'; };
+  }
 }
 
 /**
@@ -473,4 +484,60 @@ export function createRiskHeatmap(containerId, risks, onCellClick) {
       onCellClick(l, i);
     };
   });
+}
+
+/**
+ * Show a dynamic visual modal dialog on top of the viewport
+ * @param {string} title - Title of the modal
+ * @param {string} contentHtml - HTML content
+ */
+export function showModal(title, contentHtml) {
+  let modal = document.getElementById('cv-dynamic-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'cv-dynamic-modal';
+    modal.className = 'modal-overlay';
+    modal.style.zIndex = '2000';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    modal.style.background = 'rgba(0,0,0,0.7)';
+    modal.style.backdropFilter = 'blur(4px)';
+    
+    modal.innerHTML = `
+      <div class="modal-box" style="max-width: 500px; width: 90%; background: #0c101b; border: 1px solid rgba(139, 92, 246, 0.3); box-shadow: 0 0 25px rgba(139, 92, 246, 0.2); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+          <h3 id="cv-dynamic-modal-title" style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">Modal Title</h3>
+          <button id="cv-dynamic-modal-close" style="background: none; border: none; color: var(--text-secondary); font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <div id="cv-dynamic-modal-body" style="padding: 16px; font-size: 0.76rem; color: var(--text-secondary); max-height: 400px; overflow-y: auto; line-height: 1.4;">
+          <!-- Content -->
+        </div>
+        <div class="modal-footer" style="padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: flex-end; background: rgba(0,0,0,0.15);">
+          <button id="cv-dynamic-modal-btn-close" class="btn btn-secondary btn-xs" style="padding: 4px 10px;">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    const closeFn = () => {
+      modal.style.display = 'none';
+      modal.classList.add('hidden');
+    };
+    modal.querySelector('#cv-dynamic-modal-close').onclick = closeFn;
+    modal.querySelector('#cv-dynamic-modal-btn-close').onclick = closeFn;
+    modal.onclick = (e) => {
+      if (e.target === modal) closeFn();
+    };
+  }
+  
+  modal.querySelector('#cv-dynamic-modal-title').innerText = title;
+  modal.querySelector('#cv-dynamic-modal-body').innerHTML = contentHtml;
+  modal.style.display = 'flex';
+  modal.classList.remove('hidden');
 }

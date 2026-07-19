@@ -2,11 +2,11 @@
 // Cypher Vantage - Core Database & State Manager (ES6 Module)
 // ==========================================================================
 
-const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v7';
+const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v8';
 
 // Default state structure conforming to the 12 core DORA entities
 const DEFAULT_STATE = {
-  version: 7,
+  version: 8,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
@@ -778,26 +778,33 @@ export function saveState() {
  */
 export function loadState() {
   const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+  let parsed = null;
   if (saved) {
     try {
-      const parsed = JSON.parse(saved);
-      // Migrate version if required
-      if (!parsed.version || parsed.version < 7) {
-        console.warn("Outdated DORA database state (V7 needed). Reinitializing database.");
-        state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-        saveState();
-      } else {
-        state = parsed;
+      parsed = JSON.parse(saved);
+      if (!parsed.version || parsed.version < 8) {
+        console.warn("Outdated DORA database state (V8 needed). Reinitializing database.");
+        parsed = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
       }
     } catch (e) {
       console.error("Failed to load local DORA state, reinitializing default mocks.", e);
-      state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-      saveState();
+      parsed = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
     }
   } else {
     console.log("No existing database. Initializing default Cypher Vantage DORA mock data.");
-    state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-    saveState();
+    parsed = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
+  }
+
+  if (!state) {
+    state = parsed;
+  } else {
+    for (let key in state) {
+      delete state[key];
+    }
+    Object.assign(state, parsed);
   }
   return state;
 }

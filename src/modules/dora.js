@@ -3,7 +3,7 @@
 // ==========================================================================
 
 import { getState, saveState } from '../core/db.js';
-import { createTable, createCard, createStatusBadge } from '../components/ui.js';
+import { createTable, createCard, createStatusBadge, showModal } from '../components/ui.js';
 
 let selectedObligationId = 'ob-001';
 let activePillarFilter = 'all';
@@ -73,14 +73,33 @@ export function renderDoraModule() {
     </div>
   `;
 
-  // Render KPI cards
+  // Render KPI cards with tooltips and interactive drill-downs
   createCard('dora-kpi-score', {
     title: 'DORA Compliance Score',
     value: `${score}%`,
     trendText: '+5% MoM',
     trendClass: 'positive',
     icon: '📜',
-    borderLeftColor: '#14b8a6'
+    borderLeftColor: '#14b8a6',
+    tooltip: 'Weighted index: (Compliant Articles + 0.5 * Partially Compliant Articles) / Total. Click to see the breakdown formula.',
+    onclick: () => {
+      const breakdownHtml = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <p><b>DORA Compliance Index Formula:</b></p>
+          <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:4px; font-family:monospace; font-size:0.75rem; text-align:center;">
+            Score = ((Compliant + 0.5 * Partial) / Total) * 100
+          </div>
+          <table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:0.72rem;">
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:6px 0;">✅ <b>Compliant Articles</b></td><td style="text-align:right;">${compliant}</td></tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:6px 0;">⚠️ <b>Partially Compliant</b></td><td style="text-align:right;">${partial}</td></tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:6px 0;">❌ <b>Non-Compliant Articles</b></td><td style="text-align:right;">${total - compliant - partial}</td></tr>
+            <tr style="font-weight:bold; border-top:1px solid rgba(255,255,255,0.1);"><td style="padding:6px 0;">📊 Total Articles</td><td style="text-align:right;">${total}</td></tr>
+          </table>
+          <p style="margin-top:5px; font-size:0.68rem; color:var(--text-muted);">Weighted compliance scores reward partial safeguards while mandating clean remediations to achieve 100% compliance.</p>
+        </div>
+      `;
+      showModal('DORA Compliance Score Breakdown', breakdownHtml);
+    }
   });
 
   createCard('dora-kpi-controls', {
@@ -88,7 +107,24 @@ export function renderDoraModule() {
     value: `${metControls}/${totalControls}`,
     subtext: 'Operational safeguards met',
     icon: '🛠️',
-    borderLeftColor: '#10b981'
+    borderLeftColor: '#10b981',
+    tooltip: 'Active operational controls mapped to DORA requirements. Click to view mapped controls status.',
+    onclick: () => {
+      const controlsHtml = state.controls.map(c => `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.03); padding:6px 0; font-size:0.7rem;">
+          <div>
+            <b>${c.id}</b> - <span style="color:var(--text-secondary);">${c.title}</span>
+            <div style="font-size:0.62rem; color:var(--text-muted);">${c.type}</div>
+          </div>
+          ${createStatusBadge(c.status)}
+        </div>
+      `).join('');
+      showModal('Mapped Control Safeguards', `
+        <div style="display:flex; flex-direction:column; gap:10px; max-height:350px; overflow-y:auto; padding-right:5px;">
+          ${controlsHtml}
+        </div>
+      `);
+    }
   });
 
   createCard('dora-kpi-gaps', {
@@ -96,7 +132,26 @@ export function renderDoraModule() {
     value: `${totalGaps}`,
     subtext: 'Non-compliant Articles',
     icon: '⚠️',
-    borderLeftColor: '#ef4444'
+    borderLeftColor: '#ef4444',
+    tooltip: 'Articles failing full compliance mapping. Click to review compliance gaps.',
+    onclick: () => {
+      const gaps = state.obligations.filter(ob => ob.status !== 'Compliant');
+      const gapsHtml = gaps.length > 0 ? gaps.map(g => `
+        <div style="border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem; display:flex; flex-direction:column; gap:2px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b>${g.section}</b>
+            ${createStatusBadge(g.status)}
+          </div>
+          <div style="color:var(--text-secondary); font-size:0.68rem;">${g.description}</div>
+          <div style="color:var(--color-cyan); font-size:0.62rem; margin-top:2px;">Pillar: ${g.pillar}</div>
+        </div>
+      `).join('') : '<div style="text-align:center; padding:15px; color:var(--text-muted);">No gaps logged! 100% compliance achieved.</div>';
+      showModal('Active Compliance Gaps', `
+        <div style="display:flex; flex-direction:column; gap:10px; max-height:350px; overflow-y:auto; padding-right:5px;">
+          ${gapsHtml}
+        </div>
+      `);
+    }
   });
 
   createCard('dora-kpi-evidence', {
@@ -104,7 +159,24 @@ export function renderDoraModule() {
     value: `${totalEvidence}`,
     subtext: 'Cryptographic files validated',
     icon: '📂',
-    borderLeftColor: '#eab308'
+    borderLeftColor: '#eab308',
+    tooltip: 'Cryptographic proof hashes validated on the ledger. Click to browse files.',
+    onclick: () => {
+      const evidenceHtml = state.evidence.map(e => `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.03); padding:6px 0; font-size:0.7rem;">
+          <div>
+            <b>📂 ${e.name}</b>
+            <div style="font-size:0.62rem; color:var(--text-muted);">Hash: <span style="font-family:monospace;">${e.hash.slice(0, 16)}...</span></div>
+          </div>
+          <span style="font-size:0.65rem; color:var(--color-cyan); font-weight:600;">${e.uploaded}</span>
+        </div>
+      `).join('');
+      showModal('Cryptographic Evidence Vault', `
+        <div style="display:flex; flex-direction:column; gap:10px; max-height:350px; overflow-y:auto; padding-right:5px;">
+          ${evidenceHtml}
+        </div>
+      `);
+    }
   });
 
   // Bind pillar tabs

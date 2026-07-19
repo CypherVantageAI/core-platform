@@ -12,35 +12,83 @@ export function renderThirdPartyModule() {
   const container = document.getElementById('view-manager-thirdparty');
   if (!container) return;
 
-  container.innerHTML = `
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-      <!-- Left Panel: Supplier Registry -->
-      <div class="dashboard-card" style="flex: 1.5; min-width: 450px; display: flex; flex-direction: column; gap: 15px; padding: 15px; margin: 0; min-height: 600px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
-          <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
-            Nth-Party Supplier Directory
-          </h3>
-          <button class="btn btn-secondary btn-xs" onclick="switchTab('manager-inbox')" style="padding: 4px 8px; font-size: 0.65rem; display: flex; align-items: center; gap: 4px;">
-            🚨 Urgent Remediation Inbox
-          </button>
-        </div>
+  const suppliersList = Object.values(state.suppliers || {});
+  const totalSuppliers = suppliersList.length;
+  const criticalSuppliers = suppliersList.filter(s => s.riskTier === 'Critical').length;
+  const avgCompliance = totalSuppliers ? Math.round(suppliersList.reduce((sum, s) => sum + s.complianceScore, 0) / totalSuppliers) : 100;
+  const activeGaps = state.actions.filter(a => a.status !== 'Closed').length;
 
-        <!-- Directory Table -->
-        <div id="suppliers-table-container" style="width: 100%;"></div>
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+      <!-- KPI stats row -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; width: 100%;">
+        <div id="tpr-kpi-total"></div>
+        <div id="tpr-kpi-critical"></div>
+        <div id="tpr-kpi-compliance"></div>
+        <div id="tpr-kpi-gaps"></div>
       </div>
 
-      <!-- Right Panel: Profile & Subcontractors -->
-      <div class="dashboard-card" style="flex: 1.2; min-width: 380px; display: flex; flex-direction: column; gap: 15px; padding: 15px; margin: 0; min-height: 600px;">
-        <div id="supplier-detail-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-          <!-- Populated dynamically -->
+      <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
+        <!-- Left Panel: Supplier Registry -->
+        <div class="dashboard-card" style="flex: 1.5; min-width: 450px; display: flex; flex-direction: column; gap: 15px; padding: 15px; margin: 0; min-height: 600px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+            <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
+              Nth-Party Supplier Directory
+            </h3>
+            <button class="btn btn-secondary btn-xs" onclick="switchTab('manager-inbox')" style="padding: 4px 8px; font-size: 0.65rem; display: flex; align-items: center; gap: 4px;">
+              🚨 Urgent Remediation Inbox
+            </button>
+          </div>
+
+          <!-- Directory Table -->
+          <div id="suppliers-table-container" style="width: 100%;"></div>
         </div>
 
-        <div id="supplier-detail-body" style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
-          <!-- Populated dynamically -->
+        <!-- Right Panel: Profile & Subcontractors -->
+        <div class="dashboard-card" style="flex: 1.2; min-width: 380px; display: flex; flex-direction: column; gap: 15px; padding: 15px; margin: 0; min-height: 600px;">
+          <div id="supplier-detail-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div id="supplier-detail-body" style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
+            <!-- Populated dynamically -->
+          </div>
         </div>
       </div>
     </div>
   `;
+
+  // Render KPI cards
+  createCard('tpr-kpi-total', {
+    title: 'Total Suppliers Mapped',
+    value: `${totalSuppliers}`,
+    icon: '🏢',
+    borderLeftColor: '#14b8a6'
+  });
+
+  createCard('tpr-kpi-critical', {
+    title: 'Critical-Tier Vendors',
+    value: `${criticalSuppliers}`,
+    subtext: 'Requires real-time RTO alerts',
+    icon: '⚠️',
+    borderLeftColor: '#ef4444'
+  });
+
+  createCard('tpr-kpi-compliance', {
+    title: 'Average Compliance Score',
+    value: `${avgCompliance}%`,
+    subtext: 'Across Supplier Control Obligations',
+    icon: '📊',
+    borderLeftColor: '#10b981'
+  });
+
+  createCard('tpr-kpi-gaps', {
+    title: 'Active Remediation Gaps',
+    value: `${activeGaps}`,
+    subtext: 'Awaiting response/remediation',
+    icon: '🚨',
+    borderLeftColor: '#eab308'
+  });
 
   renderSuppliersTable();
   renderSupplierDetails();

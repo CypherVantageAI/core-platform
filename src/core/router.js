@@ -97,6 +97,11 @@ export function switchTab(tabId) {
         window.initTlptUI();
       }
       break;
+    case 'manager-obligations':
+      if (typeof window.renderSCOAccordion === 'function') {
+        window.renderSCOAccordion();
+      }
+      break;
     case 'manager-inbox':
       if (typeof window.renderManagerInbox === 'function') {
         window.renderManagerInbox();

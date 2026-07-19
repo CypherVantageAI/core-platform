@@ -567,7 +567,8 @@ function renderManagerActions() {
 
   filteredActions.forEach(act => {
     const s = state.suppliers[act.supplierId];
-    const c = s.assessments.find(as => as.id === act.controlId) || { section: 'N/A' };
+    if (!s) return;
+    const c = s.assessments ? (s.assessments.find(as => as.id === act.controlId) || { section: 'N/A' }) : { section: 'N/A' };
     
     let statusClass = 'badge-danger';
     let displayStatus = act.status;
@@ -5445,11 +5446,20 @@ window.renderManagerInbox = function() {
     card.style.width = '100%';
 
     const isAwaitingSupplier = act.status === 'Awaiting Response' || act.status === 'Awaiting RCA';
+    const isExpired = Date.now() > dueTime;
+    const nonRemediationImpact = v ? `${v.mythosImpact || ''} ${v.financialImpact || ''} ${v.reputationalImpact || ''}`.trim() : '';
 
     if (isAwaitingSupplier) {
-      card.style.background = 'rgba(255, 255, 255, 0.005)';
-      card.style.border = '1px dashed rgba(255, 255, 255, 0.05)';
-      card.style.opacity = '0.7';
+      if (isExpired) {
+        card.style.background = 'rgba(239, 68, 68, 0.08)';
+        card.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+        card.style.opacity = '1';
+        card.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.2)';
+      } else {
+        card.style.background = 'rgba(255, 255, 255, 0.005)';
+        card.style.border = '1px dashed rgba(255, 255, 255, 0.05)';
+        card.style.opacity = '0.7';
+      }
     } else {
       card.style.background = 'rgba(239, 68, 68, 0.02)';
       card.style.border = '1px solid rgba(239, 68, 68, 0.2)';
@@ -5473,9 +5483,18 @@ window.renderManagerInbox = function() {
     if (act.status === 'Awaiting Response') {
       statusBadgeHTML = `
         ${slaTimerHTML}
-        <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">⏳ Awaiting Supplier Plan</span>
+        <span class="badge" style="background: ${isExpired ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.1)'}; color: ${isExpired ? '#ef4444' : '#f59e0b'}; border: 1px solid ${isExpired ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.2)'}; font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">
+          ${isExpired ? '🚨 SLA BREACH: Escalation' : '⏳ Awaiting Supplier Plan'}
+        </span>
       `;
-      contentHTML = `
+      contentHTML = isExpired ? `
+        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 500; line-height: 1.45; color: var(--text-primary); width: 100%;">
+          <strong style="color: #ef4444; display: block; margin-bottom: 2px;">🚨 Urgent Escalation Required (SLA EXPIRED):</strong>
+          Supplier <b>${supplierName}</b> failed to submit their Stage 1 Remediation Action Plan within the critical target window. Offline outreach, fine assessment, or executive escalation is required.
+          ${nonRemediationImpact ? `<div style="background: rgba(0,0,0,0.15); border-left: 2px solid #ef4444; padding: 8px; border-radius: 4px; font-size: 0.7rem; color: #fca5a5; margin-top: 6px; line-height: 1.4;"><b>Non-Remediation Impact (Executive Summary):</b> ${nonRemediationImpact}</div>` : ''}
+          ${act.revisionComment ? `<div style="color: #ef4444; margin-top: 4px; font-weight: 600;">Revision Feedback Sent: "${act.revisionComment}"</div>` : ''}
+        </div>
+      ` : `
         <div style="background: rgba(245, 158, 11, 0.02); border: 1px solid rgba(245, 158, 11, 0.15); padding: 10px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 500; line-height: 1.45; color: var(--text-primary); width: 100%;">
           <strong style="color: #f59e0b; display: block; margin-bottom: 2px;">⏳ No immediate action required from our end:</strong>
           Waiting for ${supplierName} to submit their Stage 1 Remediation Action Plan. Offline follow-up or escalation might be required to Supplier management.
@@ -5502,9 +5521,19 @@ window.renderManagerInbox = function() {
     } else if (act.status === 'Awaiting RCA') {
       statusBadgeHTML = `
         ${slaTimerHTML}
-        <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">⏳ Awaiting Supplier RCA</span>
+        <span class="badge" style="background: ${isExpired ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.1)'}; color: ${isExpired ? '#ef4444' : '#f59e0b'}; border: 1px solid ${isExpired ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.2)'}; font-size: 0.58rem; text-transform: uppercase; margin-top: 4px;">
+          ${isExpired ? '🚨 SLA BREACH: Escalation' : '⏳ Awaiting Supplier RCA'}
+        </span>
       `;
-      contentHTML = `
+      contentHTML = isExpired ? `
+        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 500; line-height: 1.45; color: var(--text-primary); width: 100%;">
+          <strong style="color: #ef4444; display: block; margin-bottom: 2px;">🚨 Urgent Escalation Required (SLA EXPIRED):</strong>
+          Stage 1 Plan was approved, but <b>${supplierName}</b> failed to submit their Stage 2 Root Cause Analysis (RCA) within the target window. Offline outreach or vendor contract penalties should be assessed.
+          ${nonRemediationImpact ? `<div style="background: rgba(0,0,0,0.15); border-left: 2px solid #ef4444; padding: 8px; border-radius: 4px; font-size: 0.7rem; color: #fca5a5; margin-top: 6px; line-height: 1.4;"><b>Non-Remediation Impact (Executive Summary):</b> ${nonRemediationImpact}</div>` : ''}
+          <div style="margin-top: 4px; font-size: 0.65rem; color: var(--text-muted);">Approved Plan: "${act.remediationPlan}"</div>
+          ${act.revisionComment ? `<div style="color: #ef4444; margin-top: 4px; font-weight: 600;">Revision Feedback Sent: "${act.revisionComment}"</div>` : ''}
+        </div>
+      ` : `
         <div style="background: rgba(245, 158, 11, 0.02); border: 1px solid rgba(245, 158, 11, 0.15); padding: 10px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 500; line-height: 1.45; color: var(--text-primary); width: 100%;">
           <strong style="color: #f59e0b; display: block; margin-bottom: 2px;">⏳ No immediate action required from our end:</strong>
           Stage 1 Plan approved. Waiting for ${supplierName} to submit their Stage 2 Root Cause Analysis (RCA). Offline follow-up or escalation might be required to Supplier management.
