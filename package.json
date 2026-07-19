@@ -4,10 +4,16 @@
   "description": "Cypher Vantage is an Operational Resilience and Third-Party Supplier Risk Management System with simulated AI Agents and Supplier Access Portal for issue remediation tracking.",
   "main": "server.js",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "vite": "^5.2.11"
   },
   "author": "Antigravity",
   "license": "ISC"
