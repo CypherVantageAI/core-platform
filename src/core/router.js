@@ -12,12 +12,15 @@ import { renderIctRiskModule } from '../modules/ictrisk.js';
 import { renderThirdPartyModule } from '../modules/thirdparty.js';
 import { renderReportsModule } from '../modules/reports.js';
 
-// Supplier Portal sub-renderers
-import { renderSupplierPortalDashboard } from '../main.js'; // fallback binding
-import { renderSupplierVaultTable } from '../main.js';
-import { renderSCOAccordion } from '../main.js';
 
 export function switchTab(tabId) {
+  // Redirect legacy tabs to new modular pages
+  if (tabId === 'manager-suppliers') {
+    tabId = 'manager-thirdparty';
+  } else if (tabId === 'manager-compliance') {
+    tabId = 'manager-dora';
+  }
+
   const state = getState();
   console.log(`[Router] Routing to tab: ${tabId}`);
 
@@ -65,6 +68,16 @@ export function switchTab(tabId) {
       break;
 
     // Advanced legacy modules retained inside the shell
+    case 'manager-navigator':
+      if (typeof window.renderServiceNavigator === 'function') {
+        window.renderServiceNavigator();
+      }
+      break;
+    case 'manager-actions':
+      if (typeof window.renderManagerActions === 'function') {
+        window.renderManagerActions();
+      }
+      break;
     case 'manager-collector':
       if (typeof window.updateCollectorDropdown === 'function') {
         window.updateCollectorDropdown();

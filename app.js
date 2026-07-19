@@ -68,6 +68,7 @@ const supplierSurfaceData = {
 
 // Centralized modular database hook
 import { getState, saveState, resetDatabase } from './src/core/db.js';
+import { switchTab } from './src/core/router.js';
 
 const state = getState();
 
@@ -78,6 +79,7 @@ window.renderSCOAccordion = () => { if (typeof renderSCOAccordion === 'function'
 window.populateSupplierPortalSwitcher = () => { if (typeof populateSupplierPortalSwitcher === 'function') populateSupplierPortalSwitcher(); };
 window.updateSupplierPortalIdentity = () => { if (typeof updateSupplierPortalIdentity === 'function') updateSupplierPortalIdentity(); };
 window.updateCollectorDropdown = () => { if (typeof updateCollectorDropdown === 'function') updateCollectorDropdown(); };
+window.renderManagerActions = () => { if (typeof renderManagerActions === 'function') renderManagerActions(); };
 
 
 // --------------------------------------------------------------------------
