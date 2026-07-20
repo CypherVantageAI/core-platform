@@ -45,14 +45,17 @@ export function renderDoraModule() {
             <span style="font-size: 0.62rem; color: var(--text-muted); font-weight: 600;">Framework Version: <b>2026 Ref v1</b></span>
           </div>
 
-          <!-- Pillar Filters -->
-          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button class="btn btn-secondary btn-xs pillar-tab-btn active" data-pillar="all">All Pillars</button>
-            <button class="btn btn-secondary btn-xs pillar-tab-btn" data-pillar="Risk Management">Risk Management</button>
-            <button class="btn btn-secondary btn-xs pillar-tab-btn" data-pillar="Incident Reporting">Incident Reporting</button>
-            <button class="btn btn-secondary btn-xs pillar-tab-btn" data-pillar="Resilience Testing">Resilience Testing</button>
-            <button class="btn btn-secondary btn-xs pillar-tab-btn" data-pillar="Third-Party Risk">Third-Party Risk</button>
-            <button class="btn btn-secondary btn-xs pillar-tab-btn" data-pillar="Information Sharing">Information Sharing</button>
+          <!-- Pillar Filter Dropdown -->
+          <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
+            <label for="dora-pillar-select" style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600;">Filter by DORA Pillar:</label>
+            <select id="dora-pillar-select" class="dropdown-control" style="width: 100%; padding: 6px 10px; font-size: 0.72rem;">
+              <option value="all">All Pillars (Complete Scope)</option>
+              <option value="Risk Management">Pillar 1: ICT Risk Management</option>
+              <option value="Incident Reporting">Pillar 2: ICT-Related Incident Reporting</option>
+              <option value="Resilience Testing">Pillar 3: Digital Operational Resilience Testing</option>
+              <option value="Third-Party Risk">Pillar 4: ICT Third-Party Risk Management</option>
+              <option value="Information Sharing">Pillar 5: Information Sharing Arrangements</option>
+            </select>
           </div>
 
           <!-- Catalog list -->
@@ -180,15 +183,15 @@ export function renderDoraModule() {
     }
   });
 
-  // Bind pillar tabs
-  container.querySelectorAll('.pillar-tab-btn').forEach(btn => {
-    btn.onclick = () => {
-      container.querySelectorAll('.pillar-tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activePillarFilter = btn.getAttribute('data-pillar');
+  // Bind pillar dropdown filter
+  const pillarSelect = document.getElementById('dora-pillar-select');
+  if (pillarSelect) {
+    pillarSelect.value = activePillarFilter;
+    pillarSelect.onchange = (e) => {
+      activePillarFilter = e.target.value;
       renderCatalogue();
     };
-  });
+  }
 
   renderCatalogue();
   renderObligationDetails();

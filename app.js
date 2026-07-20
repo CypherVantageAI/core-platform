@@ -1141,7 +1141,7 @@ function renderSupplierPortalDashboard() {
               <span style="font-size: 0.62rem; color: var(--text-muted);">Due: ${dueDateStr}</span>
             </div>
             <strong style="font-size: 0.72rem; color: var(--text-primary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">${act.title}</strong>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 4px; width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; border-top: 1px dashed var(--border-color); padding-top: 4px; width: 100%;">
               <span style="font-size: 0.65rem; color: var(--text-muted);">Time Remaining:</span>
               <span class="supplier-live-countdown" data-due-time="${dueTime}" style="font-size: 0.7rem; font-weight: 700; color: #ef4444;">--h --m --s</span>
             </div>
@@ -1163,7 +1163,7 @@ function renderSupplierPortalDashboard() {
               <span style="font-size: 0.62rem; color: var(--text-muted);">Due: ${dueDateStr}</span>
             </div>
             <strong style="font-size: 0.72rem; color: var(--text-primary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">${act.title}</strong>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 4px; width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; border-top: 1px dashed var(--border-color); padding-top: 4px; width: 100%;">
               <span style="font-size: 0.65rem; color: var(--text-muted);">Time Remaining:</span>
               <span style="font-size: 0.7rem; font-weight: 700; color: #f97316;">${daysLeft} Days</span>
             </div>
