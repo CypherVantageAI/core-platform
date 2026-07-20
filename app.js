@@ -5494,7 +5494,7 @@ window.renderManagerInbox = function() {
         card.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.2)';
       } else {
         card.style.background = 'rgba(255, 255, 255, 0.005)';
-        card.style.border = '1px dashed rgba(255, 255, 255, 0.05)';
+        card.style.border = '1px dashed var(--border-color)';
         card.style.opacity = '0.7';
       }
     } else {

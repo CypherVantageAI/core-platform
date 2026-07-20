@@ -473,12 +473,13 @@ function drawDependencyGraph(srv) {
   });
 
   // Construct SVG Elements
+  const isLight = document.body.classList.contains('light-mode');
   let pathsHtml = '';
   connections.forEach(c => {
     const dx = c.to.x - c.from.x;
     const dy = c.to.y - c.from.y;
     const pathD = `M ${c.from.x + 130} ${c.from.y + 25} C ${c.from.x + 130 + dx/2} ${c.from.y + 25}, ${c.from.x + 130 + dx/2} ${c.to.y + 25}, ${c.to.x} ${c.to.y + 25}`;
-    const strokeColor = c.critical ? '#ef4444' : 'rgba(255,255,255,0.06)';
+    const strokeColor = c.critical ? '#ef4444' : (isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.06)');
     const strokeWidth = c.critical ? '2.5' : '1.5';
     const filterGlow = c.critical ? 'filter="url(#glow-red)"' : '';
     pathsHtml += `<path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" ${filterGlow} />`;
@@ -488,10 +489,12 @@ function drawDependencyGraph(srv) {
   let nodesHtml = '';
   const allNodes = [bsNode, ...pNodes, ...appNodes, ...assetNodes, ...supNodes];
   allNodes.forEach(node => {
-    let nodeBorder = 'rgba(255,255,255,0.08)';
-    let nodeBg = 'rgba(10,12,25,0.85)';
-    let headerBg = 'rgba(255,255,255,0.02)';
-    let titleColor = 'var(--text-primary)';
+    let nodeBorder = isLight ? 'rgba(15,23,42,0.15)' : 'rgba(255,255,255,0.08)';
+    let nodeBg = isLight ? '#ffffff' : 'rgba(10,12,25,0.85)';
+    let headerBg = isLight ? 'rgba(15,23,42,0.03)' : 'rgba(255,255,255,0.02)';
+    let titleColor = isLight ? '#0f172a' : '#f8fafc';
+    let textColor = isLight ? '#475569' : '#94a3b8';
+    let labelColor = isLight ? '#64748b' : '#64748b';
     let label = '';
     let meta = '';
 
@@ -521,10 +524,10 @@ function drawDependencyGraph(srv) {
     if (highlightCriticalPath) {
       if (isCriticalPathNode) {
         nodeBorder = '#ef4444';
-        nodeBg = 'rgba(239,68,68,0.02)';
+        nodeBg = isLight ? 'rgba(239,68,68,0.05)' : 'rgba(239,68,68,0.02)';
       } else {
-        nodeBg = 'rgba(10,12,25,0.2)';
-        nodeBorder = 'rgba(255,255,255,0.03)';
+        nodeBg = isLight ? 'rgba(15,23,42,0.02)' : 'rgba(10,12,25,0.2)';
+        nodeBorder = isLight ? 'rgba(15,23,42,0.05)' : 'rgba(255,255,255,0.03)';
       }
     }
 
@@ -534,11 +537,11 @@ function drawDependencyGraph(srv) {
         <rect width="130" height="50" rx="4" fill="${nodeBg}" stroke="${nodeBorder}" stroke-width="1.5" />
         <!-- Node Header label -->
         <rect width="130" height="15" rx="2" fill="${headerBg}" />
-        <text x="5" y="11" font-size="6.5" font-weight="700" fill="var(--text-muted)">${label}</text>
+        <text x="5" y="11" font-size="6.5" font-weight="700" fill="${labelColor}">${label}</text>
         
         <!-- Node content -->
         <text x="5" y="28" font-size="8" font-weight="700" fill="${titleColor}" clip-path="url(#clip-${node.id})">${node.name.slice(0, 22)}</text>
-        <text x="5" y="42" font-size="7" fill="var(--text-secondary)">${meta}</text>
+        <text x="5" y="42" font-size="7" fill="${textColor}">${meta}</text>
       </g>
     `;
   });
@@ -754,9 +757,16 @@ function executeTwinSimulation() {
   drawTwinOutageGraph(true);
 
   function drawTwinOutageGraph(isBroken) {
+    const isLight = document.body.classList.contains('light-mode');
     const stateColor = isBroken ? '#ef4444' : '#10b981';
     const nodeStatusText = isBroken ? '💥 BROKEN' : '✅ RECOVERED';
-    const connectionColor = isBroken ? '#ef4444' : 'rgba(255,255,255,0.06)';
+
+    const nodeBg = isLight ? '#ffffff' : 'rgba(10,12,25,0.9)';
+    const headerBg = isLight ? 'rgba(15,23,42,0.03)' : 'rgba(255,255,255,0.02)';
+    const titleColor = isLight ? '#0f172a' : '#f8fafc';
+    const textColor = isLight ? '#475569' : '#94a3b8';
+    const labelColor = isLight ? '#64748b' : '#64748b';
+    const connectionColor = isBroken ? '#ef4444' : (isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.06)');
     const glowFilter = isBroken ? 'filter="url(#glow-red)"' : '';
 
     mapBox.innerHTML = `
@@ -779,38 +789,38 @@ function executeTwinSimulation() {
 
         <!-- Node 1: Fail Point -->
         <g transform="translate(10, 150)">
-          <rect width="110" height="50" rx="4" fill="rgba(10,12,25,0.9)" stroke="${stateColor}" stroke-width="1.8" />
-          <rect width="110" height="15" fill="rgba(255,255,255,0.02)" />
-          <text x="5" y="10" font-size="7" font-weight="700" fill="var(--text-muted)">FAIL-POINT</text>
-          <text x="5" y="27" font-size="7" font-weight="700" fill="var(--text-primary)">${id.toUpperCase()}</text>
+          <rect width="110" height="50" rx="4" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.8" />
+          <rect width="110" height="15" fill="${headerBg}" />
+          <text x="5" y="10" font-size="7" font-weight="700" fill="${labelColor}">FAIL-POINT</text>
+          <text x="5" y="27" font-size="7" font-weight="700" fill="${titleColor}">${id.toUpperCase()}</text>
           <text x="5" y="42" font-size="8" font-weight="700" fill="${stateColor}">${nodeStatusText}</text>
         </g>
 
         <!-- Node 2a: Application -->
         <g transform="translate(280, 60)">
-          <rect width="120" height="50" rx="4" fill="rgba(10,12,25,0.9)" stroke="${stateColor}" stroke-width="1.5" />
-          <rect width="120" height="15" fill="rgba(255,255,255,0.02)" />
-          <text x="5" y="10" font-size="7" font-weight="700" fill="var(--text-muted)">APP NODE</text>
-          <text x="5" y="27" font-size="7.5" font-weight="700" fill="var(--text-primary)">Spring Core Engine</text>
-          <text x="5" y="42" font-size="7" fill="var(--text-secondary)">Status: ${isBroken ? 'Degraded' : 'Nominal'}</text>
+          <rect width="120" height="50" rx="4" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.5" />
+          <rect width="120" height="15" fill="${headerBg}" />
+          <text x="5" y="10" font-size="7" font-weight="700" fill="${labelColor}">APP NODE</text>
+          <text x="5" y="27" font-size="7.5" font-weight="700" fill="${titleColor}">Spring Core Engine</text>
+          <text x="5" y="42" font-size="7" fill="${textColor}">Status: ${isBroken ? 'Degraded' : 'Nominal'}</text>
         </g>
 
         <!-- Node 2b: Process -->
         <g transform="translate(280, 210)">
-          <rect width="120" height="50" rx="4" fill="rgba(10,12,25,0.9)" stroke="${stateColor}" stroke-width="1.5" />
-          <rect width="120" height="15" fill="rgba(255,255,255,0.02)" />
-          <text x="5" y="10" font-size="7" font-weight="700" fill="var(--text-muted)">PROCESS PATH</text>
-          <text x="5" y="27" font-size="7.5" font-weight="700" fill="var(--text-primary)">Settlement Clearance</text>
-          <text x="5" y="42" font-size="7" fill="var(--text-secondary)">Status: ${isBroken ? 'Stalled' : 'Nominal'}</text>
+          <rect width="120" height="50" rx="4" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.5" />
+          <rect width="120" height="15" fill="${headerBg}" />
+          <text x="5" y="10" font-size="7" font-weight="700" fill="${labelColor}">PROCESS PATH</text>
+          <text x="5" y="27" font-size="7.5" font-weight="700" fill="${titleColor}">Settlement Clearance</text>
+          <text x="5" y="42" font-size="7" fill="${textColor}">Status: ${isBroken ? 'Stalled' : 'Nominal'}</text>
         </g>
 
         <!-- Node 3: Mapped IBS Service -->
         <g transform="translate(520, 135)">
-          <rect width="150" height="60" rx="4" fill="rgba(10,12,25,0.9)" stroke="${stateColor}" stroke-width="1.8" />
-          <rect width="150" height="16" fill="rgba(255,255,255,0.02)" />
-          <text x="5" y="11" font-size="7" font-weight="700" fill="var(--text-muted)">AFFECTED SERVICE</text>
-          <text x="5" y="28" font-size="8.5" font-weight="700" fill="var(--text-primary)">Payments Processing</text>
-          <text x="5" y="42" font-size="7" fill="var(--text-secondary)">RTO: ${targetSla}</text>
+          <rect width="150" height="60" rx="4" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.8" />
+          <rect width="150" height="16" fill="${headerBg}" />
+          <text x="5" y="11" font-size="7" font-weight="700" fill="${labelColor}">AFFECTED SERVICE</text>
+          <text x="5" y="28" font-size="8.5" font-weight="700" fill="${titleColor}">Payments Processing</text>
+          <text x="5" y="42" font-size="7" fill="${textColor}">RTO: ${targetSla}</text>
           <text x="5" y="52" font-size="7" font-weight="700" fill="${stateColor}">${isBroken ? '⚠️ RTO AT RISK' : '✅ SLA SECURED'}</text>
         </g>
       </svg>
