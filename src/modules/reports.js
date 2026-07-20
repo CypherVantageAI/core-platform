@@ -44,6 +44,29 @@ export function renderReportsModule() {
           <div id="historical-incidents-table-container" style="width: 100%;"></div>
         </div>
       </div>
+
+      <!-- Report Builder and Preview Section -->
+      <div class="dashboard-card" style="width: 100%; padding: 15px; display: flex; flex-direction: column; gap: 12px; margin: 0;">
+        <h3 style="font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom: 6px; margin: 0;">
+          DORA Compliance Report Builder
+        </h3>
+        
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.72rem; color: var(--text-secondary);">Select Report Template:</label>
+            <select id="report-template-select" class="dropdown-control" style="width: 260px; font-size: 0.72rem; padding: 4px 8px;">
+              <option value="operational">Operational Resilience Report (IBS targets & recovery)</option>
+              <option value="executive">Executive Summary Report (C-Suite briefing & loss model)</option>
+              <option value="audit">Regulatory Audit Transcript (Control evidence compliance)</option>
+            </select>
+          </div>
+          <button id="btn-generate-report" class="btn btn-primary btn-sm" style="font-weight: 700;">📄 Generate Report</button>
+        </div>
+
+        <div id="generated-report-preview" style="display: none; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.06); padding: 20px; border-radius: 6px; flex-direction: column; gap: 15px; margin-top: 10px;">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
     </div>
   `;
 
@@ -117,4 +140,153 @@ export function renderReportsModule() {
       }
     };
   });
+
+  // Bind Generate Report Click
+  const btnGen = document.getElementById('btn-generate-report');
+  const selectTemplate = document.getElementById('report-template-select');
+  const previewBox = document.getElementById('generated-report-preview');
+
+  if (btnGen && selectTemplate && previewBox) {
+    btnGen.onclick = () => {
+      const template = selectTemplate.value;
+      previewBox.style.display = 'flex';
+      
+      const currentDate = new Date().toLocaleDateString('en-GB', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      if (template === 'operational') {
+        previewBox.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+            <div>
+              <span style="font-size:0.6rem; text-transform:uppercase; color:var(--color-cyan); font-weight:700;">Operational Resilience Audit Report</span>
+              <h2 style="font-size:1.1rem; font-weight:800; color:var(--text-primary); margin:0;">Important Business Services Resilience Transcript</h2>
+            </div>
+            <button id="btn-print-preview" class="btn btn-primary btn-sm" style="font-weight:700;">🖨️ Print Transcript</button>
+          </div>
+          
+          <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.5; display:flex; flex-direction:column; gap:12px;">
+            <div><b>Generated on:</b> ${currentDate} | <b>Authority:</b> Cypher Vantage Compliance Officer</div>
+            
+            <div>
+              <h3 style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin:8px 0 4px 0;">1. Mapped Important Business Services (IBS)</h3>
+              <table style="width:100%; border-collapse:collapse; font-size:0.68rem;">
+                <thead>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,0.1); text-align:left;">
+                    <th style="padding:4px;">Service Name</th>
+                    <th style="padding:4px;">Criticality</th>
+                    <th style="padding:4px;">Target RTO</th>
+                    <th style="padding:4px;">Max MTD</th>
+                    <th style="padding:4px;">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${state.services.map(s => `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                      <td style="padding:4px;"><b>${s.name}</b></td>
+                      <td style="padding:4px;">${s.criticality}</td>
+                      <td style="padding:4px;">${s.rto}</td>
+                      <td style="padding:4px;">${s.mtd || s.rto}</td>
+                      <td style="padding:4px; color:#10b981;">Active</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <h3 style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin:8px 0 4px 0;">2. Scenario Testing & Backup Validation</h3>
+              <p>During the current regulatory reporting window, a total of <b>${totalTests}</b> scenarios were simulated. <b>${passedTests}</b> runs achieved secure failovers within threshold limits.</p>
+              <ul>
+                <li>DR failovers average latency: <b>15 minutes</b> (Limit: 4 hours).</li>
+                <li>Immutable ledger backup status: <b>Fully Compliant</b> (100% integrity validation).</li>
+              </ul>
+            </div>
+
+            <div style="border-top:1px dashed rgba(255,255,255,0.08); padding-top:10px; font-size:0.65rem; color:var(--text-muted); font-style:italic;">
+              This document serves as formal evidence of operational resilience mapping under UK PRA and DORA regulatory frameworks.
+            </div>
+          </div>
+        `;
+      } else if (template === 'executive') {
+        previewBox.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+            <div>
+              <span style="font-size:0.6rem; text-transform:uppercase; color:var(--color-cyan); font-weight:700;">Executive Risk Briefing</span>
+              <h2 style="font-size:1.1rem; font-weight:800; color:var(--text-primary); margin:0;">C-Suite Operational Exposure & Threat Analysis</h2>
+            </div>
+            <button id="btn-print-preview" class="btn btn-primary btn-sm" style="font-weight:700;">🖨️ Print Transcript</button>
+          </div>
+          
+          <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.5; display:flex; flex-direction:column; gap:12px;">
+            <div><b>Generated on:</b> ${currentDate} | <b>Security Clearance:</b> Level 3 (C-Suite)</div>
+
+            <div>
+              <h3 style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin:8px 0 4px 0;">1. Financial Outage Exposure</h3>
+              <p>Cascading outage models map financial impact dynamically across service nodes:</p>
+              <ul>
+                <li><b>IBS Payments Clearing Outage:</b> £75,000/hr downtime exposure.</li>
+                <li><b>CIS Identity lockouts:</b> £120,000/hr workforce downtime cost.</li>
+                <li><b>Aggregate Outage Risk:</b> Modeled maximum financial exposure capped at £1,200,000 under severe incident clusters.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin:8px 0 4px 0;">2. Mitigation Index Summary</h3>
+              <p>Active mitigation controls (redundant clusters, hot standbys, backup redirects) successfully protected <b>£${totalLossPrevented.toLocaleString()}</b> of modeled losses over the last 12 incidents.</p>
+              <p><b>Executive Recommendation:</b> Invest in secondary directory routing links to reduce directory RTO under 15 minutes.</p>
+            </div>
+          </div>
+        `;
+      } else {
+        previewBox.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+            <div>
+              <span style="font-size:0.6rem; text-transform:uppercase; color:var(--color-cyan); font-weight:700;">Regulatory Audit Transcript</span>
+              <h2 style="font-size:1.1rem; font-weight:800; color:var(--text-primary); margin:0;">DORA Section 19 & 28 Security Control Ledger</h2>
+            </div>
+            <button id="btn-print-preview" class="btn btn-primary btn-sm" style="font-weight:700;">🖨️ Print Transcript</button>
+          </div>
+          
+          <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.5; display:flex; flex-direction:column; gap:12px;">
+            <div><b>Generated on:</b> ${currentDate} | <b>Audit Standard:</b> DORA (Regulation EU 2022/2554)</div>
+
+            <div>
+              <h3 style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin:8px 0 4px 0;">1. Security Controls Verification</h3>
+              <table style="width:100%; border-collapse:collapse; font-size:0.68rem;">
+                <thead>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,0.1); text-align:left;">
+                    <th style="padding:4px;">Control ID</th>
+                    <th style="padding:4px;">Control Title</th>
+                    <th style="padding:4px;">Status</th>
+                    <th style="padding:4px;">Coverage Mappings</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${state.controls.map(c => `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                      <td style="padding:4px;"><code>${c.id}</code></td>
+                      <td style="padding:4px;"><b>${c.title}</b></td>
+                      <td style="padding:4px;">${c.status}</td>
+                      <td style="padding:4px;">${c.relatedRisks.length ? c.relatedRisks.join(', ') : 'None'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <h3 style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin:8px 0 4px 0;">2. Evidence Registry Checks</h3>
+              <p>Supplier compliance audits scanned in supplier vault: <b>8 active documents</b>. High coverage confirmed on sub-processing layers for AWS and Salesforce nodes.</p>
+            </div>
+          </div>
+        `;
+      }
+
+      // Bind print button action
+      document.getElementById('btn-print-preview').onclick = () => {
+        window.print();
+      };
+    };
+  }
 }

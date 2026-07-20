@@ -2,11 +2,11 @@
 // Cypher Vantage - Core Database & State Manager (ES6 Module)
 // ==========================================================================
 
-const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v11';
+const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v12';
 
 // Default state structure conforming to the 12 core DORA entities
 const DEFAULT_STATE = {
-  version: 11,
+  version: 12,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
@@ -26,8 +26,11 @@ const DEFAULT_STATE = {
       status: 'Active',
       processes: ['prc-001'],
       applications: ['app-001'],
+      mtd: '4 Hours',
+      impactTolerance: 'Maximum tolerable disruption of 4 Hours. Clearing backlog must be cleared within 2 hours of node recovery.',
+      customerImpact: 'Direct disruption to merchant checkouts, card payment clearance, and institutional bank wire transfers. Affects ~100,000 active retail accounts.',
       financialImpact: 'High exposure. Downtime cost modeled at £75,000/hr + clearing network SLA penalties.',
-      reputationalImpact: 'Severe breach of payment processing integrity. Risk of merchant churn and PCI DSS compliance suspension.'
+      regulatoryImpact: 'Direct breach of DORA Article 5, triggering immediate supervisory notification and potential PCIDSS level suspension.'
     },
     {
       id: 'srv-002',
@@ -41,8 +44,11 @@ const DEFAULT_STATE = {
       status: 'Active',
       processes: ['prc-002'],
       applications: ['app-002'],
+      mtd: '8 Hours',
+      impactTolerance: 'Maximum tolerable disruption of 8 Hours. Post-market clearings must settle before trading day close.',
+      customerImpact: 'Institutional trading desks unable to reconcile ledger settlements. Restricts client broker liquidation rights.',
       financialImpact: 'High exposure. Outage cost modeled at £50,000/hr. Backlog penalty of £150,000 baseline.',
-      reputationalImpact: 'Major clearing delays affecting European stock exchanges. Significant negative press coverage.'
+      regulatoryImpact: 'Breach of UK PRA SS2/21 standards and DORA Article 11. Triggers FCA regulatory audit warning.'
     },
     {
       id: 'srv-003',
@@ -56,8 +62,11 @@ const DEFAULT_STATE = {
       status: 'Active',
       processes: ['prc-003'],
       applications: ['app-003'],
+      mtd: '24 Hours',
+      impactTolerance: 'Maximum tolerable disruption of 24 Hours. Point-in-time recovery data must remain under 12 hours old.',
+      customerImpact: 'Internal DBA teams cannot restore staging databases during failovers. Customer record queries delayed.',
       financialImpact: 'Loss of regulatory audit trail. Interruption fines modeled up to £100,000 per day under DORA Article 50.',
-      reputationalImpact: 'Audit failure report filed with regulatory supervisors. Disruption to disaster recovery assurances.'
+      regulatoryImpact: 'Violation of GDPR Article 32 (Data Availability) and DORA Article 12 backup assurance rules.'
     },
     {
       id: 'srv-004',
@@ -71,8 +80,11 @@ const DEFAULT_STATE = {
       status: 'Active',
       processes: ['prc-004'],
       applications: ['app-004'],
+      mtd: '2 Hours',
+      impactTolerance: 'Maximum tolerable disruption of 2 Hours. Failover LDAP nodes must engage within 5 minutes of primary loss.',
+      customerImpact: 'Complete employee and contractor lockout. Inability to access internal ticketing systems or support portals.',
       financialImpact: 'Complete internal operational freeze. Lockout cost estimated at £120,000/hr due to employee downtime.',
-      reputationalImpact: 'High compliance exposure. Inability to audit privilege controls or enforce zero-trust policies.'
+      regulatoryImpact: 'Audit failure report filed with supervisory authorities regarding business continuity plans and administrative boundaries.'
     }
   ],
 
@@ -510,7 +522,11 @@ const DEFAULT_STATE = {
       status: 'Closed',
       serviceAffected: 'IBS Payments Processing',
       downtime: '42 Minutes',
-      financialLoss: 31500
+      financialLoss: 31500,
+      classification: 'Infrastructure Outage',
+      escalationStatus: 'Escalated to CISO & L3 Hosting Operations',
+      rootCause: 'Simulated primary power grid drop inside Tokyo availability zone hosts.',
+      lessonsLearned: 'Failover transition latency was 42 minutes; target RTO threshold is 1 hour. Automate standby container deployment in eu-central.'
     },
     {
       id: 'inc-002',
@@ -519,7 +535,11 @@ const DEFAULT_STATE = {
       status: 'Resolved',
       serviceAffected: 'CIS Identity & Access Directories',
       downtime: '15 Minutes',
-      financialLoss: 12500
+      financialLoss: 12500,
+      classification: 'Environmental / Physical',
+      escalationStatus: 'Escalated to Facilities Management & DR Teams',
+      rootCause: 'Simulated wildfire boundary alert triggering high-temperature hazard sensors.',
+      lessonsLearned: 'Immutable directory synchronization was validated successfully. Load balancer failover executed within 15 minutes.'
     }
   ],
 
