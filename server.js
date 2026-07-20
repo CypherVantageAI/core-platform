@@ -10,5 +10,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Cypher Vantage TPRM running on http://localhost:${PORT}`);
+  console.log(`Cypher Vantage running on http://localhost:${PORT}`);
 });
