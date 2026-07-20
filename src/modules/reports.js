@@ -54,7 +54,7 @@ export function renderReportsModule() {
         <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-size: 0.72rem; color: var(--text-secondary);">Select Report Template:</label>
-            <select id="report-template-select" class="dropdown-control" style="width: 260px; font-size: 0.72rem; padding: 4px 8px;">
+            <select id="report-template-select" class="dropdown-control" style="width: 420px; font-size: 0.72rem; padding: 4px 8px;">
               <option value="operational">Operational Resilience Report (IBS targets & recovery)</option>
               <option value="executive">Executive Summary Report (C-Suite briefing & loss model)</option>
               <option value="audit">Regulatory Audit Transcript (Control evidence compliance)</option>

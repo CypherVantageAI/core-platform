@@ -2,11 +2,11 @@
 // Cypher Vantage - Core Database & State Manager (ES6 Module)
 // ==========================================================================
 
-const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v12';
+const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v13';
 
 // Default state structure conforming to the 12 core DORA entities
 const DEFAULT_STATE = {
-  version: 12,
+  version: 13,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
@@ -511,6 +511,15 @@ const DEFAULT_STATE = {
       description: 'Continuous monitoring of critical third parties, including auditing downstream sub-processors and subcontractor chains.',
       status: 'Non-Compliant',
       controls: ['ctl-004']
+    },
+    {
+      id: 'ob-005',
+      article: 'Article 45',
+      title: 'Information-Sharing Arrangements',
+      pillar: 'Information Sharing',
+      description: 'Exchange of cyber threat information and intelligence, including Indicators of Compromise (IoC), among trusted financial communities.',
+      status: 'Compliant',
+      controls: ['ctl-001']
     }
   ],
 

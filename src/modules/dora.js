@@ -52,6 +52,7 @@ export function renderDoraModule() {
             <button class="btn btn-secondary btn-xs pillar-tab-btn" data-pillar="Incident Reporting">Incident Reporting</button>
             <button class="btn btn-secondary btn-xs pillar-tab-btn" data-pillar="Resilience Testing">Resilience Testing</button>
             <button class="btn btn-secondary btn-xs pillar-tab-btn" data-pillar="Third-Party Risk">Third-Party Risk</button>
+            <button class="btn btn-secondary btn-xs pillar-tab-btn" data-pillar="Information Sharing">Information Sharing</button>
           </div>
 
           <!-- Catalog list -->

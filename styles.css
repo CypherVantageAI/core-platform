@@ -2782,5 +2782,87 @@ textarea:focus-visible {
   opacity: 1;
 }
 
+/* ==========================================================================
+   Light Mode Theme Overrides
+   ========================================================================== */
+body.light-mode {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-hover: rgba(255, 255, 255, 1.0);
+  --border-color: rgba(15, 23, 42, 0.12);
+  --border-color-focus: #7c3aed;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+body.light-mode .sidebar {
+  background-color: #0f172a; /* Keep sidebar dark for professional appearance */
+}
+
+body.light-mode .app-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+}
+
+body.light-mode .dashboard-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .dashboard-card h3,
+body.light-mode .dashboard-card h2,
+body.light-mode .dashboard-card h4 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode input,
+body.light-mode select,
+body.light-mode textarea,
+body.light-mode .dropdown-control,
+body.light-mode .input-control {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+}
+
+body.light-mode .btn-secondary {
+  background-color: #e2e8f0;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+}
+
+body.light-mode .btn-secondary:hover {
+  background-color: #cbd5e1;
+}
+
+body.light-mode table th {
+  background: rgba(15, 23, 42, 0.03) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+body.light-mode table td {
+  border-bottom: 1px solid var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .nav-item,
+body.light-mode .nav-sub-item {
+  color: #94a3b8; /* keep dark sidebar readable */
+}
+
+body.light-mode .theme-toggle-container button {
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+  background: rgba(15, 23, 42, 0.05) !important;
+  color: var(--text-primary) !important;
+}
+
+
 
 

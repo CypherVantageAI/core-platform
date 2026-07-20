@@ -196,8 +196,8 @@ function renderSupplierDetails() {
     <!-- Contact Info Block -->
     <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:10px; border-radius:6px; font-size:0.7rem; display:flex; flex-direction:column; gap:4px;">
       <div>💼 <b>Account Lead:</b> ${sup.contactName} (${sup.contactEmail})</div>
-      <div>📍 <b>Primary Location:</b> ${sup.primaryLocation}</div>
-      <div>🌎 <b>Secondary Operations Location:</b> ${sup.secondaryLocation}</div>
+      <div>📍 <b>Primary Location:</b> ${sup.primarySupportLocation || 'N/A'}</div>
+      <div>🌎 <b>Secondary Operations Location:</b> ${sup.secondarySupportLocation || 'N/A'}</div>
     </div>
 
     <!-- Active Compliance Gaps -->

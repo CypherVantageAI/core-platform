@@ -39,4 +39,37 @@ window.onload = function() {
 
   // 5. Initialize the active persona context
   setPersona(state.activePersona || 'manager');
+
+  // 6. Initialize Theme Selector
+  initTheme(state);
 };
+
+function initTheme(state) {
+  const btn = document.getElementById('btn-theme-toggle');
+  if (!btn) return;
+
+  const icon = document.getElementById('theme-toggle-icon');
+  const text = document.getElementById('theme-toggle-text');
+
+  function applyTheme(isLight) {
+    if (isLight) {
+      document.body.classList.add('light-mode');
+      if (icon) icon.innerText = '🌙';
+      if (text) text.innerText = 'Dark Theme';
+    } else {
+      document.body.classList.remove('light-mode');
+      if (icon) icon.innerText = '☀️';
+      if (text) text.innerText = 'Light Theme';
+    }
+  }
+
+  // Initial apply from DB state
+  applyTheme(state.theme === 'light');
+
+  btn.onclick = () => {
+    const isLightNow = document.body.classList.contains('light-mode');
+    state.theme = isLightNow ? 'dark' : 'light';
+    saveState();
+    applyTheme(!isLightNow);
+  };
+}
