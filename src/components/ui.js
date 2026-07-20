@@ -408,7 +408,7 @@ export function createStatusBadge(statusText) {
  * @param {Array} risks - Array of risk objects [{ likelihood, impact }]
  * @param {Function} onCellClick - Cell click callback (likelihood, impact)
  */
-export function createRiskHeatmap(containerId, risks, onCellClick) {
+export function createRiskHeatmap(containerId, risks, onCellClick, thresholds) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
@@ -426,9 +426,12 @@ export function createRiskHeatmap(containerId, risks, onCellClick) {
   // Cell color helper based on risk severity score (likelihood * impact)
   function getCellBg(l, i) {
     const score = l * i;
-    if (score >= 15) return 'rgba(239, 68, 68, 0.55)'; // Critical (Red)
-    if (score >= 10) return 'rgba(249, 115, 22, 0.5)';  // High (Orange)
-    if (score >= 5) return 'rgba(234, 179, 8, 0.4)';   // Medium (Yellow)
+    const med = thresholds ? thresholds.medium : 5;
+    const high = thresholds ? thresholds.high : 10;
+    const crit = thresholds ? thresholds.critical : 15;
+    if (score >= crit) return 'rgba(239, 68, 68, 0.55)'; // Critical (Red)
+    if (score >= high) return 'rgba(249, 115, 22, 0.5)';  // High (Orange)
+    if (score >= med) return 'rgba(234, 179, 8, 0.4)';   // Medium (Yellow)
     return 'rgba(16, 185, 129, 0.3)';                  // Low (Green)
   }
 

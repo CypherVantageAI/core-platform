@@ -3,10 +3,14 @@
 // ==========================================================================
 
 import { getState } from '../core/db.js';
-import { createTable, createCard, createStatusBadge, createRiskHeatmap } from '../components/ui.js';
+import { createTable, createStatusBadge, createRiskHeatmap } from '../components/ui.js';
 
 let filterLikelihood = null;
 let filterImpact = null;
+
+let thresholdMedium = 5;
+let thresholdHigh = 10;
+let thresholdCritical = 15;
 
 export function renderIctRiskModule() {
   const state = getState();
@@ -28,12 +32,31 @@ export function renderIctRiskModule() {
 
       <!-- Main Columns: 5x5 Heatmap & Risk Register -->
       <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-        <!-- Left: Heatmap Grid -->
-        <div class="dashboard-card" style="flex: 1; min-width: 320px; display: flex; flex-direction: column; justify-content: center; padding: 15px; margin: 0; min-height: 380px;">
+        <!-- Left: Heatmap Grid (Shrunk and configured width) -->
+        <div class="dashboard-card" style="width: 340px; flex: none; display: flex; flex-direction: column; padding: 12px; margin: 0; min-height: 380px;">
           <div id="risk-heatmap-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;"></div>
           
           <div id="active-heatmap-filter-indicator" style="text-align: center; font-size: 0.65rem; color: var(--color-cyan); margin-top: 10px; font-weight: 600; min-height: 20px;">
             <!-- Populated dynamically -->
+          </div>
+
+          <!-- Configuration Controls -->
+          <div style="margin-top: 15px; width: 100%; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; font-size: 0.72rem; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-weight: 700; color: var(--text-secondary); text-transform: uppercase; font-size: 0.62rem; letter-spacing: 0.05em;">Threshold Configurations</div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="display: flex; justify-content: space-between; align-items: center; color: var(--text-secondary);">
+                <span>Medium Severity (Score ≥):</span>
+                <input type="number" id="input-thresh-med" value="${thresholdMedium}" min="1" max="25" style="width: 50px; background: #0c101b; border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); text-align: center; border-radius: 3px; font-size: 0.7rem; padding: 2px;"/>
+              </label>
+              <label style="display: flex; justify-content: space-between; align-items: center; color: var(--text-secondary);">
+                <span>High Severity (Score ≥):</span>
+                <input type="number" id="input-thresh-high" value="${thresholdHigh}" min="1" max="25" style="width: 50px; background: #0c101b; border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); text-align: center; border-radius: 3px; font-size: 0.7rem; padding: 2px;"/>
+              </label>
+              <label style="display: flex; justify-content: space-between; align-items: center; color: var(--text-secondary);">
+                <span>Critical Severity (Score ≥):</span>
+                <input type="number" id="input-thresh-crit" value="${thresholdCritical}" min="1" max="25" style="width: 50px; background: #0c101b; border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); text-align: center; border-radius: 3px; font-size: 0.7rem; padding: 2px;"/>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -62,6 +85,30 @@ export function renderIctRiskModule() {
     };
   }
 
+  // Bind threshold settings
+  const inputMed = document.getElementById('input-thresh-med');
+  const inputHigh = document.getElementById('input-thresh-high');
+  const inputCrit = document.getElementById('input-thresh-crit');
+
+  if (inputMed) {
+    inputMed.onchange = (e) => {
+      thresholdMedium = Math.max(1, parseInt(e.target.value) || 5);
+      renderHeatmapAndTable();
+    };
+  }
+  if (inputHigh) {
+    inputHigh.onchange = (e) => {
+      thresholdHigh = Math.max(1, parseInt(e.target.value) || 10);
+      renderHeatmapAndTable();
+    };
+  }
+  if (inputCrit) {
+    inputCrit.onchange = (e) => {
+      thresholdCritical = Math.max(1, parseInt(e.target.value) || 15);
+      renderHeatmapAndTable();
+    };
+  }
+
   renderHeatmapAndTable();
 }
 
@@ -76,19 +123,23 @@ function renderHeatmapAndTable() {
   // Update filter indicators
   if (filterLikelihood !== null && filterImpact !== null) {
     if (filterIndicator) {
-      filterIndicator.innerHTML = `⚠️ Active Filter: Likelihood = <b>${filterLikelihood}</b> | Impact = <b>${filterImpact}</b>`;
+      filterIndicator.innerHTML = `⚠️ Filtered: L = <b>${filterLikelihood}</b> | I = <b>${filterImpact}</b>`;
     }
     if (clearBtn) clearBtn.classList.remove('hidden');
   } else {
-    if (filterIndicator) filterIndicator.innerHTML = '💡 Click on any occupied heatmap cell to filter risks by severity coordinates.';
+    if (filterIndicator) filterIndicator.innerHTML = '💡 Click on any occupied cell to filter by severity coordinates.';
     if (clearBtn) clearBtn.classList.add('hidden');
   }
 
-  // Draw heatmap
+  // Draw heatmap with thresholds
   createRiskHeatmap('risk-heatmap-container', state.risks, (l, i) => {
     filterLikelihood = l;
     filterImpact = i;
     renderHeatmapAndTable();
+  }, {
+    medium: thresholdMedium,
+    high: thresholdHigh,
+    critical: thresholdCritical
   });
 
   // Filter risk array
@@ -104,8 +155,15 @@ function renderHeatmapAndTable() {
     { key: 'category', label: 'Category' },
     { 
       key: 'score', 
-      label: 'L x I', 
-      render: (row) => `<span style="font-weight: 700; color: ${row.likelihood * row.impact >= 15 ? '#ef4444' : (row.likelihood * row.impact >= 10 ? '#f97316' : '#eab308')}">${row.likelihood} × ${row.impact} = <b>${row.likelihood * row.impact}</b></span>`
+      label: 'Risk score ( L x I )', 
+      render: (row) => {
+        const score = row.likelihood * row.impact;
+        let color = '#10b981'; // Low (Green)
+        if (score >= thresholdCritical) color = '#ef4444'; // Critical (Red)
+        else if (score >= thresholdHigh) color = '#f97316'; // High (Orange)
+        else if (score >= thresholdMedium) color = '#eab308'; // Medium (Yellow)
+        return `<span style="font-weight: 700; color: ${color}">${row.likelihood} × ${row.impact} = <b>${score}</b></span>`;
+      }
     },
     { key: 'owner', label: 'Owner', render: (row) => `<span style="font-size:0.7rem; color:var(--text-secondary);">${row.owner}</span>` },
     { key: 'status', label: 'Status', render: (row) => createStatusBadge(row.status) },

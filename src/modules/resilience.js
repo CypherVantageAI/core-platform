@@ -128,7 +128,12 @@ function renderDetailPane() {
   // Case A: Adding a new service
   if (isAdding) {
     headerContainer.innerHTML = `<h3 style="font-size:0.8rem; color:var(--text-secondary); font-weight:700; margin:0;">Create New Business Service</h3>`;
-    bodyContainer.innerHTML = `<div id="resilience-form-container"></div>`;
+    bodyContainer.innerHTML = `
+      <div style="background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.2); padding: 8px 12px; border-radius: 4px; margin-bottom: 12px; font-size: 0.72rem; line-height: 1.4; color: var(--text-secondary);">
+        🌐 <b>IBM Blueworks Sync Action:</b> Saving this new business service will automatically submit the definitions and operational process mappings to <b>IBM Blueworks</b>. Process models and workflow dependencies will be managed and synchronized bi-directionally there.
+      </div>
+      <div id="resilience-form-container"></div>
+    `;
     
     const formSchema = [
       { name: 'name', label: 'Service Name', type: 'text', required: true, placeholder: 'e.g. Credit Card Clearing' },
@@ -155,6 +160,8 @@ function renderDetailPane() {
       };
       state.services.push(newService);
       saveState();
+      
+      alert(`Service registered! Bi-directional process model created and synced with IBM Blueworks successfully.\nService ID: ${newService.id}`);
       
       selectedServiceId = newService.id;
       isAdding = false;

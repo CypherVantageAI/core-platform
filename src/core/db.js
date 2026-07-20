@@ -2,11 +2,11 @@
 // Cypher Vantage - Core Database & State Manager (ES6 Module)
 // ==========================================================================
 
-const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v8';
+const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v9';
 
 // Default state structure conforming to the 12 core DORA entities
 const DEFAULT_STATE = {
-  version: 8,
+  version: 9,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
@@ -727,6 +727,85 @@ const DEFAULT_STATE = {
       remediationPlan: '',
       rootCauseAnalysis: '',
       revisionComment: ''
+    },
+    {
+      id: 'act-001',
+      supplierId: 'aws',
+      domain: 'Resilience',
+      controlId: 'c4.2',
+      title: 'Outdated Disaster Recovery Testing Summary',
+      gapDetails: 'Evidence file AWS_DR_Testing_Plan_2024.pdf dates from October 2024. Cypher Vantage Recovery Planning module requires evidence of annual testing within the last 12 months (Current date is July 2026).',
+      status: 'Awaiting Response',
+      dateCreated: '2026-07-01',
+      emailDraft: `Dear AWS Compliance Team,
+
+Our ongoing risk assurance program has reviewed your compliance data against Cypher Vantage Control Modules.
+
+We identified a gap in the following control requirement:
+Domain: Section 13.0 - Recovery Planning (Control 4.2)
+Requirement: Supplier must provide evidence of annual disaster recovery and business continuity testing relevant to the systems hosting Cypher Vantage tenant data.
+
+Gap details: Your uploaded Disaster Recovery Test Plan dates back to 2024. We require evidence of your calendar year 2025/2026 DR testing execution summary.
+
+Please respond to this request and upload the updated documentation through the Cypher Vantage Supplier Portal as soon as possible.
+
+Regards,
+Sarah Jenkins
+Third-Party Risk Assurance, Cypher Vantage Team`,
+      responseMessage: '',
+      responseAttachment: ''
+    },
+    {
+      id: 'act-002',
+      supplierId: 'infosys',
+      domain: 'Data Management',
+      controlId: 'c3.1',
+      title: 'Staging Database Encryption Enforceability',
+      gapDetails: 'Infosys_Cyber_Policy_2025.pdf does not clarify if staging databases hosting Cypher Vantage mock datasets are encrypted at rest using AES-256. Data Management module requires encryption of all client proprietary data.',
+      status: 'Open Gap',
+      dateCreated: '2026-07-03',
+      emailDraft: '',
+      responseMessage: '',
+      responseAttachment: ''
+    },
+    {
+      id: 'act-003',
+      supplierId: 'infosys',
+      domain: 'ICT Security',
+      controlId: 'c5.3',
+      title: 'Missing Monthly Vulnerability Scan Evidence',
+      gapDetails: 'Infosys_Cyber_Policy_2025.pdf states that vulnerability scans are conducted quarterly. Cypher Vantage Cyber Security module requires monthly scanning on systems accessing tenant networks.',
+      status: 'Open Gap',
+      dateCreated: '2026-07-04',
+      emailDraft: '',
+      responseMessage: '',
+      responseAttachment: ''
+    },
+    {
+      id: 'act-004',
+      supplierId: 'infosys',
+      domain: 'Technology Risk',
+      controlId: 'c5.3',
+      title: 'Missing Subcontractor Evaluation Audits',
+      gapDetails: 'No active subcontractor evaluation process exists. Technology Risk Technical module requires annual audits of key subcontractors handling downstream API services.',
+      status: 'Open Gap',
+      dateCreated: '2026-07-04',
+      emailDraft: '',
+      responseMessage: '',
+      responseAttachment: ''
+    },
+    {
+      id: 'act-005',
+      supplierId: 'workday',
+      domain: 'ICT Security',
+      controlId: 'c5.3',
+      title: 'Subcontractor Security Evaluation Gap',
+      gapDetails: 'Workday, Inc. has not submitted contract sign-offs or NDAs for downstream sub-processors. Section 14.0 requires all downstream sub-processors to be bound by equivalent security guidelines.',
+      status: 'Open Gap',
+      dateCreated: '2026-07-05',
+      emailDraft: '',
+      responseMessage: '',
+      responseAttachment: ''
     }
   ],
   advisorChatHistory: [

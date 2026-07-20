@@ -199,9 +199,9 @@ function renderDashboardContent() {
     // RENDER THREAT MAP & LIVE FEED
     contentArea.innerHTML = `
       <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-        <!-- Global Visualisation Map Card -->
-        <div class="dashboard-card map-card" style="flex: 2; min-width: 500px; padding: 15px; position: relative; min-height: 520px; display: flex; flex-direction: column;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 12px;">
+        <!-- Left Column: Global Visualisation Map & Systems -->
+        <div class="dashboard-card map-card" style="flex: 1.8; min-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
             <h3 style="font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
               Global Threat & Service Infrastructure Visualiser
             </h3>
@@ -214,7 +214,7 @@ function renderDashboardContent() {
             </div>
           </div>
 
-          <div class="world-map-wrapper" style="position: relative; flex: 1; min-height: 380px;">
+          <div class="world-map-wrapper" style="position: relative; height: 350px;">
             <!-- Simulation Loader Overlay -->
             <div id="simulation-loader-overlay" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 12, 29, 0.85); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: var(--border-radius-lg); backdrop-filter: blur(4px); transition: opacity 0.3s ease;">
               <div class="scanner-line" style="position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--color-cyan), transparent); animation: scanEffect 1.5s infinite linear;"></div>
@@ -227,7 +227,7 @@ function renderDashboardContent() {
               <p id="simulation-loader-text" style="font-size: 0.72rem; color: var(--text-secondary); margin: 0;"></p>
             </div>
             
-            <div class="world-map-grid" id="resilience-world-map" style="position: relative; width: 100%; height: 100%; min-height: 380px;">
+            <div class="world-map-grid" id="resilience-world-map" style="position: relative; width: 100%; height: 100%;">
               <!-- Flat Globe Continent SVG Layers -->
               <svg class="world-map-svg" viewBox="0 0 800 400" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: auto;">
                 <!-- Non-selectable landmasses -->
@@ -272,22 +272,40 @@ function renderDashboardContent() {
                 <path d="M 220 180 Q 380 150 510 180" class="connection-line" id="line-na-eu" />
                 <path d="M 510 180 Q 580 240 650 250" class="connection-line" id="line-eu-apac" />
                 <path d="M 220 180 Q 430 270 650 250" class="connection-line dashed" id="line-na-apac" />
+                <path d="M 220 180 Q 230 240 288 296" class="connection-line" id="line-na-sa" />
+                <path d="M 510 180 Q 400 240 288 296" class="connection-line dashed" id="line-eu-sa" />
               </svg>
+            </div>
+          </div>
+
+          <!-- Mapped Infrastructure Section (utilizing space below map) -->
+          <div class="map-systems-section" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
+            <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 6px 0; display: flex; justify-content: space-between; align-items: center;">
+              <span>Mapped Infrastructure Services & Systems</span>
+              <span id="map-systems-count" style="font-size: 0.68rem; text-transform: none; color: var(--color-cyan); font-weight: 600;">0 Service(s)</span>
+            </h4>
+            <div id="map-systems-grid" class="resilience-systems-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+              <!-- Dynamically populated in app.js -->
             </div>
           </div>
         </div>
 
-        <!-- Industry-Wide Threat Feed Card -->
-        <div class="dashboard-card" style="flex: 1; min-width: 300px; padding: 15px; display: flex; flex-direction: column; height: 520px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 12px;">
-            <h3 style="font-size: 0.78rem; color: var(--color-cyan); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; margin: 0;">
-              📡 Live Industry Threat Feed
-            </h3>
-            <span class="badge" style="font-size: 0.55rem; background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 700; text-transform: uppercase;">LIVE</span>
+        <!-- Right Column: Detail Card & Live Threat Feed -->
+        <div style="flex: 1.2; min-width: 350px; display: flex; flex-direction: column; gap: 20px;">
+          <!-- Region Detail Card -->
+          <div class="dashboard-card info-card" id="resilience-detail-card" style="display: flex; flex-direction: column; min-height: 250px; padding: 15px; margin: 0;">
+            <!-- Dynamically populated in app.js -->
           </div>
-          
-          <div id="navigator-threat-feed" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px;">
-            <!-- Dynamically populated ticking feed items in app.js -->
+
+          <!-- Live Industry Threat Feed Card -->
+          <div class="dashboard-card" style="display: flex; flex-direction: column; height: 260px; padding: 15px; margin: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 12px;">
+              <h3 style="font-size: 0.78rem; color: var(--color-cyan); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; margin: 0;">
+                📡 Live Industry Threat Feed
+              </h3>
+              <span class="badge" style="font-size: 0.55rem; background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 700; text-transform: uppercase;">LIVE</span>
+            </div>
+            <div id="navigator-threat-feed" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px;"></div>
           </div>
         </div>
       </div>

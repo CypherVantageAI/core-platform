@@ -109,6 +109,28 @@ function getSupplierAvatar(id) {
 // // Overridden by src/core/router.js setPersona
 // window.setPersona = function(persona) { ... }
 
+function populateSupplierPortalSwitcher() {
+  const select = document.getElementById('active-supplier-select');
+  if (!select) return;
+  select.innerHTML = '';
+  Object.keys(state.suppliers || {}).forEach(key => {
+    const s = state.suppliers[key];
+    const option = document.createElement('option');
+    option.value = s.id;
+    option.text = s.name;
+    if (s.id === state.activeSupplierId) option.selected = true;
+    select.appendChild(option);
+  });
+}
+
+window.changeActiveSupplier = function(supplierId) {
+  state.activeSupplierId = supplierId;
+  updateSupplierPortalIdentity();
+  if (typeof renderSupplierPortalDashboard === 'function') renderSupplierPortalDashboard();
+  if (typeof renderSupplierVaultTable === 'function') renderSupplierVaultTable();
+  saveState();
+};
+
 function updateSupplierPortalIdentity() {
   const supplier = state.suppliers[state.activeSupplierId];
   const userRoleText = document.getElementById('user-role-name');
@@ -1045,6 +1067,15 @@ function createSupplierActionCard(act) {
       ` : ''}
 
       ${actionFormHTML}
+
+      <!-- ServiceNow integration notice -->
+      <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); width: 100%;">
+        <span style="display: flex; align-items: center; gap: 4px;">
+          <span style="color: #818cf8;">⚙️</span>
+          <span>ServiceNow Sync: <b>Active (Two-Way)</b></span>
+        </span>
+        <span style="font-family: monospace; opacity: 0.8; color: var(--color-cyan);">Ticket: SN-INC-2026-${act.id.toUpperCase()}</span>
+      </div>
     </div>
   `;
 
@@ -5321,10 +5352,16 @@ window.submitSupplierRca = function(actionId) {
 
 window.updateManagerInboxBadge = function() {
   const badge = document.getElementById('badge-manager-inbox');
-  if (!badge) return;
   const count = state.actions.filter(a => a.isVulnerabilityRemediation && a.status !== 'Closed').length;
-  badge.innerText = count;
-  badge.style.display = count > 0 ? 'inline-block' : 'none';
+  if (badge) {
+    badge.innerText = count;
+    badge.style.display = count > 0 ? 'inline-block' : 'none';
+  }
+  const slaBadge = document.getElementById('badge-sla-monitor-count');
+  if (slaBadge) {
+    slaBadge.innerText = count;
+    slaBadge.style.display = count > 0 ? 'inline-block' : 'none';
+  }
 };
 
 window.startManagerSlaCountdown = function() {
@@ -5594,6 +5631,15 @@ window.renderManagerInbox = function() {
       ${impactPanelHTML}
 
       ${buttonsHTML}
+
+      <!-- ServiceNow integration notice -->
+      <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); width: 100%;">
+        <span style="display: flex; align-items: center; gap: 4px;">
+          <span style="color: #818cf8;">⚙️</span>
+          <span>ServiceNow Sync: <b>Active (Two-Way)</b></span>
+        </span>
+        <span style="font-family: monospace; opacity: 0.8; color: var(--color-cyan);">Ticket: SN-INC-2026-${act.id.toUpperCase()}</span>
+      </div>
 
       <!-- Comment Section for Revision Requests (Initially Hidden) -->
       <div id="revision-box-${act.id}" class="hidden" style="margin-top: 10px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">

@@ -294,7 +294,7 @@
             </a>
             <ul class="nav-sub-list" style="list-style: none; padding-left: 32px; margin-top: 2px; margin-bottom: 4px;">
               <li>
-                <a href="#" id="nav-manager-navigator" class="nav-sub-item" onclick="switchTab('manager-navigator'); event.stopPropagation();">
+                <a href="#" id="nav-manager-navigator" class="nav-sub-item" onclick="switchTab('manager-navigator'); event.stopPropagation();" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                   <span style="display: flex; align-items: center; gap: 6px;">
                     <svg class="nav-icon" style="width: 13px; height: 13px; margin: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
@@ -303,6 +303,7 @@
                     </svg>
                     <span>IBS &amp; CIS - SLA Monitor</span>
                   </span>
+                  <span id="badge-sla-monitor-count" class="badge badge-danger" style="font-size: 0.6rem; padding: 1px 4px; border-radius: 4px; display: none;">0</span>
                 </a>
               </li>
             </ul>
@@ -316,21 +317,23 @@
             </a>
             <ul class="nav-sub-list" style="list-style: none; padding-left: 32px; margin-top: 2px; margin-bottom: 4px;">
               <li>
-                <a href="#" id="nav-manager-collector" class="nav-sub-item" onclick="switchTab('manager-collector'); event.stopPropagation();">
-                  <span style="display: flex; align-items: center; gap: 6px;">
-                    <svg class="nav-icon" style="width: 13px; height: 13px; margin: 0;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
-                    <span>AI Evidence Collector</span>
-                  </span>
-                  <span class="badge badge-accent" style="font-size: 0.6rem; padding: 1px 4px; border-radius: 4px;">Live</span>
-                </a>
-              </li>
-              <li>
                 <a href="#" id="nav-manager-obligations" class="nav-sub-item" onclick="switchTab('manager-obligations'); event.stopPropagation();">
                   <span style="display: flex; align-items: center; gap: 6px;">
                     <svg class="nav-icon" style="width: 13px; height: 13px; margin: 0;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
                     <span>Supplier Control Obligations</span>
                   </span>
                 </a>
+                <ul class="nav-sub-sub-list" style="list-style: none; padding-left: 15px; margin-top: 2px; margin-bottom: 2px;">
+                  <li>
+                    <a href="#" id="nav-manager-collector" class="nav-sub-item" onclick="switchTab('manager-collector'); event.stopPropagation();" style="font-size: 0.7rem; opacity: 0.85;">
+                      <span style="display: flex; align-items: center; gap: 6px;">
+                        <svg class="nav-icon" style="width: 11px; height: 11px; margin: 0;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+                        <span>AI Evidence Collector</span>
+                      </span>
+                      <span class="badge badge-accent" style="font-size: 0.55rem; padding: 1px 3px; border-radius: 3px;">Live</span>
+                    </a>
+                  </li>
+                </ul>
               </li>
             </ul>
           </li>
