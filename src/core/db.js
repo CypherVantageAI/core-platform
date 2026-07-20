@@ -2,11 +2,11 @@
 // Cypher Vantage - Core Database & State Manager (ES6 Module)
 // ==========================================================================
 
-const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v9';
+const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v10';
 
 // Default state structure conforming to the 12 core DORA entities
 const DEFAULT_STATE = {
-  version: 9,
+  version: 10,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
@@ -604,107 +604,696 @@ const DEFAULT_STATE = {
     lossTrackerIntervalId: null,
     // Store nested navigation hierarchy
     hierarchy: {
-      global: {
-        name: 'Global Operations Network',
-        personnel: [{ name: 'Nate Peterson', role: 'Lead Architect', location: 'London Head Office', status: 'On-Call', contact: 'n.peterson@cyphervantage.ai' }],
-        systems: [],
-        countries: {
-          uk: {
-            name: 'United Kingdom Core Grid',
-            personnel: [{ name: 'Alexander Wright', role: 'Incident Commander', location: 'London Ops Hub', status: 'On-Call', contact: 'a.wright@cyphervantage.ai' }],
-            systems: [],
-            cities: {
-              london: {
-                name: 'London Primary Datacenter Hub',
-                personnel: [{ name: 'Sarah Jenkins', role: 'Head of Resilience', location: 'London Center', status: 'Active', contact: 's.jenkins@cyphervantage.ai' }],
-                systems: [{ name: 'Borsa Italiana Transit Gateway (IBS Trade Entry)', description: 'Trade entry relay validating execution buffers for Borsa Italiana clearing nodes.', serviceType: 'ibs', status: 'Nominal' }]
-              }
-            }
-          },
-          us: {
-            name: 'North American Zone',
-            personnel: [],
-            systems: [],
-            states: {
-              va: {
-                name: 'Virginia Regional Ingress',
-                personnel: [],
-                systems: [],
-                cities: {
-                  ashburn: {
-                    name: 'Ashburn Secure Co-location Facility',
-                    personnel: [{ name: 'David Carter', role: 'Network Administrator', location: 'Ashburn, VA', status: 'Active', contact: 'd.carter@cyphervantage.ai' }],
-                    systems: [{ name: 'AWS us-east-1a (IBS Payments)', description: 'Primary cardholder transactions verification controller and gateway services.', serviceType: 'ibs', status: '9h SLA (Urgent)' }]
-                  }
-                }
-              },
-              or: {
-                name: 'Oregon Regional Access',
-                personnel: [],
-                systems: [],
-                cities: {
-                  portland: {
-                    name: 'Oregon AWS-West Backup Site',
-                    personnel: [{ name: 'Emily Rose', role: 'Secondary SysOps Lead', location: 'Oregon, USA', status: 'Standby', contact: 'e.rose@cyphervantage.ai' }],
-                    systems: [{ name: 'Azure US-West-2 (CIS Identity Services)', description: 'Directory authorization sync relay validating credentials database replication logs.', serviceType: 'cis', status: 'Nominal' }]
-                  }
+    na: {
+      name: 'North America',
+      threatLevel: 'Moderate',
+      threatColor: 'orange',
+      countries: {
+        us: {
+          name: 'United States',
+          threatLevel: 'Moderate',
+          threatColor: 'orange',
+          states: {
+            va: {
+              name: 'Virginia',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                ashburn: {
+                  name: 'Ashburn (Data Center)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'AWS us-east-1a (IBS Payments)', status: 'Active', serviceType: 'ibs', description: 'Core retail payment processing gateway' }
+                  ],
+                  personnel: [
+                    { name: 'David Vance', role: 'AWS Support Lead', location: 'Seattle/Ashburn', contact: 'd.vance@aws.com', status: 'On Duty' }
+                  ],
+                  hotspots: [
+                    { type: 'Grid Strain', desc: 'Summer heatwave warning on Northern Virginia power grids' }
+                  ]
                 }
               }
+            },
+            or: {
+              name: 'Oregon',
+              threatLevel: 'Moderate',
+              threatColor: 'orange',
+              cities: {
+                boardman: {
+                  name: 'Boardman (Data Center)',
+                  threatLevel: 'Moderate',
+                  threatColor: 'orange',
+                  systems: [
+                    { name: 'Azure US-West-2 (CIS Identity Services)', status: 'Active', serviceType: 'cis', description: 'Active Directory & token authorization service' }
+                  ],
+                  personnel: [
+                    { name: 'Emma Watson', role: 'Azure Ops Lead', location: 'Portland/Boardman', contact: 'e.watson@azure.com', status: 'On Duty' }
+                  ],
+                  hotspots: [
+                    { type: 'Weather', desc: 'Wildfire alert issued near Columbia River Basin' }
+                  ]
+                }
+              }
+            },
+            ny_state: {
+              name: 'New York',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                newyork: {
+                  name: 'New York (28 Liberty St Office)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'New York Hub (IBS Market Feeds)', status: 'Active', serviceType: 'ibs', description: 'Real-time ticker multicast feed routing' }
+                  ],
+                  personnel: [
+                    { name: 'James Carter', role: 'Infrastructure Director', location: 'New York Office', contact: 'j.carter@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            il_state: {
+              name: 'Illinois',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                chicago: {
+                  name: 'Chicago (Wacker Dr Office)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Chicago Gateway (CIS Clearing Access)', status: 'Active', serviceType: 'cis', description: 'Derivative clearing transit proxy' }
+                  ],
+                  personnel: [
+                    { name: 'Linda Ross', role: 'Clearing Analyst', location: 'Chicago Office', contact: 'l.ross@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            ca_state: {
+              name: 'California',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                sanfrancisco: {
+                  name: 'San Francisco Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'FTSE Russell SF (IBS Index Calculation)', status: 'Active', serviceType: 'ibs', description: 'Real-time index updates engine' }
+                  ],
+                  personnel: [
+                    { name: 'Robert Chen', role: 'Data Engineer', location: 'San Francisco Office', contact: 'r.chen@ftserussell.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
             }
-          },
-          de: {
-            name: 'European Union Zone',
-            personnel: [],
-            systems: [],
-            states: {
-              he: {
-                name: 'Hesse Regional Clearing Router',
-                personnel: [],
-                systems: [],
-                cities: {
-                  frankfurt: {
-                    name: 'Frankfurt Central Colocation Grid',
-                    personnel: [{ name: 'Hans Mueller', role: 'EU Security Supervisor', location: 'Frankfurt Central', status: 'On-Call', contact: 'h.mueller@cyphervantage.ai' }],
-                    systems: [{ name: 'AWS eu-central-1 (IBS Clearing Portal)', description: 'Equity clearing node managing real-time ledger settlement journals.', serviceType: 'ibs', status: '48h SLA (Critical)' }]
+          }
+        },
+        ca: {
+          name: 'Canada',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            qc_state: {
+              name: 'Quebec',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                montreal: {
+                  name: 'Montreal Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Montreal Node (CIS Data Delivery)', status: 'Active', serviceType: 'cis', description: 'Bulk file delivery proxy' }
+                  ],
+                  personnel: [
+                    { name: 'Marc Tremblay', role: 'Systems Engineer', location: 'Montreal Office', contact: 'm.tremblay@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    eu: {
+      name: 'Europe',
+      threatLevel: 'Nominal',
+      threatColor: 'green',
+      countries: {
+        de: {
+          name: 'Germany',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            hesse: {
+              name: 'Hesse',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                frankfurt: {
+                  name: 'Frankfurt (Data Center)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'AWS eu-central-1 (IBS Clearing Portal)', status: 'Active', serviceType: 'ibs', description: 'Clearing and settlement portal' }
+                  ],
+                  personnel: [
+                    { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London/Frankfurt', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        uk: {
+          name: 'United Kingdom',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            england: {
+              name: 'England',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                london: {
+                  name: 'London HQ (10 Paternoster Sq)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  subdivisions: {
+                    'london-north': {
+                      name: 'North London (Primary Office)',
+                      threatLevel: 'Nominal',
+                      threatColor: 'green',
+                      systems: [],
+                      personnel: [
+                        { name: 'Sarah Jenkins', role: 'Risk Lead & DORA Coordinator', location: 'London North Office', contact: 'sarah.jenkins@cyphervantage.com', status: 'On Duty' }
+                      ],
+                      hotspots: [
+                        { type: 'Regulatory Review', desc: 'UK PRA operational resilience review window open' }
+                      ]
+                    },
+                    'london-se': {
+                      name: 'SouthEast London (DR Backup Site)',
+                      threatLevel: 'Nominal',
+                      threatColor: 'green',
+                      systems: [
+                        { name: 'AWS London Edge (CIS Auth Relay)', status: 'Active', serviceType: 'cis', description: 'Local OAuth validation node' }
+                      ],
+                      personnel: [
+                        { name: 'Alan Turing', role: 'Security Analyst', location: 'London SE Recovery Hub', contact: 'a.turing@cyphervantage.com', status: 'On Duty' }
+                      ],
+                      hotspots: [
+                        { type: 'Power Alert', desc: 'Grid maintenance scheduled for SouthEast London zone' }
+                      ]
+                    }
                   }
                 }
               }
             }
-          },
-          in: {
-            name: 'APAC Region West',
-            personnel: [],
-            systems: [],
-            states: {
-              ka: {
-                name: 'Karnataka Integration Zone',
-                personnel: [],
-                systems: [],
-                cities: {
-                  bangalore: {
-                    name: 'Bangalore Secure Cloud Sandbox',
-                    personnel: [{ name: 'Rajesh Kumar', role: 'Lead Compliance Architect', location: 'Bangalore Delivery Center', status: 'Active', contact: 'r.kumar@infosys-tprm.com' }],
-                    systems: [{ name: 'Infosys Core DB Ledger (CIS Database Backup)', description: 'Transaction history journal storage vault maintaining ledger synchronizations.', serviceType: 'cis', status: '24h SLA (Critical)' }]
-                  }
+          }
+        },
+        it: {
+          name: 'Italy',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            lombardy: {
+              name: 'Lombardy',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                milan: {
+                  name: 'Milan (Piazza degli Affari Office)',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Borsa Italiana Transit Gateway (IBS Trade Entry)', status: 'Active', serviceType: 'ibs', description: 'Italian equity trade routing gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Giovanni Rossi', role: 'Network Specialist', location: 'Milan Office', contact: 'g.rossi@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
                 }
               }
             }
-          },
-          sg: {
-            name: 'APAC Region East',
-            personnel: [],
-            systems: [],
-            cities: {
-              singapore: {
-                name: 'Singapore Edge Routers',
-                personnel: [{ name: 'Lee Min', role: 'APAC Operations Lead', location: 'Singapore Edge Center', status: 'Active', contact: 'l.min@cyphervantage.ai' }],
-                systems: [{ name: 'Google Cloud SG (CIS API Gateway Routing)', description: 'API router managing gateway channels for APAC routing zones.', serviceType: 'cis', status: '48h SLA (Critical)' }]
+          }
+        },
+        ro: {
+          name: 'Romania',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            bucharest_state: {
+              name: 'Bucharest Region',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                bucharest: {
+                  name: 'Bucharest Operations Centre',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Bucharest Shared Ops Hub (CIS Identity Audit)', status: 'Active', serviceType: 'cis', description: 'Access control compliance validation engine' }
+                  ],
+                  personnel: [
+                    { name: 'Andrei Popescu', role: 'Compliance Officer', location: 'Bucharest Office', contact: 'a.popescu@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            cluj_state: {
+              name: 'Cluj Region',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                cluj: {
+                  name: 'Cluj-Napoca Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Cluj Tech Center (CIS Patching Gateway)', status: 'Active', serviceType: 'cis', description: 'Automated software patching controller' }
+                  ],
+                  personnel: [
+                    { name: 'Elena Radu', role: 'DevOps Engineer', location: 'Cluj Office', contact: 'e.radu@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        pl: {
+          name: 'Poland',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            pomerania: {
+              name: 'Pomerania',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                gdynia: {
+                  name: 'Gdynia Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Gdynia Risk Hub (IBS Analytics Compute)', status: 'Active', serviceType: 'ibs', description: 'Calculates risk metrics for European markets' }
+                  ],
+                  personnel: [
+                    { name: 'Piotr Nowak', role: 'Risk Analyst', location: 'Gdynia Office', contact: 'p.nowak@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    apac: {
+      name: 'Asia-Pacific',
+      threatLevel: 'High',
+      threatColor: 'red',
+      countries: {
+        in: {
+          name: 'India',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            karnataka: {
+              name: 'Karnataka',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                bangalore: {
+                  name: 'Bengaluru Operations Hub',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Infosys Core DB Ledger (CIS Database Backup)', status: 'Active', serviceType: 'cis', description: 'Regulatory transaction audit log replica' }
+                  ],
+                  personnel: [
+                    { name: 'Rajesh Kumar', role: 'DB Administrator', location: 'Bangalore Office', contact: 'r.kumar@infosys.com', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            maharashtra: {
+              name: 'Maharashtra',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                mumbai: {
+                  name: 'Mumbai Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Mumbai Transit Access (IBS FX Feeds)', status: 'Active', serviceType: 'ibs', description: 'Rupee currency pricing relay' }
+                  ],
+                  personnel: [
+                    { name: 'Aditi Sharma', role: 'Support Lead', location: 'Mumbai Office', contact: 'a.sharma@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            telangana: {
+              name: 'Telangana',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                hyderabad: {
+                  name: 'Hyderabad Engineering Hub',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Hyderabad Dev Node (CIS Sandbox)', status: 'Active', serviceType: 'cis', description: 'Secure isolated staging gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Vikram Singh', role: 'SecOps Architect', location: 'Hyderabad Office', contact: 'v.singh@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            delhi_state: {
+              name: 'Delhi NCR',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                delhi: {
+                  name: 'New Delhi Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Delhi Client API Portal (IBS Data Hub)', status: 'Active', serviceType: 'ibs', description: 'Client access portal API gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Pooja Gupta', role: 'Client Manager', location: 'Delhi Office', contact: 'p.gupta@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        sg: {
+          name: 'Singapore',
+          threatLevel: 'High',
+          threatColor: 'red',
+          states: {
+            central: {
+              name: 'Central Region',
+              threatLevel: 'High',
+              threatColor: 'red',
+              cities: {
+                jurong: {
+                  name: 'Jurong (Data Center)',
+                  threatLevel: 'High',
+                  threatColor: 'red',
+                  systems: [
+                    { name: 'Google Cloud SG (CIS API Gateway Routing)', status: 'Warning', serviceType: 'cis', description: 'APAC API proxy and router' }
+                  ],
+                  personnel: [
+                    { name: 'Mei Ling', role: 'SecOps Analyst', location: 'Singapore Office', contact: 'm.ling@gcp.com', status: 'On Duty' }
+                  ],
+                  hotspots: [
+                    { type: 'Weather', desc: 'Typhoon alert issued for Singapore/East Asia margins' }
+                  ]
+                },
+                singapore_city: {
+                  name: 'Singapore City Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'FTSE SG Calculation Engine (IBS Straits Ticker)', status: 'Active', serviceType: 'ibs', description: 'Real-time calculation engine for index metrics' }
+                  ],
+                  personnel: [
+                    { name: 'Henry Tan', role: 'Support Lead', location: 'Singapore Office', contact: 'h.tan@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        lk: {
+          name: 'Sri Lanka',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            western_province: {
+              name: 'Western Province',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                colombo: {
+                  name: 'Colombo Technology Center',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Colombo Shared Services Node (CIS Network Transit)', status: 'Active', serviceType: 'cis', description: 'Global VPN authentication tunnel' }
+                  ],
+                  personnel: [
+                    { name: 'Ruwan Perera', role: 'Infrastructure Architect', location: 'Colombo Office', contact: 'r.perera@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        my: {
+          name: 'Malaysia',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            penang_state: {
+              name: 'Penang',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                penang: {
+                  name: 'Penang Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Penang Ops Node (CIS Support Routing)', status: 'Active', serviceType: 'cis', description: 'Support ticketing failover gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Fatimah Awang', role: 'Operations Lead', location: 'Penang Office', contact: 'f.awang@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        ph: {
+          name: 'Philippines',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            metro_manila: {
+              name: 'Metro Manila',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                manila: {
+                  name: 'Manila Shared Services Hub',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Manila Client Delivery Gateway (IBS Support Feeds)', status: 'Active', serviceType: 'ibs', description: 'Customer service desk feed manager' }
+                  ],
+                  personnel: [
+                    { name: 'Maria Santos', role: 'Support Analyst', location: 'Manila Office', contact: 'm.santos@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        jp: {
+          name: 'Japan',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            tokyo_state: {
+              name: 'Tokyo',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                tokyo: {
+                  name: 'Tokyo Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Tokyo Trade Gateway (IBS TSE Gateway)', status: 'Active', serviceType: 'ibs', description: 'Tokyo stock trading access routing proxy' }
+                  ],
+                  personnel: [
+                    { name: 'Kenji Sato', role: 'Systems Lead', location: 'Tokyo Office', contact: 'k.sato@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        hk: {
+          name: 'Hong Kong',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            hk_island: {
+              name: 'Hong Kong Island',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                hongkong: {
+                  name: 'Hong Kong Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'HK Exchange Routing Node (IBS HKEX Transit)', status: 'Active', serviceType: 'ibs', description: 'Hong Kong Exchange direct connect interface' }
+                  ],
+                  personnel: [
+                    { name: 'Wong Ka-shing', role: 'Support Analyst', location: 'Hong Kong Office', contact: 'w.kashing@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    af: {
+      name: 'Africa',
+      threatLevel: 'Nominal',
+      threatColor: 'green',
+      countries: {
+        za: {
+          name: 'South Africa',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            gauteng: {
+              name: 'Gauteng',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                johannesburg: {
+                  name: 'Johannesburg Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'JSE Direct Connect (IBS JSE Link)', status: 'Active', serviceType: 'ibs', description: 'Johannesburg Stock Exchange dedicated gateway' }
+                  ],
+                  personnel: [
+                    { name: 'Thabo Mbeki', role: 'Network Support', location: 'Johannesburg Office', contact: 't.mbeki@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            },
+            western_cape: {
+              name: 'Western Cape',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                capetown: {
+                  name: 'Cape Town Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Cape Town DR Node (CIS CT Recovery)', status: 'Active', serviceType: 'cis', description: 'Secondary disaster recovery hub for South Africa operations' }
+                  ],
+                  personnel: [
+                    { name: 'Chloe van der Merwe', role: 'DR Coordinator', location: 'Cape Town Office', contact: 'c.vdmerwe@org.internal', status: 'On Standby' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        },
+        ke: {
+          name: 'Kenya',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            nairobi_county: {
+              name: 'Nairobi Area',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                nairobi: {
+                  name: 'Nairobi Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'Nairobi Regional Hub (CIS NSE Feed)', status: 'Active', serviceType: 'cis', description: 'Nairobi Stock Exchange live ticker feed relay' }
+                  ],
+                  personnel: [
+                    { name: 'Amara Okechukwu', role: 'Security Analyst', location: 'Nairobi Office', contact: 'a.okechukwu@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    sa: {
+      name: 'South America',
+      threatLevel: 'Nominal',
+      threatColor: 'green',
+      countries: {
+        br: {
+          name: 'Brazil',
+          threatLevel: 'Nominal',
+          threatColor: 'green',
+          states: {
+            sp_state: {
+              name: 'São Paulo',
+              threatLevel: 'Nominal',
+              threatColor: 'green',
+              cities: {
+                sao_paulo: {
+                  name: 'São Paulo Office',
+                  threatLevel: 'Nominal',
+                  threatColor: 'green',
+                  systems: [
+                    { name: 'B3 Direct Link (IBS B3 Connect)', status: 'Active', serviceType: 'ibs', description: 'São Paulo direct trading and routing connection to B3 Exchange.' },
+                    { name: 'LatAm Operations Hub (CIS LatAm Directory)', status: 'Active', serviceType: 'cis', description: 'Primary directory and identity authentication node for South American operations.' }
+                  ],
+                  personnel: [
+                    { name: 'Gabriela Santos', role: 'Network Support', location: 'São Paulo Office (Cardoso de Melo 1855)', contact: 'g.santos@org.internal', status: 'On Duty' },
+                    { name: 'Thiago Silva', role: 'Resilience Coordinator', location: 'São Paulo Office (Cardoso de Melo 1855)', contact: 't.silva@org.internal', status: 'On Duty' }
+                  ],
+                  hotspots: []
+                }
               }
             }
           }
         }
       }
     }
+  }
   },
 
   supplierEvidenceVault: [],
