@@ -2863,6 +2863,24 @@ body.light-mode .theme-toggle-container button {
   color: var(--text-primary) !important;
 }
 
+/* Non-Remediation Impact Card Theme styling */
+.non-remediation-impact-card {
+  background: rgba(0, 0, 0, 0.15) !important;
+  border-left: 2px solid #ef4444 !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  font-size: 0.7rem !important;
+  color: #fca5a5 !important;
+  margin-top: 6px !important;
+  line-height: 1.4 !important;
+}
+
+body.light-mode .non-remediation-impact-card {
+  background: rgba(239, 68, 68, 0.06) !important;
+  color: #b91c1c !important; /* Beautiful readable dark red in light mode */
+}
+
+
 
 
 

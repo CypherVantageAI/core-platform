@@ -49,17 +49,16 @@ function initTheme(state) {
   if (!btn) return;
 
   const icon = document.getElementById('theme-toggle-icon');
-  const text = document.getElementById('theme-toggle-text');
 
   function applyTheme(isLight) {
     if (isLight) {
       document.body.classList.add('light-mode');
       if (icon) icon.innerText = '🌙';
-      if (text) text.innerText = 'Dark Theme';
+      btn.setAttribute('title', 'Switch to Dark Theme');
     } else {
       document.body.classList.remove('light-mode');
       if (icon) icon.innerText = '☀️';
-      if (text) text.innerText = 'Light Theme';
+      btn.setAttribute('title', 'Switch to Light Theme');
     }
   }
 

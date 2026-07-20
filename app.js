@@ -5528,7 +5528,7 @@ window.renderManagerInbox = function() {
         <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 500; line-height: 1.45; color: var(--text-primary); width: 100%;">
           <strong style="color: #ef4444; display: block; margin-bottom: 2px;">🚨 Urgent Escalation Required (SLA EXPIRED):</strong>
           Supplier <b>${supplierName}</b> failed to submit their Stage 1 Remediation Action Plan within the critical target window. Offline outreach, fine assessment, or executive escalation is required.
-          ${nonRemediationImpact ? `<div style="background: rgba(0,0,0,0.15); border-left: 2px solid #ef4444; padding: 8px; border-radius: 4px; font-size: 0.7rem; color: #fca5a5; margin-top: 6px; line-height: 1.4;"><b>Non-Remediation Impact (Executive Summary):</b> ${nonRemediationImpact}</div>` : ''}
+          ${nonRemediationImpact ? `<div class="non-remediation-impact-card"><b>Non-Remediation Impact (Executive Summary):</b> ${nonRemediationImpact}</div>` : ''}
           ${act.revisionComment ? `<div style="color: #ef4444; margin-top: 4px; font-weight: 600;">Revision Feedback Sent: "${act.revisionComment}"</div>` : ''}
         </div>
       ` : `
@@ -5566,7 +5566,7 @@ window.renderManagerInbox = function() {
         <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 500; line-height: 1.45; color: var(--text-primary); width: 100%;">
           <strong style="color: #ef4444; display: block; margin-bottom: 2px;">🚨 Urgent Escalation Required (SLA EXPIRED):</strong>
           Stage 1 Plan was approved, but <b>${supplierName}</b> failed to submit their Stage 2 Root Cause Analysis (RCA) within the target window. Offline outreach or vendor contract penalties should be assessed.
-          ${nonRemediationImpact ? `<div style="background: rgba(0,0,0,0.15); border-left: 2px solid #ef4444; padding: 8px; border-radius: 4px; font-size: 0.7rem; color: #fca5a5; margin-top: 6px; line-height: 1.4;"><b>Non-Remediation Impact (Executive Summary):</b> ${nonRemediationImpact}</div>` : ''}
+          ${nonRemediationImpact ? `<div class="non-remediation-impact-card"><b>Non-Remediation Impact (Executive Summary):</b> ${nonRemediationImpact}</div>` : ''}
           <div style="margin-top: 4px; font-size: 0.65rem; color: var(--text-muted);">Approved Plan: "${act.remediationPlan}"</div>
           ${act.revisionComment ? `<div style="color: #ef4444; margin-top: 4px; font-weight: 600;">Revision Feedback Sent: "${act.revisionComment}"</div>` : ''}
         </div>
