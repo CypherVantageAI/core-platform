@@ -155,7 +155,8 @@ function renderHeatmapAndTable() {
     { key: 'category', label: 'Category' },
     { 
       key: 'score', 
-      label: 'Risk score ( L x I )', 
+      label: 'Risk Score = L x I', 
+      width: '150px',
       render: (row) => {
         const score = row.likelihood * row.impact;
         let color = '#10b981'; // Low (Green)

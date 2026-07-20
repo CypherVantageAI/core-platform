@@ -2,11 +2,11 @@
 // Cypher Vantage - Core Database & State Manager (ES6 Module)
 // ==========================================================================
 
-const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v10';
+const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v11';
 
 // Default state structure conforming to the 12 core DORA entities
 const DEFAULT_STATE = {
-  version: 10,
+  version: 11,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
@@ -1312,6 +1312,57 @@ const DEFAULT_STATE = {
       isVulnerabilityRemediation: true,
       cveId: 'CVE-2026-9912',
       serviceName: 'AWS us-east-1a (IBS Payments)',
+      execSummary: '',
+      remediationPlan: '',
+      rootCauseAnalysis: '',
+      revisionComment: ''
+    },
+    {
+      id: 'act-vuln-9-active',
+      supplierId: 'aws',
+      domain: 'Vulnerability Remediation',
+      controlId: 'c5.3',
+      title: 'CVE-2026-9912 - SLA Remediation Request: AWS us-east-1a (IBS Payments) - Active Directive',
+      gapDetails: 'A secondary verification scan is required on the billing endpoints to confirm no lingering memory leaks exist after initial Spring Boot upgrades.',
+      status: 'Awaiting Response',
+      dateCreated: '2026-07-20',
+      isVulnerabilityRemediation: true,
+      cveId: 'CVE-2026-9912',
+      serviceName: 'AWS us-east-1a (IBS Payments)',
+      execSummary: '',
+      remediationPlan: '',
+      rootCauseAnalysis: '',
+      revisionComment: ''
+    },
+    {
+      id: 'act-vuln-24',
+      supplierId: 'infosys',
+      domain: 'Vulnerability Remediation',
+      controlId: 'c5.3',
+      title: 'CVE-2026-3829 - SLA Remediation Request: Infosys Core DB Ledger (CIS Database Backup)',
+      gapDetails: 'A critical remote code execution vulnerability (CVE-2026-3829) has been found in Oracle WebLogic. Restrict external traffic and apply security patches.',
+      status: 'Awaiting Response',
+      dateCreated: '2026-07-20',
+      isVulnerabilityRemediation: true,
+      cveId: 'CVE-2026-3829',
+      serviceName: 'Infosys Core DB Ledger (CIS Database Backup)',
+      execSummary: '',
+      remediationPlan: '',
+      rootCauseAnalysis: '',
+      revisionComment: ''
+    },
+    {
+      id: 'act-vuln-48',
+      supplierId: 'aws',
+      domain: 'Vulnerability Remediation',
+      controlId: 'c5.3',
+      title: 'CVE-2026-1044 - SLA Remediation Request: AWS eu-central-1 (IBS Clearing Portal)',
+      gapDetails: 'A high severity HTTP/2 Denial of Service vulnerability (CVE-2026-1044) has been found on Node.js services. Update Node version and configure rate limiting.',
+      status: 'Awaiting Response',
+      dateCreated: '2026-07-20',
+      isVulnerabilityRemediation: true,
+      cveId: 'CVE-2026-1044',
+      serviceName: 'AWS eu-central-1 (IBS Clearing Portal)',
       execSummary: '',
       remediationPlan: '',
       rootCauseAnalysis: '',

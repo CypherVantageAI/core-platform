@@ -74,8 +74,9 @@ export function createTable(containerId, data, columns, options = {}) {
                 ${columns.map(col => {
                   const isSorted = currentSortKey === col.key;
                   const sortIcon = isSorted ? (currentSortDir === 'asc' ? ' 🔼' : ' 🔽') : '';
+                  const widthStyle = col.width ? `width: ${col.width}; min-width: ${col.width};` : '';
                   return `
-                    <th class="sortable-header" data-key="${col.key}" style="padding: 10px 12px; color: var(--text-secondary); font-weight: 600; cursor: pointer; user-select: none;">
+                    <th class="sortable-header" data-key="${col.key}" style="padding: 10px 12px; color: var(--text-secondary); font-weight: 600; cursor: pointer; user-select: none; ${widthStyle}">
                       ${col.label}${sortIcon}
                     </th>
                   `;
@@ -90,7 +91,8 @@ export function createTable(containerId, data, columns, options = {}) {
                   <tr class="${options.onRowClick ? 'clickable-row' : ''}" data-id="${row.id}" style="border-bottom: 1px solid rgba(255,255,255,0.03); background: ${bg}; border-left: ${borderLeft}; cursor: ${options.onRowClick ? 'pointer' : 'default'}; transition: all 0.2s;">
                     ${columns.map(col => {
                       const cellContent = col.render ? col.render(row) : (row[col.key] !== undefined ? row[col.key] : '--');
-                      return `<td style="padding: 10px 12px; color: var(--text-primary);">${cellContent}</td>`;
+                      const widthStyle = col.width ? `width: ${col.width}; min-width: ${col.width};` : '';
+                      return `<td style="padding: 10px 12px; color: var(--text-primary); ${widthStyle}">${cellContent}</td>`;
                     }).join('')}
                   </tr>
                 `;
