@@ -150,9 +150,9 @@ function renderHeatmapAndTable() {
 
   // Render Table
   const columns = [
-    { key: 'id', label: 'ID' },
-    { key: 'title', label: 'Risk Vector', render: (row) => `<b>${row.title}</b>` },
-    { key: 'category', label: 'Category' },
+    { key: 'id', label: 'ID', width: '100px' },
+    { key: 'title', label: 'Risk Vector', width: '220px', render: (row) => `<b style="white-space: normal; word-break: break-word; display: block;">${row.title}</b>` },
+    { key: 'category', label: 'Category', width: '110px' },
     { 
       key: 'score', 
       label: 'Risk Score = L x I', 
@@ -166,12 +166,13 @@ function renderHeatmapAndTable() {
         return `<span style="font-weight: 700; color: ${color}">${row.likelihood} × ${row.impact} = <b>${score}</b></span>`;
       }
     },
-    { key: 'owner', label: 'Owner', render: (row) => `<span style="font-size:0.7rem; color:var(--text-secondary);">${row.owner}</span>` },
-    { key: 'status', label: 'Status', render: (row) => createStatusBadge(row.status) },
+    { key: 'owner', label: 'Owner', width: '140px', render: (row) => `<span style="font-size:0.7rem; color:var(--text-secondary); white-space: normal; display: block;">${row.owner}</span>` },
+    { key: 'status', label: 'Status', width: '100px', render: (row) => createStatusBadge(row.status) },
     { 
       key: 'mitigation', 
       label: 'Mitigation Controls', 
-      render: (row) => `<span style="font-size:0.68rem; color:var(--text-secondary); line-height:1.25; display:block;">${row.mitigation}</span>` 
+      width: '260px',
+      render: (row) => `<span style="font-size:0.68rem; color:var(--text-secondary); line-height:1.25; display:block; white-space: normal; word-break: break-word;">${row.mitigation}</span>` 
     }
   ];
 
