@@ -1,11 +1,12 @@
 // ==========================================================================
-// Cypher Vantage - Third Party Risk Module (ES6 Module)
+// Cypher Vantage - Third Party & Nth-Party Risk Module (ES6 Module)
 // ==========================================================================
 
-import { getState } from '../core/db.js';
+import { getState, saveState } from '../core/db.js';
 import { createTable, createCard, createStatusBadge } from '../components/ui.js';
 
 let selectedSupplierId = 'aws';
+let activeThirdPartyTab = 'directory';
 
 export function renderThirdPartyModule() {
   const state = getState();
@@ -17,6 +18,7 @@ export function renderThirdPartyModule() {
   const criticalSuppliers = suppliersList.filter(s => s.riskTier === 'Critical').length;
   const avgCompliance = totalSuppliers ? Math.round(suppliersList.reduce((sum, s) => sum + s.complianceScore, 0) / totalSuppliers) : 100;
   const activeGaps = state.actions.filter(a => a.status !== 'Closed').length;
+  const totalSubcontractors = suppliersList.reduce((sum, s) => sum + (s.subcontractors ? s.subcontractors.length : 0), 0);
 
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
@@ -28,33 +30,16 @@ export function renderThirdPartyModule() {
         <div id="tpr-kpi-gaps"></div>
       </div>
 
-      <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-        <!-- Left Panel: Supplier Registry -->
-        <div class="dashboard-card" style="flex: 1.5; min-width: 450px; display: flex; flex-direction: column; gap: 15px; padding: 15px; margin: 0; min-height: 600px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
-            <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
-              Nth-Party Supplier Directory
-            </h3>
-            <button class="btn btn-secondary btn-xs" onclick="switchTab('manager-inbox')" style="padding: 4px 8px; font-size: 0.65rem; display: flex; align-items: center; gap: 4px;">
-              🚨 Urgent Remediation Inbox
-            </button>
-          </div>
-
-          <!-- Directory Table -->
-          <div id="suppliers-table-container" style="width: 100%;"></div>
-        </div>
-
-        <!-- Right Panel: Profile & Subcontractors -->
-        <div class="dashboard-card" style="flex: 1.2; min-width: 380px; display: flex; flex-direction: column; gap: 15px; padding: 15px; margin: 0; min-height: 600px;">
-          <div id="supplier-detail-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-            <!-- Populated dynamically -->
-          </div>
-
-          <div id="supplier-detail-body" style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
-            <!-- Populated dynamically -->
-          </div>
-        </div>
+      <!-- Sub-Tab Navigation -->
+      <div class="sub-tab-nav" style="display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; flex-wrap: wrap;">
+        <button id="tab-tpr-directory" class="nav-sub-item ${activeThirdPartyTab === 'directory' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">Supplier Inventory</button>
+        <button id="tab-tpr-concentration" class="nav-sub-item ${activeThirdPartyTab === 'concentration' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">Concentration Risk</button>
+        <button id="tab-tpr-sla" class="nav-sub-item ${activeThirdPartyTab === 'sla' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">SLA &amp; Performance</button>
+        <button id="tab-tpr-exit" class="nav-sub-item ${activeThirdPartyTab === 'exit' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">Exit Strategies</button>
       </div>
+
+      <!-- Dynamic Content Area -->
+      <div id="tpr-tab-content" style="width: 100%; min-height: 520px;"></div>
     </div>
   `;
 
@@ -62,6 +47,7 @@ export function renderThirdPartyModule() {
   createCard('tpr-kpi-total', {
     title: 'Total Suppliers Mapped',
     value: `${totalSuppliers}`,
+    subtext: `${totalSubcontractors} Subcontractors Mapped`,
     icon: '🏢',
     borderLeftColor: '#14b8a6'
   });
@@ -90,13 +76,76 @@ export function renderThirdPartyModule() {
     borderLeftColor: '#eab308'
   });
 
+  // Bind tab buttons
+  document.getElementById('tab-tpr-directory').onclick = () => switchTab('directory');
+  document.getElementById('tab-tpr-concentration').onclick = () => switchTab('concentration');
+  document.getElementById('tab-tpr-sla').onclick = () => switchTab('sla');
+  document.getElementById('tab-tpr-exit').onclick = () => switchTab('exit');
+
+  // Load active tab
+  renderActiveTabContent();
+}
+
+function switchTab(tabId) {
+  activeThirdPartyTab = tabId;
+  document.querySelectorAll('.sub-tab-nav .nav-sub-item').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  const activeBtn = document.getElementById(`tab-tpr-${tabId}`);
+  if (activeBtn) activeBtn.classList.add('active');
+  renderActiveTabContent();
+}
+
+function renderActiveTabContent() {
+  const contentArea = document.getElementById('tpr-tab-content');
+  if (!contentArea) return;
+
+  if (activeThirdPartyTab === 'directory') {
+    renderDirectoryTab(contentArea);
+  } else if (activeThirdPartyTab === 'concentration') {
+    renderConcentrationTab(contentArea);
+  } else if (activeThirdPartyTab === 'sla') {
+    renderSlaTab(contentArea);
+  } else if (activeThirdPartyTab === 'exit') {
+    renderExitTab(contentArea);
+  }
+}
+
+// --------------------------------------------------------------------------
+// TAB 1: SUPPLIER DIRECTORY
+// --------------------------------------------------------------------------
+function renderDirectoryTab(container) {
+  container.innerHTML = `
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
+      <!-- Left Panel: Supplier Registry -->
+      <div class="dashboard-card" style="flex: 1.5; min-width: 450px; display: flex; flex-direction: column; gap: 15px; padding: 15px; margin: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+          <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
+            Nth-Party Supplier Directory
+          </h3>
+          <button class="btn btn-secondary btn-xs" onclick="switchTab('manager-inbox')" style="padding: 4px 8px; font-size: 0.65rem; display: flex; align-items: center; gap: 4px;">
+            🚨 Urgent Remediation Inbox
+          </button>
+        </div>
+        <div id="suppliers-table-container" style="width: 100%;"></div>
+      </div>
+
+      <!-- Right Panel: Profile & Subcontractors -->
+      <div class="dashboard-card" style="flex: 1.2; min-width: 380px; display: flex; flex-direction: column; gap: 15px; padding: 15px; margin: 0;">
+        <div id="supplier-detail-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <!-- Populated dynamically -->
+        </div>
+        <div id="supplier-detail-body" style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  `;
+
   renderSuppliersTable();
   renderSupplierDetails();
 }
 
-/**
- * Render list of suppliers in the left grid
- */
 function renderSuppliersTable() {
   const state = getState();
   const columns = [
@@ -137,9 +186,6 @@ function renderSuppliersTable() {
   });
 }
 
-/**
- * Render detailed profiles and subcontractor layouts
- */
 function renderSupplierDetails() {
   const state = getState();
   const headerContainer = document.getElementById('supplier-detail-header');
@@ -153,7 +199,6 @@ function renderSupplierDetails() {
     return;
   }
 
-  // Header display
   headerContainer.innerHTML = `
     <div>
       <span style="font-size:0.56rem; text-transform:uppercase; color:var(--color-cyan); font-weight:700;">Supplier Profile</span>
@@ -164,9 +209,8 @@ function renderSupplierDetails() {
     </div>
   `;
 
-  // Filter subcontractor rows
   const subsHtml = sup.subcontractors && sup.subcontractors.length > 0 ? sup.subcontractors.map(sub => `
-    <tr style="border-bottom:1px solid rgba(255,255,255,0.02); font-size:0.7rem;">
+    <tr style="border-bottom:1px solid var(--border-color); font-size:0.7rem;">
       <td style="padding:6px 8px; color:var(--text-primary);"><b>${sub.name}</b></td>
       <td style="padding:6px 8px; color:var(--text-secondary);">${sub.role}</td>
       <td style="padding:6px 8px; color:var(--text-muted);">${sub.primaryLocation}</td>
@@ -178,7 +222,6 @@ function renderSupplierDetails() {
     </tr>
   `;
 
-  // Filter compliance gaps specific to supplier
   const supplierRisks = state.risks.filter(r => r.owner.includes(sup.contactName) || r.title.includes(sup.id.toUpperCase()) || r.title.includes(sup.name.split(' ')[0]));
   const supplierGapsHtml = supplierRisks.length > 0 ? supplierRisks.map(r => `
     <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(239,68,68,0.02); border:1px solid rgba(239,68,68,0.1); border-radius:4px; padding:6px 10px; font-size:0.68rem;">
@@ -193,14 +236,12 @@ function renderSupplierDetails() {
       ${sup.riskTierExplanation}
     </div>
 
-    <!-- Contact Info Block -->
-    <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:10px; border-radius:6px; font-size:0.7rem; display:flex; flex-direction:column; gap:4px;">
+    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:10px; border-radius:6px; font-size:0.7rem; display:flex; flex-direction:column; gap:4px;">
       <div>💼 <b>Account Lead:</b> ${sup.contactName} (${sup.contactEmail})</div>
       <div>📍 <b>Primary Location:</b> ${sup.primarySupportLocation || 'N/A'}</div>
       <div>🌎 <b>Secondary Operations Location:</b> ${sup.secondarySupportLocation || 'N/A'}</div>
     </div>
 
-    <!-- Active Compliance Gaps -->
     <div style="display:flex; flex-direction:column; gap:6px;">
       <h4 style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em; font-weight: 700; margin: 0;">
         Active Compliance Gaps & Risks
@@ -208,15 +249,14 @@ function renderSupplierDetails() {
       ${supplierGapsHtml}
     </div>
 
-    <!-- Downstream Subprocessor Grid -->
     <div style="display:flex; flex-direction:column; gap:6px;">
-      <h4 style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 4px; margin: 0;">
+      <h4 style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; margin: 0;">
         Downstream Subcontractor Chain (Tier 4 / Nth-Party)
       </h4>
-      <div style="overflow-x:auto; width:100%; border:1px solid rgba(255,255,255,0.03); border-radius:4px;">
+      <div style="overflow-x:auto; width:100%; border:1px solid var(--border-color); border-radius:4px;">
         <table style="width:100%; border-collapse:collapse; text-align:left;">
           <thead>
-            <tr style="background:rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.68rem; font-weight:600; color:var(--text-secondary);">
+            <tr style="background:rgba(255,255,255,0.02); border-bottom:1px solid var(--border-color); font-size:0.68rem; font-weight:600; color:var(--text-secondary);">
               <th style="padding:6px 8px;">Subcontractor</th>
               <th style="padding:6px 8px;">Role</th>
               <th style="padding:6px 8px;">Primary Location</th>
@@ -227,6 +267,270 @@ function renderSupplierDetails() {
             ${subsHtml}
           </tbody>
         </table>
+      </div>
+    </div>
+  `;
+}
+
+// --------------------------------------------------------------------------
+// TAB 2: CONCENTRATION RISK
+// --------------------------------------------------------------------------
+function renderConcentrationTab(container) {
+  const state = getState();
+  const suppliersList = Object.values(state.suppliers || {});
+
+  // Identify subcontractor concentration hotspots
+  const subcontractorMap = {};
+  suppliersList.forEach(sup => {
+    if (sup.subcontractors) {
+      sup.subcontractors.forEach(sub => {
+        if (!subcontractorMap[sub.name]) {
+          subcontractorMap[sub.name] = {
+            name: sub.name,
+            role: sub.role,
+            primaryLocation: sub.primaryLocation,
+            suppliers: []
+          };
+        }
+        subcontractorMap[sub.name].suppliers.push(sup.name);
+      });
+    }
+  });
+
+  const hotspotRows = Object.values(subcontractorMap)
+    .filter(sub => sub.suppliers.length > 1)
+    .map(sub => `
+      <tr style="border-bottom: 1px solid var(--border-color); font-size: 0.72rem;">
+        <td style="padding: 10px; color: var(--text-primary);"><b>⚠️ ${sub.name}</b></td>
+        <td style="padding: 10px; color: var(--text-secondary);">${sub.role}</td>
+        <td style="padding: 10px; color: var(--text-muted);">${sub.primaryLocation}</td>
+        <td style="padding: 10px; color: #ef4444; font-weight: 700;">${sub.suppliers.length} Primary Vendors</td>
+        <td style="padding: 10px; color: var(--text-secondary);">${sub.suppliers.join(', ')}</td>
+      </tr>
+    `).join('');
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+      <div class="dashboard-card" style="padding: 15px; margin: 0;">
+        <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 10px;">
+          Nth-Party Subprocessor Concentration Hotspots
+        </h3>
+        <p class="panel-subtitle" style="margin-bottom: 15px;">DORA Chapter V mandates identifying critical services sharing downstream subcontractors to prevent systemic failures.</p>
+        
+        <div style="overflow-x: auto; width: 100%; border: 1px solid var(--border-color); border-radius: 6px;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color); font-size: 0.7rem; font-weight: 600; color: var(--text-secondary);">
+                <th style="padding: 10px;">Subcontractor (Tier 4)</th>
+                <th style="padding: 10px;">Role</th>
+                <th style="padding: 10px;">Primary Location</th>
+                <th style="padding: 10px;">Concentration Exposure</th>
+                <th style="padding: 10px;">Impacted Primary Suppliers</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${hotspotRows || '<tr><td colspan="5" style="padding:15px; text-align:center; color:var(--text-muted);">No overlapping critical subcontractors mapped.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Concentration Map Visualization -->
+      <div class="dashboard-card" style="padding: 15px; margin: 0; min-height: 280px; display: flex; flex-direction: column; gap: 10px;">
+        <h3 style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px; margin: 0;">
+          Interactive Concentration Overlay Map
+        </h3>
+        
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); border: 1px solid var(--border-color); border-radius: 6px; padding: 20px; position: relative; overflow: hidden;">
+          <!-- SVG Concentration Tree -->
+          <svg viewBox="0 0 700 220" style="width: 100%; height: 100%; max-height: 220px;">
+            <defs>
+              <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Lines -->
+            <path d="M 50 110 L 250 50" stroke="rgba(15,23,42,0.15)" stroke-width="1.5" fill="none" />
+            <path d="M 50 110 L 250 170" stroke="rgba(15,23,42,0.15)" stroke-width="1.5" fill="none" />
+            <path d="M 250 50 L 520 110" stroke="#ef4444" stroke-width="2.5" fill="none" filter="url(#glow-red)" />
+            <path d="M 250 170 L 520 110" stroke="#ef4444" stroke-width="2.5" fill="none" filter="url(#glow-red)" />
+            
+            <!-- Level 1: Primary Bank Service -->
+            <g transform="translate(10, 85)">
+              <rect width="110" height="50" rx="4" fill="var(--bg-card)" stroke="var(--border-color)" stroke-width="1.5" />
+              <text x="5" y="15" font-size="7" font-weight="700" fill="var(--text-muted)">CRITICAL SERVICE</text>
+              <text x="5" y="32" font-size="8.5" font-weight="700" fill="var(--text-primary)">Payments Hub</text>
+            </g>
+
+            <!-- Level 2: Primary Vendors -->
+            <g transform="translate(200, 25)">
+              <rect width="110" height="50" rx="4" fill="var(--bg-card)" stroke="#ef4444" stroke-width="1.5" />
+              <text x="5" y="15" font-size="7" font-weight="700" fill="var(--text-muted)">PRIMARY SUPPLIER</text>
+              <text x="5" y="32" font-size="8" font-weight="700" fill="var(--text-primary)">AWS (Cloud Hosting)</text>
+            </g>
+            <g transform="translate(200, 145)">
+              <rect width="110" height="50" rx="4" fill="var(--bg-card)" stroke="#ef4444" stroke-width="1.5" />
+              <text x="5" y="15" font-size="7" font-weight="700" fill="var(--text-muted)">PRIMARY SUPPLIER</text>
+              <text x="5" y="32" font-size="8" font-weight="700" fill="var(--text-primary)">Salesforce (SaaS)</text>
+            </g>
+
+            <!-- Level 3: Common Downstream Subprocessor -->
+            <g transform="translate(480, 85)">
+              <rect width="130" height="50" rx="4" fill="#ef4444" stroke="#ef4444" stroke-width="2" />
+              <text x="5" y="15" font-size="7" font-weight="700" fill="rgba(255,255,255,0.7)">⚠️ CONCENTRATION POINT</text>
+              <text x="5" y="32" font-size="9" font-weight="800" fill="#ffffff">Cloudflare (CDN/DNS)</text>
+              <text x="5" y="44" font-size="7" fill="rgba(255,255,255,0.9)">Shared by AWS & SFDC</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// --------------------------------------------------------------------------
+// TAB 3: SLA & PERFORMANCE
+// --------------------------------------------------------------------------
+function renderSlaTab(container) {
+  const state = getState();
+  const activeActions = state.actions.filter(a => a.isVulnerabilityRemediation && a.status !== 'Closed');
+
+  const slaRows = activeActions.map(act => {
+    const s = state.suppliers[act.supplierId];
+    const supplierName = s ? s.name : 'Unknown';
+    let slaTarget = '48 Hours';
+    if (act.title.includes('9 Hours') || act.id === 'act-vuln-pre') slaTarget = '9 Hours';
+    else if (act.title.includes('24 Hours')) slaTarget = '24 Hours';
+
+    return `
+      <tr style="border-bottom: 1px solid var(--border-color); font-size: 0.72rem;">
+        <td style="padding: 10px; color: var(--text-primary);"><b>${act.id}</b></td>
+        <td style="padding: 10px; color: var(--text-secondary);">${act.title}</td>
+        <td style="padding: 10px; color: var(--text-muted);">${supplierName}</td>
+        <td style="padding: 10px;"><span class="badge badge-info" style="font-size:0.6rem;">${slaTarget}</span></td>
+        <td style="padding: 10px; color: var(--text-secondary);">${act.status}</td>
+        <td style="padding: 10px; color: #ef4444; font-weight: 700;">Active Remediation</td>
+      </tr>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+      <!-- SLA Status gauges -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; width: 100%;">
+        <div class="dashboard-card" style="padding: 15px; margin: 0; text-align: center;">
+          <h4 style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin: 0;">SLA Compliance Rate</h4>
+          <strong style="font-size: 1.8rem; color: #10b981; display: block; margin-top: 5px;">94.2%</strong>
+          <span style="font-size: 0.62rem; color: var(--text-secondary);">Target: >95.0% | Variance: -0.8%</span>
+        </div>
+        
+        <div class="dashboard-card" style="padding: 15px; margin: 0; text-align: center;">
+          <h4 style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin: 0;">MTTR (Mean Time to Resolve)</h4>
+          <strong style="font-size: 1.8rem; color: var(--color-cyan); display: block; margin-top: 5px;">14.8 Hours</strong>
+          <span style="font-size: 0.62rem; color: var(--text-secondary);">Critical Vulns: 8.2 Hours | High: 22 Hours</span>
+        </div>
+        
+        <div class="dashboard-card" style="padding: 15px; margin: 0; text-align: center;">
+          <h4 style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin: 0;">Active SLA Breaches</h4>
+          <strong style="font-size: 1.8rem; color: #ef4444; display: block; margin-top: 5px;">1</strong>
+          <span style="font-size: 0.62rem; color: var(--text-secondary);">AWS us-east-1a testing overdue (Article 13 gap)</span>
+        </div>
+      </div>
+
+      <div class="dashboard-card" style="padding: 15px; margin: 0;">
+        <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 10px;">
+          Active Supplier Remediation SLA Registry
+        </h3>
+        <p class="panel-subtitle" style="margin-bottom: 15px;">Uptime and vulnerability fix performance under contractual service level agreements (SLAs).</p>
+        
+        <div style="overflow-x: auto; width: 100%; border: 1px solid var(--border-color); border-radius: 6px;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color); font-size: 0.7rem; font-weight: 600; color: var(--text-secondary);">
+                <th style="padding: 10px;">Action ID</th>
+                <th style="padding: 10px;">Remediation Objective</th>
+                <th style="padding: 10px;">Vendor</th>
+                <th style="padding: 10px;">Target SLA Limit</th>
+                <th style="padding: 10px;">Status</th>
+                <th style="padding: 10px;">Compliance Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${slaRows || '<tr><td colspan="6" style="padding:15px; text-align:center; color:var(--text-muted);">No active remediation SLAs logged. All suppliers nominal.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// --------------------------------------------------------------------------
+// TAB 4: EXIT STRATEGIES
+// --------------------------------------------------------------------------
+function renderExitTab(container) {
+  const state = getState();
+  const strategies = state.exitStrategies || {};
+
+  const strategyRows = Object.keys(strategies).map(supId => {
+    const strat = strategies[supId];
+    const s = state.suppliers[supId];
+    const supplierName = s ? s.name : supId.toUpperCase();
+    const feasibilityColor = strat.feasibilityIndex >= 80 ? '#10b981' : (strat.feasibilityIndex >= 60 ? '#eab308' : '#ef4444');
+
+    return `
+      <tr style="border-bottom: 1px solid var(--border-color); font-size: 0.72rem;">
+        <td style="padding: 10px; color: var(--text-primary);"><b>${supplierName}</b></td>
+        <td style="padding: 10px; color: var(--text-secondary);">${strat.backupProvider}</td>
+        <td style="padding: 10px; color: var(--text-muted);">${strat.transitionTimeline}</td>
+        <td style="padding: 10px; color: var(--text-secondary);">${strat.criticalServicesAffected.join(', ')}</td>
+        <td style="padding: 10px;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-weight:700; color: ${feasibilityColor}">${strat.feasibilityIndex}%</span>
+            <div style="flex:1; width:50px; height:4px; background:rgba(255,255,255,0.04); border-radius:2px; overflow:hidden;">
+              <div style="width: ${strat.feasibilityIndex}%; height:100%; background: ${feasibilityColor}"></div>
+            </div>
+          </div>
+        </td>
+        <td style="padding: 10px;"><span class="badge" style="background: rgba(6,182,212,0.1); color: var(--color-cyan); border: 1px solid rgba(6,182,212,0.2);">${strat.strategyStatus}</span></td>
+        <td style="padding: 10px; text-align: center;">
+          <button class="btn btn-secondary btn-xs" onclick="alert('Exit simulation logs: Last run ${strat.lastTestDate}. Data integrity and failover sync verified with zero loss.')" style="padding: 2px 6px;">Test Log</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+      <div class="dashboard-card" style="padding: 15px; margin: 0;">
+        <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 10px;">
+          Supplier Exit Strategy Registry
+        </h3>
+        <p class="panel-subtitle" style="margin-bottom: 15px;">DORA Article 28 requires financial institutions to maintain robust exit strategies for critical ICT service providers to allow transitions without service interruption.</p>
+        
+        <div style="overflow-x: auto; width: 100%; border: 1px solid var(--border-color); border-radius: 6px;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color); font-size: 0.7rem; font-weight: 600; color: var(--text-secondary);">
+                <th style="padding: 10px;">Primary Supplier</th>
+                <th style="padding: 10px;">Alternative Backup Provider</th>
+                <th style="padding: 10px;">Transition Timeline</th>
+                <th style="padding: 10px;">Services Mapped</th>
+                <th style="padding: 10px;">Feasibility Index</th>
+                <th style="padding: 10px;">Plan Status</th>
+                <th style="padding: 10px; text-align: center;">Simulation Drills</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${strategyRows}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   `;

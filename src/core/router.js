@@ -11,6 +11,7 @@ import { renderDoraModule } from '../modules/dora.js';
 import { renderIctRiskModule } from '../modules/ictrisk.js';
 import { renderThirdPartyModule } from '../modules/thirdparty.js';
 import { renderReportsModule } from '../modules/reports.js';
+import { renderAiGovernanceModule } from '../modules/aigovernance.js';
 
 
 export function switchTab(tabId) {
@@ -87,15 +88,7 @@ export function switchTab(tabId) {
       // Chat is loaded via static HTML
       break;
     case 'manager-ai-risk':
-      if (typeof window.testDlpSanitizer === 'function') {
-        const dlpToggle = document.getElementById('dlp-toggle');
-        if (dlpToggle) dlpToggle.checked = state.dlpProxyEnabled;
-        window.testDlpSanitizer();
-        window.assessAiActCompliance();
-      }
-      if (typeof window.initTlptUI === 'function') {
-        window.initTlptUI();
-      }
+      renderAiGovernanceModule();
       break;
     case 'manager-obligations':
       if (typeof window.renderSCOAccordion === 'function') {

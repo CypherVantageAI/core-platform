@@ -150,28 +150,27 @@ function renderHeatmapAndTable() {
 
   // Render Table
   const columns = [
-    { key: 'id', label: 'ID', width: '100px' },
-    { key: 'title', label: 'Risk Vector', width: '220px', render: (row) => `<b style="white-space: normal; word-break: break-word; display: block;">${row.title}</b>` },
-    { key: 'category', label: 'Category', width: '110px' },
+    { key: 'id', label: 'ID', width: '50px' },
+    { key: 'title', label: 'Risk Vector', width: '160px', render: (row) => `<b style="white-space: normal; word-break: break-word; display: block;">${row.title}</b>` },
+    { key: 'category', label: 'Category', width: '90px' },
     { 
       key: 'score', 
-      label: 'Risk Score = L x I', 
-      width: '150px',
+      label: 'Score (L×I)', 
+      width: '110px',
       render: (row) => {
         const score = row.likelihood * row.impact;
         let color = '#10b981'; // Low (Green)
         if (score >= thresholdCritical) color = '#ef4444'; // Critical (Red)
         else if (score >= thresholdHigh) color = '#f97316'; // High (Orange)
         else if (score >= thresholdMedium) color = '#eab308'; // Medium (Yellow)
-        return `<span style="font-weight: 700; color: ${color}">${row.likelihood} × ${row.impact} = <b>${score}</b></span>`;
+        return `<span style="font-weight: 700; color: ${color}">${row.likelihood}×${row.impact}=<b>${score}</b></span>`;
       }
     },
-    { key: 'owner', label: 'Owner', width: '140px', render: (row) => `<span style="font-size:0.7rem; color:var(--text-secondary); white-space: normal; display: block;">${row.owner}</span>` },
-    { key: 'status', label: 'Status', width: '100px', render: (row) => createStatusBadge(row.status) },
+    { key: 'owner', label: 'Owner', width: '110px', render: (row) => `<span style="font-size:0.7rem; color:var(--text-secondary); white-space: normal; display: block;">${row.owner}</span>` },
+    { key: 'status', label: 'Status', width: '80px', render: (row) => createStatusBadge(row.status) },
     { 
       key: 'mitigation', 
       label: 'Mitigation Controls', 
-      width: '260px',
       render: (row) => `<span style="font-size:0.68rem; color:var(--text-secondary); line-height:1.25; display:block; white-space: normal; word-break: break-word;">${row.mitigation}</span>` 
     }
   ];

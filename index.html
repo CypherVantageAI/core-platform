@@ -313,7 +313,7 @@
                       <polyline points="2 17 12 22 22 17"></polyline>
                       <polyline points="2 12 12 17 22 12"></polyline>
                     </svg>
-                    <span>IBS &amp; CIS - SLA Monitor</span>
+                    <span>IBS &amp; CIS - Vulnerability SLA Monitor</span>
                   </span>
                   <span id="badge-sla-monitor-count" class="badge badge-danger" style="font-size: 0.6rem; padding: 1px 4px; border-radius: 4px; display: none;">0</span>
                 </a>
@@ -871,310 +871,7 @@
       <!-- VIEW: RISK MANAGER AI AUDIT SUITE              -->
       <!-- ============================================== -->
       <section id="view-manager-ai-risk" class="content-pane">
-        <div class="view-header">
-          <h2>AI Audit &amp; BAS (Breach and Attack Simulation) Resilience Suite</h2>
-          <p>Execute BAS (Breach and Attack Simulation) tests, launch threat-led penetration tests, audit third-party LLM integrations, and monitor outbound data loss prevention</p>
-        </div>
-
-        <div style="display: block; width: 100%;">
-          
-          <!-- ============================================== -->
-          <!-- SECTION 1: DORA & TIBER-EU Resilience Simulation Suite -->
-          <!-- ============================================== -->
-          <div class="view-header mt-3" style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <h3 style="margin: 0; font-size: 1.1rem;">1. DORA &amp; TIBER-EU BAS (Breach and Attack Simulation) Suite</h3>
-              <span class="badge badge-info" style="font-size: 0.65rem; padding: 2px 8px; position: static;">BAS &amp; Red-Teaming Portal</span>
-            </div>
-            <p style="margin-top: 4px; font-size: 0.8rem; color: var(--text-secondary);">Launch natural crisis scenarios or trigger automated BAS (Breach and Attack Simulation) threat-led penetration tests on the global infrastructure map</p>
-          </div>
-
-          <!-- Wins and Benefits box for Simulation Suite -->
-          <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: var(--border-radius-md); padding: 12px; display: flex; gap: 10px; align-items: flex-start;">
-              <div style="font-size: 1.25rem;">🏆</div>
-              <div>
-                <strong style="font-size: 0.8rem; color: #10b981; display: block;">Regulatory Compliance Win</strong>
-                <span style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
-                  Directly satisfies **DORA Article 11 (ICT Incident Management)** and **Article 26 (TLPT Red Teaming)** guidelines via continuous **BAS (Breach and Attack Simulation)** validation, eliminating third-party consulting audit overhead.
-                </span>
-              </div>
-            </div>
-            <div style="flex: 1; min-width: 280px; background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.15); border-radius: var(--border-radius-md); padding: 12px; display: flex; gap: 10px; align-items: flex-start;">
-              <div style="font-size: 1.25rem;">📈</div>
-              <div>
-                <strong style="font-size: 0.8rem; color: var(--color-cyan); display: block;">Business Operations Benefit</strong>
-                <span style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
-                  Proactively maps and validates failover and disaster recovery times across global zones, reducing potential SLA penalty exposure by up to **92%**.
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="resilience-row" style="margin-bottom: 30px;">
-            <!-- Card 1: Custom Crisis & Scenario Simulator (Art. 11 DORA) -->
-            <div class="dashboard-card custom-drill-card" style="flex: 1; min-width: 320px; display: flex; flex-direction: column;">
-              <div class="card-header-resilience">
-                <h3>DORA Article 11 Crisis &amp; Scenario Simulator</h3>
-                <span class="badge badge-accent" style="font-size: 0.65rem;">Article 11 DORA</span>
-              </div>
-              <p class="panel-subtitle" style="margin-bottom: var(--spacing-sm);">Configure custom geopolitical or environmental threat vectors to run failover contingency drills on the Global Map</p>
-              
-              <div style="display: flex; flex-direction: column; gap: var(--spacing-sm); margin-top: 10px; flex: 1; justify-content: center;">
-                <div>
-                  <label class="text-xs text-secondary" style="display: block; margin-bottom: 4px;">Target Location</label>
-                  <select id="suite-location-select" class="dropdown-control" style="width: 100%; margin: 0; color: var(--color-text); background: var(--color-bg-dark); border-color: rgba(255,255,255,0.08);">
-                    <option value="na">North America (Region)</option>
-                    <option value="eu">Europe (Region)</option>
-                    <option value="apac">Asia-Pacific (Region)</option>
-                    <option value="ashburn">Ashburn DC (Virginia)</option>
-                    <option value="boardman">Boardman DC (Oregon)</option>
-                    <option value="frankfurt">Frankfurt DC (Germany)</option>
-                    <option value="london">London Hub (UK)</option>
-                    <option value="bangalore">Bangalore Hub (India)</option>
-                    <option value="jurong">Jurong DC (Singapore)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="text-xs text-secondary" style="display: block; margin-bottom: 4px;">Threat Vector</label>
-                  <select id="suite-threat-select" class="dropdown-control" style="width: 100%; margin: 0; color: var(--color-text); background: var(--color-bg-dark); border-color: rgba(255,255,255,0.08);">
-                    <option value="grid">Power Grid Failure (DORA Art. 11)</option>
-                    <option value="wildfire">Wildfire Emergency</option>
-                    <option value="ddos">Volumetric DDoS Attack</option>
-                    <option value="fibercut">Fiber-Optic Cable Cut</option>
-                    <option value="ransomware">Ransomware Encryption</option>
-                    <option value="tlpt">TIBER-EU Red Team Test</option>
-                  </select>
-                </div>
-
-                <div style="display: flex; gap: 8px; margin-top: 15px;">
-                  <button class="btn btn-primary" onclick="runSuiteCustomSimulation()" style="flex: 1.2; font-size: 0.72rem; padding: 6px 12px; height: 32px; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    ⚡ Run Crisis Drill
-                  </button>
-                  <button class="btn btn-secondary" onclick="resetResilienceDrill()" style="flex: 0.8; font-size: 0.72rem; padding: 6px 12px; height: 32px; border-color: var(--color-danger); color: var(--color-danger); background: rgba(239, 68, 68, 0.05); display: flex; align-items: center; justify-content: center;">
-                    Reset
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card 2: TIBER-EU / TLPT & BAS Simulator (Art. 26 DORA) -->
-            <div class="dashboard-card tlpt-card" style="flex: 1.5; min-width: 420px; display: flex; flex-direction: column;">
-              <div class="card-header-resilience">
-                <h3>TIBER-EU / Threat-Led Penetration Testing (TLPT) &amp; BAS Simulator</h3>
-                <span class="badge badge-accent" style="font-size: 0.65rem;">Article 26 DORA</span>
-              </div>
-              <p class="panel-subtitle" style="margin-bottom: var(--spacing-sm);">Simulate structured adversarial tactics, techniques, and procedures (TTPs) and launch automated breach and attack simulations (BAS) targeting critical internal networks</p>
-              
-              <!-- TIBER Phase Progress Tracker -->
-              <div class="tlpt-phase-tracker" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md); background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: var(--border-radius-sm); border: 1px solid rgba(255,255,255,0.03);">
-                <div class="phase-step active" id="phase-step-prep">
-                  <div class="step-num">1</div>
-                  <div class="step-text">Prep &amp; Scope</div>
-                </div>
-                <div class="phase-arrow">➔</div>
-                <div class="phase-step" id="phase-step-intel">
-                  <div class="step-num">2</div>
-                  <div class="step-text">Threat Intel (CTI)</div>
-                </div>
-                <div class="phase-arrow">➔</div>
-                <div class="phase-step" id="phase-step-exec">
-                  <div class="step-num">3</div>
-                  <div class="step-text">Red Team Exec</div>
-                </div>
-                <div class="phase-arrow">➔</div>
-                <div class="phase-step" id="phase-step-close">
-                  <div class="step-num">4</div>
-                  <div class="step-text">Closure &amp; Replay</div>
-                </div>
-              </div>
-
-              <!-- Simulation Settings -->
-              <div style="display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); flex-wrap: wrap; align-items: flex-end;">
-                <div style="flex: 1; min-width: 160px;">
-                  <label class="text-xs text-secondary" style="display: block; margin-bottom: 4px;">Target Scenarios</label>
-                  <select id="tlpt-scenario" class="dropdown-control select-sm" style="width: 100%; margin: 0; background: var(--color-bg-dark); border-color: rgba(255,255,255,0.08); color: var(--color-text);">
-                    <option value="ransomware">Ransomware on CIS Identity Gateway</option>
-                    <option value="supplychain">Supply Chain Poisoning (Infosys API Hack)</option>
-                    <option value="ddos">Distributed DDoS + DNS Spoofing</option>
-                    <option value="insider">Malicious Insider Privilege Escalation</option>
-                  </select>
-                </div>
-                <div style="display: flex; gap: var(--spacing-sm);">
-                  <button class="btn btn-primary btn-sm" id="btn-launch-tlpt" onclick="startTlptSimulation()">Launch TIBER-EU Red Team</button>
-                  <button class="btn btn-secondary btn-sm hidden" id="btn-stop-tlpt" onclick="stopTlptSimulation()" style="border-color: var(--color-danger); color: var(--color-danger); background: rgba(239, 68, 68, 0.05); margin: 0;">Abort Test</button>
-                </div>
-              </div>
-
-              <!-- Terminal Output Console -->
-              <div class="terminal-card" style="flex: 1; min-height: 180px; display: flex; flex-direction: column;">
-                <div class="terminal-header" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(0,0,0,0.3);">
-                  <span class="terminal-title" style="font-size: 0.72rem; letter-spacing: 0.05em; color: var(--color-cyan); font-weight: 600;">RED-TEAM SIMULATOR CONSOLE</span>
-                  <span class="terminal-badge" id="tlpt-status" style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">IDLE</span>
-                </div>
-                <div class="terminal-body" id="tlpt-console-logs" style="flex: 1; height: 140px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; color: #38bdf8; padding: var(--spacing-sm); line-height: 1.4; background: rgba(0,0,0,0.25);">
-                  <span style="color: var(--color-text-secondary);">Select a threat scenario above and click "Launch TIBER-EU Red Team" to perform a Threat-Led Penetration Test.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ============================================== -->
-          <!-- SECTION 2: TLPT - ADVERSARIAL AGENT PENTESTING FOR AI AGENTS -->
-          <!-- ============================================== -->
-          <div class="view-header mt-4" style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <h3 style="margin: 0; font-size: 1.1rem;">2. TLPT &amp; BAS - Adversarial Agent PenTesting for AI agents</h3>
-              <span class="badge badge-accent" style="font-size: 0.65rem; padding: 2px 8px; position: static;">AI/LLM System Audit</span>
-            </div>
-            <p style="margin-top: 4px; font-size: 0.8rem; color: var(--text-secondary);">Audit third-party LLM agent integrations by executing automated BAS (Breach and Attack Simulation) and prompt-injection testing</p>
-          </div>
-
-          <!-- Wins and Benefits box for Adversarial Pentesting -->
-          <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: var(--border-radius-md); padding: 12px; display: flex; gap: 10px; align-items: flex-start;">
-              <div style="font-size: 1.25rem;">🏆</div>
-              <div>
-                <strong style="font-size: 0.8rem; color: #10b981; display: block;">Regulatory Compliance Win</strong>
-                <span style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
-                  Aligns with **EU AI Act Article 15 (Cybersecurity &amp; Robustness)** mandates by verifying systemic resilience against prompt-injection exploits.
-                </span>
-              </div>
-            </div>
-            <div style="flex: 1; min-width: 280px; background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.15); border-radius: var(--border-radius-md); padding: 12px; display: flex; gap: 10px; align-items: flex-start;">
-              <div style="font-size: 1.25rem;">📈</div>
-              <div>
-                <strong style="font-size: 0.8rem; color: var(--color-cyan); display: block;">Business Operations Benefit</strong>
-                <span style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
-                  Blocks AI system manipulations that bypass business logic, protecting corporate IP and preventing rogue actions via integration APIs.
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-card main-panel" style="width: 100%; margin-bottom: 30px; display: flex; flex-direction: column;">
-            <div style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 15px; background: rgba(255,255,255,0.01); padding: 10px 12px; border-radius: var(--border-radius-sm); border: 1px solid rgba(255,255,255,0.03);">
-              <strong>What this does:</strong> Simulates adversarial attack payloads against integrated third-party support chatbots, automation scripts, and database assistants. It runs jailbreak vectors, indirect prompt injections, and environment variable harvest tests to evaluate if boundary filters effectively contain LLM responses.
-            </div>
-
-            <div style="display: flex; gap: var(--spacing-sm); margin-top: 5px; flex-wrap: wrap; align-items: flex-end;">
-              <div style="flex: 1.2; min-width: 200px;">
-                <label class="text-xs text-secondary" style="display: block; margin-bottom: 4px;">Target Integration Agent</label>
-                <select id="pentest-target" class="dropdown-control" style="width: 100%; margin: 0;">
-                  <option value="aws-assistant">AWS Support Agent (Integrated LLM)</option>
-                  <option value="slack-helper">Slack Productivity Bot (Integrated LLM)</option>
-                  <option value="infosys-db-bot">Infosys Database Assistant (Integrated LLM)</option>
-                  <option value="salesforce-agent">Salesforce Customer Success AI (Integrated LLM)</option>
-                  <option value="copilot-dev">GitHub Copilot Enterprise Workspace (Developer Assistant)</option>
-                  <option value="workday-recruiter">Workday AI Resume Screen Assistant (HR Integrator)</option>
-                  <option value="openai-custom-gpt">Internal Custom GPT Portal (Finance Strategy Bot)</option>
-                </select>
-              </div>
-              
-              <div style="flex: 1; min-width: 180px;">
-                <label class="text-xs text-secondary" style="display: block; margin-bottom: 4px;">Attack Payload / Vector</label>
-                <select id="pentest-vector" class="dropdown-control" style="width: 100%; margin: 0;">
-                  <option value="jailbreak">System Instruction Bypass (Jailbreak)</option>
-                  <option value="exfiltrate">Tenant Data Harvest (PII Exfiltration)</option>
-                  <option value="poison">Indirect Prompt Injection (Web Scraping exploit)</option>
-                  <option value="escalate">Remote Command Execution &amp; API Key Harvest</option>
-                  <option value="toxic">Hallucination &amp; Toxicity Trigger</option>
-                </select>
-              </div>
-
-              <div>
-                <button class="btn btn-primary" onclick="runAdversarialTest()" style="height: 38px; display: flex; align-items: center; justify-content: center;">
-                  Launch Adversarial Pentest Sweep
-                </button>
-              </div>
-            </div>
-
-            <div class="terminal-card mt-3" style="min-height: 180px;">
-              <div class="terminal-header" style="padding: 8px 12px; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center;">
-                <span class="terminal-title" style="font-size: 0.75rem;">ADVERSARIAL ATTACK SIMULATION</span>
-                <span class="terminal-badge" id="pentest-status">Idle</span>
-              </div>
-              <div class="terminal-body" id="pentest-logs" style="height: 140px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; color: #f43f5e; padding: 12px;">
-                <span class="terminal-placeholder">Select a target agent and attack payload vector above, then click "Launch Adversarial Pentest Sweep" to audit.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- ============================================== -->
-          <!-- SECTION 3: LLM DLP DATA LEAKAGE SANITIZATION -->
-          <!-- ============================================== -->
-          <div class="view-header mt-4" style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <h3 style="margin: 0; font-size: 1.1rem;">3. LLM DLP Data Leakage Sanitization</h3>
-              <span class="badge badge-accent" style="font-size: 0.65rem; padding: 2px 8px; position: static;">Outbound Data Loss Prevention</span>
-            </div>
-            <p style="margin-top: 4px; font-size: 0.8rem; color: var(--text-secondary);">Strip corporate secrets and PII from outbound API queries before routing to third-party endpoints</p>
-          </div>
-
-          <!-- Wins and Benefits box for DLP Sanitization -->
-          <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: var(--border-radius-md); padding: 12px; display: flex; gap: 10px; align-items: flex-start;">
-              <div style="font-size: 1.25rem;">🏆</div>
-              <div>
-                <strong style="font-size: 0.8rem; color: #10b981; display: block;">Regulatory Compliance Win</strong>
-                <span style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
-                  Upholds **GDPR Article 32 (Data Minimization &amp; Security)** and **DORA third-party risk guidelines** regarding data routing to public services.
-                </span>
-              </div>
-            </div>
-            <div style="flex: 1; min-width: 280px; background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.15); border-radius: var(--border-radius-md); padding: 12px; display: flex; gap: 10px; align-items: flex-start;">
-              <div style="font-size: 1.25rem;">📈</div>
-              <div>
-                <strong style="font-size: 0.8rem; color: var(--color-cyan); display: block;">Business Operations Benefit</strong>
-                <span style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.35; display: block; margin-top: 2px;">
-                  Safely opens public generative AI tools to personnel, boosting developer efficiency while completely removing IP/creds leak vectors.
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-card main-panel" style="width: 100%; margin-bottom: 20px;">
-            <div style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 15px; background: rgba(255,255,255,0.01); padding: 10px 12px; border-radius: var(--border-radius-sm); border: 1px solid rgba(255,255,255,0.03);">
-              <strong>What this does:</strong> Acts as an inline security broker (CASB/DLP) between our local tenant and external LLM APIs. The gateway inspects every outbound text block, running fast-regex scanning to redact API keys, database credentials, emails, passwords, and credit card numbers before they are transmitted.
-            </div>
-
-            <div class="form-group mt-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--border-radius-md); padding: 16px;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-weight: 600;">Outbound DLP Sanitization Proxy Gateway</span>
-                <label class="switch-toggle" style="position: relative; display: inline-block; width: 44px; height: 22px;">
-                  <input type="checkbox" id="dlp-toggle" checked style="opacity: 0; width: 0; height: 0;" onchange="toggleDlpProxy()">
-                  <span class="slider-toggle-round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .3s; border-radius: 22px;"></span>
-                </label>
-              </div>
-              <p class="text-xs text-muted mt-1">If enabled, API keys, passwords, credentials, emails, and credit card numbers are scrubbed.</p>
-            </div>
-
-            <div class="mt-4">
-              <h4>DLP Outbound Prompt Tester</h4>
-              <p class="text-xs text-muted mb-2">Type a prompt containing PII or secrets below, and click "Scan &amp; Redact Payload" to execute sanitization manually.</p>
-              
-              <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
-                <textarea id="dlp-prompt-input" class="textarea-input" placeholder="Type a prompt containing PII or secrets (e.g. My staging DB password is admin_pass123. Email me at sarah@cv.com)" rows="3" oninput="testDlpSanitizer()"></textarea>
-                
-                <div style="display: flex; justify-content: flex-end;">
-                  <button class="btn btn-primary" onclick="triggerDlpScanManual()" style="font-size: 0.74rem; padding: 6px 14px; height: 32px; display: flex; align-items: center; gap: 6px;">
-                    🔍 Scan &amp; Redact Payload
-                  </button>
-                </div>
-
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: var(--border-radius-sm); font-family: monospace; font-size: 0.82rem; min-height: 50px; position: relative;">
-                  <span class="text-xs text-muted block" style="font-family: var(--font-body); margin-bottom: 4px;">Redacted Payload routed to Vendor API:</span>
-                  <div id="dlp-prompt-output" style="color: var(--color-cyan);">[No input entered]</div>
-                  <div id="dlp-scan-indicator" class="hidden" style="position: absolute; right: 12px; bottom: 12px; font-size: 0.72rem; color: #10b981; display: flex; align-items: center; gap: 4px;">
-                    <span class="status-dot status-green" style="animation: pulse 1s infinite;"></span> Scanning payload...
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
+        <!-- Renders dynamically from src/modules/aigovernance.js -->
       </section>
 
       <!-- ============================================== -->
@@ -1492,7 +1189,7 @@
       <!-- ============================================== -->
       <section id="view-manager-navigator" class="content-pane">
         <div class="view-header">
-          <h2>IBS &amp; CIS - SLA Monitor</h2>
+          <h2>IBS &amp; CIS - Vulnerability SLA Monitor</h2>
           <p>Explore end-to-end critical service mappings, operational dependencies, Nth-party subcontractors, technology stack profiles, active vulnerabilities, and regulatory blast radiuses under DORA Article 19</p>
           
           <!-- Remediation SLA Guidance -->
@@ -1611,21 +1308,21 @@
 
               <!-- Navigator Sub-Tabs -->
               <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0;">
-                <button id="navigator-sub-tab-tree" class="navigator-sub-tab-btn active" onclick="switchNavigatorSubTab('tree')">
-                  Dependency Mapping
-                </button>
-                <button id="navigator-sub-tab-security" class="navigator-sub-tab-btn" onclick="switchNavigatorSubTab('security')">
+                <button id="navigator-sub-tab-security" class="navigator-sub-tab-btn active" onclick="switchNavigatorSubTab('security')">
                   Tech Stack &amp; Security Profile
+                </button>
+                <button id="navigator-sub-tab-tree" class="navigator-sub-tab-btn" onclick="switchNavigatorSubTab('tree')">
+                  Dependency Mapping
                 </button>
               </div>
 
               <!-- Collapsible Dependency Tree container -->
-              <div id="navigator-dependency-tree" style="display: flex; flex-direction: column; gap: 10px;">
+              <div id="navigator-dependency-tree" class="hidden" style="display: flex; flex-direction: column; gap: 10px;">
                 <!-- Mapped components in tree layout -->
               </div>
 
               <!-- Tech Stack & Security Profile Container -->
-              <div id="navigator-security-profile" class="hidden" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+              <div id="navigator-security-profile" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
                 <!-- Dynamic tech stack and vulnerability register populated in app.js -->
               </div>
             </div>

@@ -981,50 +981,85 @@ function renderReadinessTab(container) {
 
   container.innerHTML = `
     <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-      <!-- Confidence Score Meter & Exercise selector -->
-      <div class="dashboard-card" style="flex: 1; min-width: 320px; padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 15px; align-items: center; text-align: center;">
-        <h3 style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; font-weight:700; border-bottom:1px dashed rgba(255,255,255,0.06); padding-bottom:8px; margin:0; width:100%; text-align:left;">
-          Recovery Confidence Rating
-        </h3>
+      <!-- Left Column: Confidence Rating & Planning Panel -->
+      <div class="dashboard-card" style="flex: 1.1; min-width: 320px; padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 15px;">
+        <div style="text-align: center;">
+          <h3 style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; font-weight:700; border-bottom:1px dashed var(--border-color); padding-bottom:8px; margin:0; text-align:left; width:100%;">
+            Recovery Confidence Rating
+          </h3>
 
-        <!-- Dynamic radial indicator circle -->
-        <div style="position: relative; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; margin: 15px 0;">
-          <svg width="100%" height="100%" viewBox="0 0 36 36" style="transform: rotate(-90deg);">
-            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="3" />
-            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--color-cyan)" stroke-dasharray="${confidence}, 100" stroke-width="3" filter="url(#glow-ring)" />
-          </svg>
-          <div style="position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <span style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 10px rgba(6,182,212,0.3);">${confidence}%</span>
-            <span style="font-size: 0.58rem; text-transform: uppercase; color: var(--text-muted); font-weight:700; letter-spacing:0.05em;">Ready index</span>
+          <!-- Dynamic radial indicator circle -->
+          <div style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin: 15px auto;">
+            <svg width="100%" height="100%" viewBox="0 0 36 36" style="transform: rotate(-90deg);">
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="3" />
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--color-cyan)" stroke-dasharray="${confidence}, 100" stroke-width="3" />
+            </svg>
+            <div style="position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+              <span style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">${confidence}%</span>
+              <span style="font-size: 0.55rem; text-transform: uppercase; color: var(--text-muted); font-weight:700; letter-spacing:0.05em;">Ready Index</span>
+            </div>
           </div>
         </div>
 
-        <div style="font-size:0.7rem; color:var(--text-secondary); line-height:1.45; text-align:left; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px; border-radius:4px; width:100%;">
-          <b>Metrics breakdown:</b><br/>
-          * Test Pass/Fail Rate: ${state.tests.filter(t => t.results === 'Passed').length} / ${state.tests.length} passed.<br/>
-          * Freshness: ${state.tests.filter(t => (new Date().getFullYear() - new Date(t.lastRun).getFullYear()) <= 1).length} tests verified within last 12 months.
-        </div>
+        <!-- Exercise Planning & Scoping Form -->
+        <div style="display:flex; flex-direction:column; gap:10px; border-top:1px dashed var(--border-color); padding-top:12px;">
+          <h4 style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em; font-weight: 700; margin: 0;">
+            1. Drill Planning &amp; Scoping
+          </h4>
+          
+          <div>
+            <label style="font-size:0.65rem; color:var(--text-secondary); display:block; margin-bottom:2px;">Select Scenario Target</label>
+            <select id="readiness-drill-select" class="dropdown-control" style="width:100%; font-size:0.7rem; margin:0;">
+              <option value="dr-failover">AWS Primary Host DR Failover (Cloud Outage)</option>
+              <option value="ransomware-drill">LockBit Ransomware Contagion (Ransomware)</option>
+              <option value="compromise-scenario">Compromised Admin Session Lockout (Identity Compromise)</option>
+              <option value="backup-restore">Immutable Backup Restore Audit (Data Corruption)</option>
+              <option value="thirdparty-drill">Infosys Middleware Outage (Third-party Failure)</option>
+              <option value="payment-drill">Credit Network SLA Fines & Failover (Payment Outage)</option>
+            </select>
+          </div>
 
-        <!-- Exercise Launcher Form -->
-        <div style="display:flex; flex-direction:column; gap:6px; width:100%; text-align:left; border-top:1px dashed rgba(255,255,255,0.06); padding-top:12px;">
-          <label style="font-size:0.68rem; color:var(--text-secondary); font-weight:700;">Initiate Operational Resilience Drill:</label>
-          <select id="readiness-drill-select" class="dropdown-control" style="width:100%; font-size:0.72rem;">
-            <option value="dr-failover">AWS Primary Host DR Failover Drill</option>
-            <option value="backup-restore">Immutable Backup Restore Audit</option>
-            <option value="compromise-scenario">Compromised Admin Session Lockout drill</option>
-          </select>
-          <button id="btn-run-drill" class="btn btn-primary btn-sm" style="width:100%; margin-top:6px; font-weight:700; background:var(--color-cyan); color:#000; border:none;">⏱️ Launch Simulation Drill</button>
+          <div style="display: flex; gap: 8px;">
+            <div style="flex: 1;">
+              <label style="font-size:0.65rem; color:var(--text-secondary); display:block; margin-bottom:2px;">Drill Coordinator</label>
+              <input type="text" id="drill-coordinator" class="input-control" value="Sarah Jenkins" style="width: 100%; font-size: 0.7rem; margin: 0; padding: 4px 8px; height: 28px;">
+            </div>
+            <div style="flex: 1;">
+              <label style="font-size:0.65rem; color:var(--text-secondary); display:block; margin-bottom:2px;">Target RTO Limit</label>
+              <input type="text" id="drill-target-rto" class="input-control" value="4 Hours" style="width: 100%; font-size: 0.7rem; margin: 0; padding: 4px 8px; height: 28px;">
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:0.65rem; color:var(--text-secondary); display:block; margin-bottom:2px;">Failover Strategy Description</label>
+            <textarea id="drill-strategy" class="textarea-input" style="width: 100%; font-size: 0.7rem; margin: 0; padding: 4px 8px; min-height: 42px;" placeholder="Describe recovery routes (e.g. redirect traffic to backup cluster in Oregon)"></textarea>
+          </div>
+
+          <button id="btn-run-drill" class="btn btn-primary btn-sm" style="width:100%; margin-top:6px; font-weight:700;">⏱️ Launch Simulation Drill</button>
         </div>
       </div>
 
-      <!-- Live Simulation Terminal Card -->
-      <div class="dashboard-card" style="flex: 1.8; min-width: 400px; padding: 15px; margin: 0; min-height: 480px; display: flex; flex-direction: column; gap: 8px;">
-        <h3 style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; font-weight:700; border-bottom:1px dashed rgba(255,255,255,0.06); padding-bottom:8px; margin:0;">
-          Resilience Drill Console
-        </h3>
-        
-        <div id="readiness-drill-terminal" style="flex:1; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); border-radius:6px; font-family:monospace; font-size:0.68rem; color:#10b981; padding:12px; overflow-y:auto; line-height:1.45; display:flex; flex-direction:column; gap:4px;">
-          <div style="color:var(--text-muted); font-style:italic;">[Drill console idle. Select a simulation drill and click launch on the left panel...]</div>
+      <!-- Right Column: Execution Console & Lessons Learned -->
+      <div style="flex: 1.8; min-width: 400px; display: flex; flex-direction: column; gap: 20px;">
+        <!-- Live Simulation Terminal Card -->
+        <div class="dashboard-card" style="padding: 15px; margin: 0; min-height: 280px; display: flex; flex-direction: column; gap: 8px; flex: 1;">
+          <h3 style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; font-weight:700; border-bottom:1px dashed var(--border-color); padding-bottom:8px; margin:0;">
+            2. Drill Execution Console
+          </h3>
+          
+          <div id="readiness-drill-terminal" style="flex:1; background:rgba(0,0,0,0.5); border:1px solid var(--border-color); border-radius:6px; font-family:monospace; font-size:0.68rem; color:#10b981; padding:12px; overflow-y:auto; line-height:1.45; display:flex; flex-direction:column; gap:4px; min-height: 180px;">
+            <div style="color:var(--text-muted); font-style:italic;">[Drill console idle. Scope your test on the left and click launch...]</div>
+          </div>
+        </div>
+
+        <!-- Lessons Learned Card (Appears dynamically upon completion) -->
+        <div class="dashboard-card" id="lessons-learned-card" style="padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+          <h3 style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; font-weight:700; border-bottom:1px dashed var(--border-color); padding-bottom:8px; margin:0;">
+            3. Drill Post-Mortem &amp; Lessons Learned
+          </h3>
+          <div id="lessons-learned-content">
+            <span style="font-size: 0.7rem; color: var(--text-muted); font-style: italic;">Complete an active drill simulation execution to log the lessons learned report.</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1033,7 +1068,10 @@ function renderReadinessTab(container) {
   // Bind drill trigger
   document.getElementById('btn-run-drill').onclick = () => {
     const drillType = document.getElementById('readiness-drill-select').value;
-    launchResilienceDrill(drillType);
+    const coordinator = document.getElementById('drill-coordinator').value;
+    const targetRto = document.getElementById('drill-target-rto').value;
+    const strategy = document.getElementById('drill-strategy').value || "Standard failover routes";
+    launchResilienceDrill(drillType, coordinator, targetRto, strategy, container);
   };
 }
 
@@ -1057,7 +1095,7 @@ function calculateRecoveryConfidence(state) {
   return Math.max(Math.min(score, 100), 20);
 }
 
-function launchResilienceDrill(drillType) {
+function launchResilienceDrill(drillType, coordinator, targetRto, strategy, container) {
   const terminal = document.getElementById('readiness-drill-terminal');
   if (!terminal) return;
 
@@ -1068,10 +1106,18 @@ function launchResilienceDrill(drillType) {
   let steps = [];
   let testTitle = '';
   let category = '';
+  let defaultLessons = '';
+
+  // Setup planning preamble
+  activeDrillLog.push(`[PLANNING] Coordinator: ${coordinator}`);
+  activeDrillLog.push(`[PLANNING] Target RTO Limit: ${targetRto}`);
+  activeDrillLog.push(`[PLANNING] Recovery Strategy: ${strategy}`);
+  activeDrillLog.push(`--------------------------------------------------`);
 
   if (drillType === 'dr-failover') {
     testTitle = 'AWS Primary Node DR Failover Verification';
-    category = 'DR Failover';
+    category = 'Cloud Outage';
+    defaultLessons = 'Failover completed successfully within 4 minutes. Recommendation: Schedule automated secondary region DNS testing quarterly.';
     steps = [
       `[INFO] Booting DR Failover Simulation for AWS us-east-1a node...`,
       `[INFO] Checking database replication synchronization lags...`,
@@ -1082,9 +1128,33 @@ function launchResilienceDrill(drillType) {
       `[OK] Secondary hosting containers launched successfully.`,
       `[SUCCESS] DR Failover completed successfully. Transition speed: 4 minutes 12 seconds.`
     ];
+  } else if (drillType === 'ransomware-drill') {
+    testTitle = 'LockBit Ransomware Contagion Drill';
+    category = 'Ransomware';
+    defaultLessons = 'SSO credentials locked out in under 8 seconds. Backups restored with zero transaction loss. Recommendation: Expand simulated host scanning vectors.';
+    steps = [
+      `[INFO] Triggering simulated LockBit 3.0 ransomware payload on Boardman Azure servers...`,
+      `[ALERT] Cryptographic locking behavior detected on host directory structures.`,
+      `[ACTION] Isolating affected sub-networks and locking active admin sessions...`,
+      `[OK] Tenant connection tunnels disconnected successfully.`,
+      `[INFO] Mounting immutable backup database snapshot ledger...`,
+      `[SUCCESS] System isolated. Zero data leakage detected. Backup integrity confirmed.`
+    ];
+  } else if (drillType === 'compromise-scenario') {
+    testTitle = 'Compromised Admin Session Lockout drill';
+    category = 'Identity Compromise';
+    defaultLessons = 'Admin lockout triggered immediately. Zero trust policy confirmed. Recommendation: Update session rotation timer limit from 1 hour to 30 mins.';
+    steps = [
+      `[INFO] Spawning mock compromised administrative token scenario...`,
+      `[ACTION] Automated zero-trust credential lock triggered.`,
+      `[INFO] Enforcing absolute MFA session token rotations...`,
+      `[OK] Outbound corporate VPN credentials revoked.`,
+      `[SUCCESS] session contained successfully within 8 seconds.`
+    ];
   } else if (drillType === 'backup-restore') {
     testTitle = 'Immutable Backup Restore Audit';
-    category = 'Backup Test';
+    category = 'Data Corruption';
+    defaultLessons = 'SHA-256 hash checks matching across all transactional segments. Recommendation: Establish incremental daily verify jobs.';
     steps = [
       `[INFO] Initiating immutable backup restore check for database snapshot...`,
       `[INFO] Retrieving WORM backup ledger journals...`,
@@ -1093,15 +1163,28 @@ function launchResilienceDrill(drillType) {
       `[INFO] Compiling ledger integrity checksum tests...`,
       `[SUCCESS] Backup restored successfully. Restored 31,452 transaction ledger journals with zero corruption.`
     ];
-  } else {
-    testTitle = 'Compromised Admin Session Lockout drill';
-    category = 'Security Drill';
+  } else if (drillType === 'thirdparty-drill') {
+    testTitle = 'Infosys Middleware API Outage Failover';
+    category = 'Third-party Failure';
+    defaultLessons = 'Standby supplier TCS mobilized. API failover switch latency: 1.5 minutes. Recommendation: Pre-warm backup container resources.';
     steps = [
-      `[INFO] Spawning mock compromised administrative token scenario...`,
-      `[ACTION] Automated zero-trust credential lock triggered.`,
-      `[INFO] Enforcing absolute MFA session token rotations...`,
-      `[OK] Outbound corporate VPN credentials revoked.`,
-      `[SUCCESS] session contained successfully within 8 seconds.`
+      `[INFO] Simulating total API failure on Infosys Bangalore middleware servers...`,
+      `[ALERT] Outbound HTTP connection timeout limit exceeded.`,
+      `[ACTION] Initiating third-party exit strategy: routing API queries to standby partner TCS...`,
+      `[OK] TCS middleware container gateways handshake established.`,
+      `[SUCCESS] API services operational. Failover latency: 1 minute 28 seconds.`
+    ];
+  } else {
+    testTitle = 'Credit Network SLA Outage Failover';
+    category = 'Payment Outage';
+    defaultLessons = 'Secondary payment processor Barclays cleared transaction queue. SLA fine penalty avoided. Recommendation: Audit fallback networks availability monthly.';
+    steps = [
+      `[INFO] Simulating main payment settlement gateway carrier drop...`,
+      `[ALERT] Direct clearing settlement processing queues backing up.`,
+      `[ACTION] Activating local transaction spooler cache...`,
+      `[ACTION] Triggering merchant backup routing to secondary Barclays settlement network...`,
+      `[OK] Barclays clearance API returned nominal 200 HTTP code.`,
+      `[SUCCESS] Transaction clearing queue flushed successfully. MTTR: 2 minutes 10 seconds.`
     ];
   }
 
@@ -1114,33 +1197,47 @@ function launchResilienceDrill(drillType) {
       idx++;
     } else {
       clearInterval(drillLogTimer);
-      // Save test result to state
-      const state = getState();
-      // Find existing test or create new
-      const existing = state.tests.find(t => t.title === testTitle);
-      if (existing) {
-        existing.lastRun = new Date().toISOString().split('T')[0];
-        existing.results = 'Passed';
-      } else {
-        state.tests.unshift({
-          id: `tst-${String(state.tests.length + 1).padStart(3, '0')}`,
-          title: testTitle,
-          type: category,
-          lastRun: new Date().toISOString().split('T')[0],
-          results: 'Passed',
-          status: 'Completed'
-        });
-      }
-      saveState();
-      terminal.innerHTML += `<div style="color:#10b981; font-weight:700; margin-top:8px;">[Drill Audit Complete: Passed. Confidence Score updated.]</div>`;
+      terminal.innerHTML += `<div style="color:#10b981; font-weight:700; margin-top:8px;">[Drill Execution Complete. Scoped under RTO target: ${targetRto}]</div>`;
       terminal.scrollTop = terminal.scrollHeight;
       
-      // Force trigger state reload if function exists in shell scope
-      if (typeof window.updateManagerInboxBadge === 'function') {
-        window.updateManagerInboxBadge();
+      // Render Lessons Learned Form
+      const lessonsCard = document.getElementById('lessons-learned-content');
+      if (lessonsCard) {
+        lessonsCard.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <p style="font-size:0.7rem; color:var(--text-secondary); margin:0;">Input post-mortem review notes and click save to commit test results back to the database state.</p>
+            <textarea id="lessons-learned-notes-input" class="textarea-input" style="width:100%; font-size:0.7rem; min-height:50px;">${defaultLessons}</textarea>
+            <button id="btn-save-lessons" class="btn btn-primary btn-xs" style="width:100%; font-weight:700; height:28px;">📝 Log Lessons Learned & Save Results</button>
+          </div>
+        `;
+
+        document.getElementById('btn-save-lessons').onclick = () => {
+          const notesText = document.getElementById('lessons-learned-notes-input').value;
+          
+          const state = getState();
+          const existing = state.tests.find(t => t.title === testTitle);
+          if (existing) {
+            existing.lastRun = new Date().toISOString().split('T')[0];
+            existing.results = 'Passed';
+            existing.lessonsLearned = notesText;
+          } else {
+            state.tests.unshift({
+              id: `tst-${String(state.tests.length + 1).padStart(3, '0')}`,
+              title: testTitle,
+              type: category,
+              lastRun: new Date().toISOString().split('T')[0],
+              results: 'Passed',
+              status: 'Completed',
+              lessonsLearned: notesText
+            });
+          }
+          saveState();
+          alert('Lessons learned and test metrics logged successfully to database state.');
+          renderReadinessTab(container);
+        };
       }
     }
-  }, 500);
+  }, 350);
 }
 
 // ==========================================================================

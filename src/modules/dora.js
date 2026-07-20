@@ -189,7 +189,18 @@ export function renderDoraModule() {
     pillarSelect.value = activePillarFilter;
     pillarSelect.onchange = (e) => {
       activePillarFilter = e.target.value;
+      
+      // Auto-select the first obligation in the filtered catalog
+      let obligations = [...state.obligations];
+      if (activePillarFilter !== 'all') {
+        obligations = obligations.filter(ob => ob.pillar === activePillarFilter);
+      }
+      if (obligations.length > 0) {
+        selectedObligationId = obligations[0].id;
+      }
+      
       renderCatalogue();
+      renderObligationDetails();
     };
   }
 
