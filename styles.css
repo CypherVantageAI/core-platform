@@ -140,7 +140,7 @@ body.dark-mode {
 
 .brand-tagline {
   margin-left: 20px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid var(--border-color);
   padding-left: 20px;
   font-size: 11px;
   color: var(--text-secondary);
@@ -214,8 +214,14 @@ body.dark-mode {
 }
 
 .supplier-selector-container label {
-  font-size: 12px;
+  font-size: 10px !important;
   color: var(--text-secondary);
+}
+
+.supplier-selector-container select {
+  font-size: 0.68rem !important;
+  padding: 4px 8px !important;
+  height: 28px !important;
 }
 
 .user-badge {
