@@ -546,3 +546,4 @@ export function showModal(title, contentHtml) {
   modal.style.display = 'flex';
   modal.classList.remove('hidden');
 }
+window.showModal = showModal;

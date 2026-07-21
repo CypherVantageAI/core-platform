@@ -2,11 +2,11 @@
 // Cypher Vantage - Core Database & State Manager (ES6 Module)
 // ==========================================================================
 
-const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v14';
+const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v15';
 
 // Default state structure conforming to the 12 core DORA entities
 const DEFAULT_STATE = {
-  version: 14,
+  version: 15,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
@@ -403,7 +403,9 @@ const DEFAULT_STATE = {
       impact: 5,
       mitigation: 'Implement GCP multi-region backup failover routes and mirror critical identity vaults.',
       owner: 'Sarah Jenkins',
-      status: 'Open'
+      status: 'Open',
+      associatedSupplierId: 'aws',
+      associatedServiceId: 'srv-001'
     },
     {
       id: 'rsk-002',
@@ -414,7 +416,9 @@ const DEFAULT_STATE = {
       impact: 4,
       mitigation: 'Trigger immediate automated request on AWS portal to upload recent BCP failover drill documents.',
       owner: 'Nate Peterson',
-      status: 'Open'
+      status: 'Open',
+      associatedSupplierId: 'aws',
+      associatedServiceId: 'srv-002'
     },
     {
       id: 'rsk-003',
@@ -425,7 +429,9 @@ const DEFAULT_STATE = {
       impact: 5,
       mitigation: 'Push automated remediation plan request to AWS and apply temporary ingress security group block rules.',
       owner: 'David Vance',
-      status: 'Open'
+      status: 'Open',
+      associatedAppId: 'app-001',
+      associatedAssetId: 'ast-001'
     },
     {
       id: 'rsk-004',
@@ -436,7 +442,8 @@ const DEFAULT_STATE = {
       impact: 3,
       mitigation: 'Enforce master subcontractor policy requirements in supplier portal for all integration partners.',
       owner: 'Alexander Wright',
-      status: 'Mitigated'
+      status: 'Mitigated',
+      associatedSupplierId: 'aws'
     }
   ],
 
@@ -1616,7 +1623,65 @@ Third-Party Risk Assurance, Cypher Vantage Team`,
       lastTestDate: '2026-05-02',
       strategyStatus: 'Approved'
     }
-  }
+  },
+  dataAssets: [
+    {
+      id: 'dat-001',
+      name: 'Client Transaction Ledger Snapshot',
+      type: 'Structured SQL DB snapshot',
+      size: '1.2 TB',
+      confidentiality: 'Highly Restricted',
+      associatedApplications: ['app-001'],
+      complianceStatus: 'Active'
+    },
+    {
+      id: 'dat-002',
+      name: 'Customer SSO Credentials Registry',
+      type: 'Encrypted LDAP Partition',
+      size: '42 MB',
+      confidentiality: 'Restricted',
+      associatedApplications: ['app-004'],
+      complianceStatus: 'Active'
+    },
+    {
+      id: 'dat-003',
+      name: 'Settlement Clearings Journal Pool',
+      type: 'Kafka Log Aggregation Cluster',
+      size: '800 GB',
+      confidentiality: 'Highly Restricted',
+      associatedApplications: ['app-002'],
+      complianceStatus: 'Active'
+    }
+  ],
+  recoveryPlans: [
+    {
+      id: 'rp-001',
+      name: 'Multi-Region Cloud Failover Blueprint',
+      associatedServices: ['srv-001'],
+      rtoTarget: '4 Hours',
+      status: 'Tested & Approved',
+      lastTestDate: '2026-03-12',
+      mitigationVector: 'AWS Cross-region dynamic dns failover'
+    },
+    {
+      id: 'rp-002',
+      name: 'Post-Market Settle Fallback Playbook',
+      associatedServices: ['srv-002'],
+      rtoTarget: '8 Hours',
+      status: 'Tested & Approved',
+      lastTestDate: '2026-05-18',
+      mitigationVector: 'Offline broker settlements reconciliation'
+    },
+    {
+      id: 'rp-003',
+      name: 'Active-Active LDAP Backup Protocol',
+      associatedServices: ['srv-004'],
+      rtoTarget: '2 Hours',
+      status: 'Tested & Approved',
+      lastTestDate: '2026-06-25',
+      mitigationVector: 'Active Directory secondary Oregon directory sync'
+    }
+  ]
 };
 
 // Global state container

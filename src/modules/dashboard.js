@@ -4,6 +4,7 @@
 
 import { getState } from '../core/db.js';
 import { createCard, createSVGChart, createStatusBadge, showModal } from '../components/ui.js';
+import { renderResilienceGraph } from './knowledgegraph.js';
 
 let activeDashboardSubTab = 'overview';
 
@@ -18,6 +19,7 @@ export function renderExecutiveDashboard() {
       <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%;">
         <button id="btn-db-tab-overview" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'overview' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">Executive Overview</button>
         <button id="btn-db-tab-threatmap" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'threatmap' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🗺️ Global Threat Map & Feed</button>
+        <button id="btn-db-tab-graph" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'graph' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Resilience Knowledge Graph</button>
       </div>
 
       <!-- Tab Content Area -->
@@ -28,6 +30,7 @@ export function renderExecutiveDashboard() {
   // Bind tab buttons
   const btnOverview = document.getElementById('btn-db-tab-overview');
   const btnThreatMap = document.getElementById('btn-db-tab-threatmap');
+  const btnGraph = document.getElementById('btn-db-tab-graph');
 
   if (btnOverview) {
     btnOverview.onclick = () => {
@@ -36,6 +39,7 @@ export function renderExecutiveDashboard() {
       // Update active classes
       btnOverview.classList.add('active');
       if (btnThreatMap) btnThreatMap.classList.remove('active');
+      if (btnGraph) btnGraph.classList.remove('active');
     };
   }
 
@@ -46,6 +50,18 @@ export function renderExecutiveDashboard() {
       // Update active classes
       btnThreatMap.classList.add('active');
       if (btnOverview) btnOverview.classList.remove('active');
+      if (btnGraph) btnGraph.classList.remove('active');
+    };
+  }
+
+  if (btnGraph) {
+    btnGraph.onclick = () => {
+      activeDashboardSubTab = 'graph';
+      renderDashboardContent();
+      // Update active classes
+      btnGraph.classList.add('active');
+      if (btnOverview) btnOverview.classList.remove('active');
+      if (btnThreatMap) btnThreatMap.classList.remove('active');
     };
   }
 
@@ -267,6 +283,11 @@ function renderDashboardContent() {
       { label: 'Medium Tier', value: mediumSuppliers, color: '#eab308' },
       { label: 'Low Tier', value: lowSuppliers, color: '#10b981' }
     ]);
+  } else if (activeDashboardSubTab === 'graph') {
+    contentArea.innerHTML = `
+      <div id="resilience-global-graph-container" style="width: 100%;"></div>
+    `;
+    renderResilienceGraph('resilience-global-graph-container');
   } else {
     // RENDER THREAT MAP & LIVE FEED
     contentArea.innerHTML = `

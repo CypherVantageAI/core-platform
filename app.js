@@ -5046,107 +5046,112 @@ window.selectNavigatorService = function(serviceName, element) {
   const treeContainer = document.getElementById('navigator-dependency-tree');
   treeContainer.innerHTML = '';
 
-  // 1. Service Node (Root)
-  const rootNode = document.createElement('div');
-  rootNode.className = 'dependency-tree-node service-node';
-  rootNode.innerHTML = `
-    <div class="node-content">
-      <span class="node-label">Root Service</span>
-      <span class="node-title">${targetSys.name}</span>
-      <span class="node-meta">Infrastructure Node: ${locationNodeName} | Operational Status: ${targetSys.status}</span>
-    </div>
-  `;
-  treeContainer.appendChild(rootNode);
-
-  const rootBranches = document.createElement('div');
-  rootBranches.className = 'node-branches';
-  rootNode.appendChild(rootBranches);
-
-  // 2. Personnel Location Node (Especially important for CIS internal services)
-  if (associatedPersonnel && associatedPersonnel.length > 0) {
-    associatedPersonnel.forEach(p => {
-      const pNode = document.createElement('div');
-      pNode.className = 'dependency-tree-node personnel-node';
-      pNode.innerHTML = `
-        <div class="node-content">
-          <span class="node-label">Key Personnel Location (${targetSys.serviceType.toUpperCase()} Safeguard)</span>
-          <span class="node-title">${p.name} (${p.role})</span>
-          <span class="node-meta">Location: ${p.location} | Status: ${p.status} | Contact: ${p.contact}</span>
-        </div>
-      `;
-      rootBranches.appendChild(pNode);
-    });
+  const srvObj = state.services.find(s => s.name === serviceName);
+  if (srvObj && typeof window.renderResilienceGraph === 'function') {
+    window.renderResilienceGraph('navigator-dependency-tree', { focalNodeId: srvObj.id });
   } else {
-    const noPersonnelNode = document.createElement('div');
-    noPersonnelNode.className = 'dependency-tree-node personnel-node';
-    noPersonnelNode.innerHTML = `
-      <div class="node-content" style="border-left: 3px solid var(--text-muted); opacity: 0.6;">
-        <span class="node-label">Key Personnel Location</span>
-        <span class="node-title">No Specific Personnel Assigned</span>
-        <span class="node-meta">Managed via shared regional operational pools.</span>
+    // 1. Service Node (Root)
+    const rootNode = document.createElement('div');
+    rootNode.className = 'dependency-tree-node service-node';
+    rootNode.innerHTML = `
+      <div class="node-content">
+        <span class="node-label">Root Service</span>
+        <span class="node-title">${targetSys.name}</span>
+        <span class="node-meta">Infrastructure Node: ${locationNodeName} | Operational Status: ${targetSys.status}</span>
       </div>
     `;
-    rootBranches.appendChild(noPersonnelNode);
-  }
+    treeContainer.appendChild(rootNode);
 
-  // 3. Primary Supplier Node (Tier 3)
-  const supplierNode = document.createElement('div');
-  supplierNode.className = 'dependency-tree-node supplier-node';
-  supplierNode.innerHTML = `
-    <div class="node-content">
-      <span class="node-label">Tier 3 (Primary Supplier / Provider)</span>
-      <span class="node-title">${supplierName}</span>
-      <span class="node-meta">Risk Tier: ${riskTier} | DORA Compliance: ${compScore} | Support HQ: ${primaryLoc}</span>
-    </div>
-  `;
-  rootBranches.appendChild(supplierNode);
+    const rootBranches = document.createElement('div');
+    rootBranches.className = 'node-branches';
+    rootNode.appendChild(rootBranches);
 
-  const supplierBranches = document.createElement('div');
-  supplierBranches.className = 'node-branches';
-  supplierNode.appendChild(supplierBranches);
+    // 2. Personnel Location Node (Especially important for CIS internal services)
+    if (associatedPersonnel && associatedPersonnel.length > 0) {
+      associatedPersonnel.forEach(p => {
+        const pNode = document.createElement('div');
+        pNode.className = 'dependency-tree-node personnel-node';
+        pNode.innerHTML = `
+          <div class="node-content">
+            <span class="node-label">Key Personnel Location (${targetSys.serviceType.toUpperCase()} Safeguard)</span>
+            <span class="node-title">${p.name} (${p.role})</span>
+            <span class="node-meta">Location: ${p.location} | Status: ${p.status} | Contact: ${p.contact}</span>
+          </div>
+        `;
+        rootBranches.appendChild(pNode);
+      });
+    } else {
+      const noPersonnelNode = document.createElement('div');
+      noPersonnelNode.className = 'dependency-tree-node personnel-node';
+      noPersonnelNode.innerHTML = `
+        <div class="node-content" style="border-left: 3px solid var(--text-muted); opacity: 0.6;">
+          <span class="node-label">Key Personnel Location</span>
+          <span class="node-title">No Specific Personnel Assigned</span>
+          <span class="node-meta">Managed via shared regional operational pools.</span>
+        </div>
+      `;
+      rootBranches.appendChild(noPersonnelNode);
+    }
 
-  // 4. Recursive Subcontractors (Tier 4 / Nth Party)
-  if (subcontractors && subcontractors.length > 0) {
-    subcontractors.forEach(sub => {
-      const subNode = document.createElement('div');
-      subNode.className = 'dependency-tree-node subcontractor-node';
-      
-      const subName = typeof sub === 'object' ? sub.name : sub;
-      const subRole = typeof sub === 'object' ? sub.role : 'Subcontractor Operations';
-      
-      let subLoc = 'Global Operations';
-      if (typeof sub === 'object') {
-        subLoc = `${sub.primaryLocation} / ${sub.secondaryLocation}`;
-      } else {
-        if (sub.includes('Equinix')) subLoc = 'Ashburn, VA / London, UK / Singapore (Datacenter Hubs)';
-        else if (sub.includes('Cloudflare')) subLoc = 'Global Edge CDN Nodes (200+ Cities)';
-        else if (sub.includes('Twilio')) subLoc = 'San Francisco, California (USA)';
-        else if (sub.includes('Wipro')) subLoc = 'Bangalore, India';
-        else if (sub.includes('TATA')) subLoc = 'Mumbai, India';
-        else if (sub.includes('AWS')) subLoc = 'Seattle, Washington (USA)';
-        else if (sub.includes('Microsoft')) subLoc = 'Redmond, Washington (USA)';
-      }
+    // 3. Primary Supplier Node (Tier 3)
+    const supplierNode = document.createElement('div');
+    supplierNode.className = 'dependency-tree-node supplier-node';
+    supplierNode.innerHTML = `
+      <div class="node-content">
+        <span class="node-label">Tier 3 (Primary Supplier / Provider)</span>
+        <span class="node-title">${supplierName}</span>
+        <span class="node-meta">Risk Tier: ${riskTier} | DORA Compliance: ${compScore} | Support HQ: ${primaryLoc}</span>
+      </div>
+    `;
+    rootBranches.appendChild(supplierNode);
 
-      subNode.innerHTML = `
-        <div class="node-content">
+    const supplierBranches = document.createElement('div');
+    supplierBranches.className = 'node-branches';
+    supplierNode.appendChild(supplierBranches);
+
+    // 4. Recursive Subcontractors (Tier 4 / Nth Party)
+    if (subcontractors && subcontractors.length > 0) {
+      subcontractors.forEach(sub => {
+        const subNode = document.createElement('div');
+        subNode.className = 'dependency-tree-node subcontractor-node';
+        
+        const subName = typeof sub === 'object' ? sub.name : sub;
+        const subRole = typeof sub === 'object' ? sub.role : 'Subcontractor Operations';
+        
+        let subLoc = 'Global Operations';
+        if (typeof sub === 'object') {
+          subLoc = `${sub.primaryLocation} / ${sub.secondaryLocation}`;
+        } else {
+          if (sub.includes('Equinix')) subLoc = 'Ashburn, VA / London, UK / Singapore (Datacenter Hubs)';
+          else if (sub.includes('Cloudflare')) subLoc = 'Global Edge CDN Nodes (200+ Cities)';
+          else if (sub.includes('Twilio')) subLoc = 'San Francisco, California (USA)';
+          else if (sub.includes('Wipro')) subLoc = 'Bangalore, India';
+          else if (sub.includes('TATA')) subLoc = 'Mumbai, India';
+          else if (sub.includes('AWS')) subLoc = 'Seattle, Washington (USA)';
+          else if (sub.includes('Microsoft')) subLoc = 'Redmond, Washington (USA)';
+        }
+
+        subNode.innerHTML = `
+          <div class="node-content">
+            <span class="node-label">Tier 4 (N-th Party Subcontractor)</span>
+            <span class="node-title">${subName} ${subRole ? `(${subRole})` : ''}</span>
+            <span class="node-meta">Location: ${subLoc} | SLA Binding: Enforced | Security Audit: Passed</span>
+          </div>
+        `;
+        supplierBranches.appendChild(subNode);
+      });
+    } else {
+      const noSubNode = document.createElement('div');
+      noSubNode.className = 'dependency-tree-node subcontractor-node';
+      noSubNode.innerHTML = `
+        <div class="node-content" style="border-left: 3px solid var(--text-muted); opacity: 0.6;">
           <span class="node-label">Tier 4 (N-th Party Subcontractor)</span>
-          <span class="node-title">${subName} ${subRole ? `(${subRole})` : ''}</span>
-          <span class="node-meta">Location: ${subLoc} | SLA Binding: Enforced | Security Audit: Passed</span>
+          <span class="node-title">No Downstream Subcontractors Mapped</span>
+          <span class="node-meta">All operations are handled natively by the primary supplier.</span>
         </div>
       `;
-      supplierBranches.appendChild(subNode);
-    });
-  } else {
-    const noSubNode = document.createElement('div');
-    noSubNode.className = 'dependency-tree-node subcontractor-node';
-    noSubNode.innerHTML = `
-      <div class="node-content" style="border-left: 3px solid var(--text-muted); opacity: 0.6;">
-        <span class="node-label">Tier 4 (N-th Party Subcontractor)</span>
-        <span class="node-title">No Downstream Subcontractors Mapped</span>
-        <span class="node-meta">All operations are handled natively by the primary supplier.</span>
-      </div>
-    `;
-    supplierBranches.appendChild(noSubNode);
+      supplierBranches.appendChild(noSubNode);
+    }
   }
 
 
@@ -5985,4 +5990,72 @@ window.startSupplierSlaCountdown = function() {
   updateTimers();
   window.supplierSlaIntervalId = setInterval(updateTimers, 1000);
 };
+
+window.showHelpGuide = function() {
+  const guideHtml = `
+    <div style="font-size: 0.72rem; line-height: 1.5; color: var(--text-secondary); display: flex; flex-direction: column; gap: 15px; max-height: 500px; overflow-y: auto; padding-right: 8px;">
+      <p>Welcome to <b>Cypher Vantage</b>, the market-leading digital operational resilience platform designed for DORA compliance, Nth-party risk tracking, and threat-led resilience orchestration.</p>
+      
+      <!-- Section 1 -->
+      <div>
+        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">1. Executive Overview & KPI Interactive Details</h4>
+        <p>The dashboard provides high-level resilience summaries. Clicking any of the top KPI cards (<b>Resilience Score, DORA Compliance, Open Risks, Active Incidents, or Open Findings</b>) opens an explanation modal displaying calculation weightings, current counts, and compliance targets.</p>
+      </div>
+
+      <!-- Section 2 -->
+      <div>
+        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">2. Operational Resilience Knowledge Graph</h4>
+        <p>Accessible in the <b>Executive Dashboard</b> sub-tab. It connects 12 key resilience entities (Services, Processes, Apps, Assets, Cloud nodes, Data, Suppliers, Risks, Controls, Incidents, Recovery Plans, and Obligations).</p>
+        <ul>
+          <li><b>Pan & Zoom:</b> Drag the canvas to pan. Use <b>+</b> / <b>-</b> to zoom.</li>
+          <li><b>Upstream/Downstream:</b> Click any node to highlight its upstream dependencies in cyan and downstream targets in purple.</li>
+          <li><b>Outage Simulation:</b> Click <b>Trigger Failure</b> in the sidebar to simulate an outage. The engine calculates cascading financial exposure, customer impact, and violated DORA articles in real-time.</li>
+        </ul>
+      </div>
+
+      <!-- Section 3 -->
+      <div>
+        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">3. IBS & CIS SLA Monitor (Service Navigator)</h4>
+        <p>Accessible via the left sidebar. Lets you select a critical service (IBS/CIS) to view its technology stack and active security vulnerabilities. Under the <b>Dependency Mapping</b> tab, a focused sub-graph renders the localized neighborhood of that service.</p>
+      </div>
+
+      <!-- Section 4 -->
+      <div>
+        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">4. Threat-Led Penetration Testing (TLPT)</h4>
+        <p>Manage penetration campaigns following the <b>TIBER-EU</b> lifecycle: Threat Intelligence ➔ Planning ➔ White Team ➔ Red Team ➔ Purple Team ➔ Findings ➔ Remediation. Pre-populated templates are available for ransomware, API breaches, and DDoS outages.</p>
+      </div>
+
+      <!-- Section 5 -->
+      <div>
+        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">5. AI Audit & Governance Registry</h4>
+        <p>Ensures security compliance for LLMs. Includes the **AI Model Registry**, prompt injection testing playbooks, hallucination metrics logs, and an **Inline DLP Sanitizer** proxy badge indicating active filters.</p>
+      </div>
+
+      <!-- Section 6 -->
+      <div>
+        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">6. Nth-Party TPRM & Exit Strategies</h4>
+        <p>Provides a Supplier Directory with subcontractor mappings, vendor concentration risk matrices, active SLA meters, and transition playbooks to alternative suppliers (Exit Strategies).</p>
+      </div>
+
+      <!-- Section 7 -->
+      <div>
+        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">7. Crisis Scenario Drills</h4>
+        <p>Run simulated tabletop or operational drills. coordinators set coordinators, recovery RTO targets, and mitigation methods. After completion, coordinators submit <b>Lessons Learned</b> which are logged back to the dashboard.</p>
+      </div>
+
+      <!-- Section 8 -->
+      <div>
+        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">8. State-Aware AI Advisor Commands</h4>
+        <p>Ask the chatbot helper questions regarding the live state database:
+          <br>• <i>"Show DORA gaps"</i>
+          <br>• <i>"Which suppliers support Payments?"</i>
+          <br>• <i>"Which critical services lack testing?"</i>
+          <br>• <i>"Generate Board Report"</i>
+        </p>
+      </div>
+    </div>
+  `;
+  window.showModal('Cypher Vantage Platform User Guide', guideHtml);
+};
+
 
