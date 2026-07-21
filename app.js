@@ -6092,7 +6092,7 @@ window.showHelpGuide = function() {
     else if (paneId === 'view-manager-risk') {
       activeTabId = 'tlpt';
     }
-    else if (paneId === 'view-manager-thirdparty' || paneId === 'view-manager-actions') {
+    else if (paneId === 'view-manager-thirdparty' || paneId === 'view-manager-actions' || paneId === 'view-manager-suppliers') {
       activeTabId = 'tprm';
     }
     else if (paneId === 'view-manager-resilience') {
@@ -6104,6 +6104,24 @@ window.showHelpGuide = function() {
     }
     else if (paneId === 'view-manager-advisor') {
       activeTabId = 'advisor';
+    }
+    else if (paneId === 'view-manager-obligations') {
+      activeTabId = 'tprm'; // Supplier Control Obligations mapping
+    }
+    else if (paneId === 'view-manager-dora' || paneId === 'view-manager-compliance') {
+      activeTabId = 'overview';
+    }
+    else if (paneId === 'view-manager-collector') {
+      activeTabId = 'advisor';
+    }
+    else if (paneId === 'view-manager-inbox') {
+      activeTabId = 'tprm';
+    }
+    else if (paneId === 'view-manager-reports') {
+      activeTabId = 'overview';
+    }
+    else if (paneId === 'view-supplier-dashboard' || paneId === 'view-supplier-evidence' || paneId === 'view-supplier-obligations') {
+      activeTabId = 'tprm'; // Supplier portal templates map to TPRM
     }
   }
 
