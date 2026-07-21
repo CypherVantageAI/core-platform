@@ -45,13 +45,26 @@ export function renderThirdPartyModule() {
     </div>
   `;
 
-  // Render KPI cards
+  // Render KPI cards with popups
   createCard('tpr-kpi-total', {
     title: 'Total Suppliers Mapped',
     value: `${totalSuppliers}`,
     subtext: `${totalSubcontractors} Subcontractors Mapped`,
     icon: '🏢',
-    borderLeftColor: '#14b8a6'
+    borderLeftColor: '#14b8a6',
+    tooltip: 'Click to view mapped suppliers and downstream subcontractor count.',
+    onclick: () => {
+      const suppliersHtml = suppliersList.map(s => `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem;">
+          <div>
+            <b>${s.name}</b> (${s.subcontractors ? s.subcontractors.length : 0} Subcontractors)
+            <div style="font-size:0.64rem; color:var(--text-muted);">${s.primarySupportLocation || 'Global Operations'}</div>
+          </div>
+          ${createStatusBadge(s.riskTier)}
+        </div>
+      `).join('');
+      window.showModal('Mapped Nth-Party Suppliers', `<div style="display:flex; flex-direction:column; gap:8px; max-height:350px; overflow-y:auto;">${suppliersHtml}</div>`);
+    }
   });
 
   createCard('tpr-kpi-critical', {
@@ -59,7 +72,21 @@ export function renderThirdPartyModule() {
     value: `${criticalSuppliers}`,
     subtext: 'Requires real-time RTO alerts',
     icon: '⚠️',
-    borderLeftColor: '#ef4444'
+    borderLeftColor: '#ef4444',
+    tooltip: 'Click to view Critical-tier supplier profiles.',
+    onclick: () => {
+      const criticals = suppliersList.filter(s => s.riskTier === 'Critical');
+      const critHtml = criticals.map(s => `
+        <div style="border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem; display:flex; flex-direction:column; gap:2px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b>${s.name}</b>
+            ${createStatusBadge(s.riskTier)}
+          </div>
+          <div style="font-size:0.65rem; color:var(--text-secondary);">${s.riskTierExplanation}</div>
+        </div>
+      `).join('');
+      window.showModal('Critical-Tier Suppliers', `<div style="display:flex; flex-direction:column; gap:8px; max-height:350px; overflow-y:auto;">${critHtml}</div>`);
+    }
   });
 
   createCard('tpr-kpi-compliance', {
@@ -67,7 +94,17 @@ export function renderThirdPartyModule() {
     value: `${avgCompliance}%`,
     subtext: 'Across Supplier Control Obligations',
     icon: '📊',
-    borderLeftColor: '#10b981'
+    borderLeftColor: '#10b981',
+    tooltip: 'Click to view compliance scores breakdown by supplier.',
+    onclick: () => {
+      const scoresHtml = suppliersList.map(s => `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem;">
+          <span><b>${s.name}</b></span>
+          <span style="font-weight:700; color:${s.complianceScore >= 90 ? '#10b981' : s.complianceScore >= 70 ? '#f59e0b' : '#ef4444'};">${s.complianceScore}%</span>
+        </div>
+      `).join('');
+      window.showModal('Supplier Compliance Scores', `<div style="display:flex; flex-direction:column; gap:6px; max-height:350px; overflow-y:auto;">${scoresHtml}</div>`);
+    }
   });
 
   createCard('tpr-kpi-gaps', {
@@ -75,7 +112,25 @@ export function renderThirdPartyModule() {
     value: `${activeGaps}`,
     subtext: 'Awaiting response/remediation',
     icon: '🚨',
-    borderLeftColor: '#eab308'
+    borderLeftColor: '#eab308',
+    tooltip: 'Click to view active remediation actions across suppliers.',
+    onclick: () => {
+      const openActions = state.actions.filter(a => a.status !== 'Closed');
+      const actionsHtml = openActions.length > 0 ? openActions.map(a => {
+        const priorityStatus = a.priority === 'High' || a.priority === 'Critical' ? 'Non-Compliant' : a.status === 'In Progress' ? 'Partial' : 'Open';
+        return `
+          <div style="border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem; display:flex; flex-direction:column; gap:2px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <b>${a.title}</b>
+              ${createStatusBadge(priorityStatus)}
+            </div>
+            <div style="font-size:0.65rem; color:var(--text-secondary);">${a.gapDetails || a.description || a.domain}</div>
+            <div style="font-size:0.62rem; color:#ef4444; margin-top:2px;">Owner: ${a.assignedTo || 'Unassigned'} | Due: ${a.dueDate || 'Urgent'}</div>
+          </div>
+        `;
+      }).join('') : '<div style="text-align:center; padding:15px; color:var(--text-muted);">No open remediation actions.</div>';
+      window.showModal('Active Remediation Gaps', `<div style="display:flex; flex-direction:column; gap:8px; max-height:350px; overflow-y:auto;">${actionsHtml}</div>`);
+    }
   });
 
   // Bind tab buttons

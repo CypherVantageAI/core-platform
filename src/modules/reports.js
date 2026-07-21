@@ -85,13 +85,26 @@ export function renderReportsModule() {
     </div>
   `;
 
-  // Render KPI cards
+  // Render KPI cards with popups
   createCard('reports-kpi-tests', {
     title: 'Total Tests Run',
     value: `${totalTests}`,
     subtext: 'Cumulative scenario simulations and sanity checks',
     icon: '📊',
-    borderLeftColor: '#14b8a6'
+    borderLeftColor: '#14b8a6',
+    tooltip: 'Click to view breakdown of executed tests.',
+    onclick: () => {
+      const testsHtml = state.tests.map(t => `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem;">
+          <div>
+            <b>${t.scenario}</b>
+            <div style="font-size:0.64rem; color:var(--text-muted);">Execution Date: ${t.date}</div>
+          </div>
+          ${createStatusBadge(t.results === 'Passed' ? 'Compliant' : 'Non-Compliant')}
+        </div>
+      `).join('');
+      window.showModal('Resilience Test Audit Trail', `<div style="display:flex; flex-direction:column; gap:8px; max-height:350px; overflow-y:auto;">${testsHtml}</div>`);
+    }
   });
 
   createCard('reports-kpi-success', {
@@ -99,7 +112,19 @@ export function renderReportsModule() {
     value: `${totalTests ? Math.round((passedTests / totalTests) * 100) : 100}%`,
     subtext: 'Ratio of passed integrity audits to total tests',
     icon: '✅',
-    borderLeftColor: '#10b981'
+    borderLeftColor: '#10b981',
+    tooltip: 'Click to view pass/fail test ratio.',
+    onclick: () => {
+      const passRate = totalTests ? Math.round((passedTests / totalTests) * 100) : 100;
+      window.showModal('Test Pass Rate Ratio', `
+        <div style="font-size:0.75rem; line-height:1.5;">
+          <b>Pass Rate Score: ${passRate}%</b><br/>
+          Passed Integrity Audits: ${passedTests}<br/>
+          Failed/Degraded Tests: ${totalTests - passedTests}<br/>
+          Total Simulations: ${totalTests}
+        </div>
+      `);
+    }
   });
 
   createCard('reports-kpi-incidents', {
@@ -107,15 +132,38 @@ export function renderReportsModule() {
     value: `${totalIncidents}`,
     subtext: 'Outages matching DORA Article 19 classification',
     icon: '🚨',
-    borderLeftColor: '#ef4444'
+    borderLeftColor: '#ef4444',
+    tooltip: 'Click to view DORA Article 19 Incident Registry.',
+    onclick: () => {
+      const incHtml = state.incidents.map(i => `
+        <div style="border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem; display:flex; flex-direction:column; gap:2px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b>${i.name}</b>
+            ${createStatusBadge(i.status === 'Closed' ? 'Compliant' : 'Non-Compliant')}
+          </div>
+          <div style="font-size:0.65rem; color:var(--text-secondary);">${i.description}</div>
+          <div style="font-size:0.62rem; color:#ef4444; margin-top:2px;">Financial Loss: £${(i.financialLoss || 0).toLocaleString()}</div>
+        </div>
+      `).join('');
+      window.showModal('DORA Article 19 Incident Registry', `<div style="display:flex; flex-direction:column; gap:8px; max-height:350px; overflow-y:auto;">${incHtml}</div>`);
+    }
   });
 
   createCard('reports-kpi-loss', {
     title: 'Estimated Loss Prevented',
     value: `£${totalLossPrevented.toLocaleString()}`,
-    subtext: 'Modeled financial savings from automated failovers',
-    icon: '💰',
-    borderLeftColor: '#eab308'
+    subtext: 'Financial impact mitigated via failover playbooks',
+    icon: '🛡️',
+    borderLeftColor: '#a855f7',
+    tooltip: 'Click to view mitigated financial loss model.',
+    onclick: () => {
+      window.showModal('Mitigated Financial Loss Model', `
+        <div style="font-size:0.75rem; line-height:1.5;">
+          <b>Total Loss Prevented: £${totalLossPrevented.toLocaleString()}</b><br/><br/>
+          Modeled against operational disruption baselines (£50,000/hr outage cost for payments clearing & £150,000 SLA backlog penalties) successfully mitigated by automated failover playbooks under DORA Article 11.
+        </div>
+      `);
+    }
   });
 
   // Render Completed Tests Table

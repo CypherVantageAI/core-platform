@@ -143,7 +143,7 @@ export function renderDoraModule() {
       const gapsHtml = gaps.length > 0 ? gaps.map(g => `
         <div style="border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem; display:flex; flex-direction:column; gap:2px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <b>${g.section}</b>
+            <b>${g.article}: ${g.title}</b>
             ${createStatusBadge(g.status)}
           </div>
           <div style="color:var(--text-secondary); font-size:0.68rem;">${g.description}</div>
@@ -163,14 +163,14 @@ export function renderDoraModule() {
     value: `${totalEvidence}`,
     subtext: 'Cryptographic files validated',
     icon: '📂',
-    borderLeftColor: '#eab308',
+    borderLeftColor: '#6366f1',
     tooltip: 'Cryptographic proof hashes validated on the ledger. Click to browse files.',
     onclick: () => {
       const evidenceHtml = state.evidence.map(e => `
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.03); padding:6px 0; font-size:0.7rem;">
           <div>
             <b>📂 ${e.name}</b>
-            <div style="font-size:0.62rem; color:var(--text-muted);">Hash: <span style="font-family:monospace;">${e.hash.slice(0, 16)}...</span></div>
+            <div style="font-size:0.62rem; color:var(--text-muted);">Hash: <span style="font-family:monospace;">${e.hash ? e.hash.slice(0, 16) : 'SHA-256'}...</span></div>
           </div>
           <span style="font-size:0.65rem; color:var(--color-cyan); font-weight:600;">${e.uploaded}</span>
         </div>
