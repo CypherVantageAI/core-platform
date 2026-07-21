@@ -1661,7 +1661,9 @@ Third-Party Risk Assurance, Cypher Vantage Team`,
       rtoTarget: '4 Hours',
       status: 'Tested & Approved',
       lastTestDate: '2026-03-12',
-      mitigationVector: 'AWS Cross-region dynamic dns failover'
+      mitigationVector: 'AWS Cross-region dynamic dns failover',
+      confidenceScore: 90,
+      bottleneck: 'DNS propagation delay (approx. 15 mins)'
     },
     {
       id: 'rp-002',
@@ -1670,7 +1672,9 @@ Third-Party Risk Assurance, Cypher Vantage Team`,
       rtoTarget: '8 Hours',
       status: 'Tested & Approved',
       lastTestDate: '2026-05-18',
-      mitigationVector: 'Offline broker settlements reconciliation'
+      mitigationVector: 'Offline broker settlements reconciliation',
+      confidenceScore: 75,
+      bottleneck: 'Manual trade ledger verification backlogs'
     },
     {
       id: 'rp-003',
@@ -1679,7 +1683,9 @@ Third-Party Risk Assurance, Cypher Vantage Team`,
       rtoTarget: '2 Hours',
       status: 'Tested & Approved',
       lastTestDate: '2026-06-25',
-      mitigationVector: 'Active Directory secondary Oregon directory sync'
+      mitigationVector: 'Active Directory secondary Oregon directory sync',
+      confidenceScore: 95,
+      bottleneck: 'Potential cross-region AD replication conflicts'
     }
   ]
 };

@@ -564,6 +564,8 @@ function drawDependencyGraph(srv) {
       <!-- Paths -->
       ${pathsHtml}
       
+      <!-- Nodes -->
+      ${nodesHtml}
     </svg>
   `;
 }
@@ -786,6 +788,28 @@ function renderAuditSubPane(container, state, suppliers) {
     return !hasDrill;
   });
 
+  // Default supplier calculation
+  const defaultSup = state.suppliers[selectedAuditTarget] || suppliers[0];
+  const affectedAppsSup = state.applications.filter(app => app.hostingProvider && app.hostingProvider.toLowerCase().includes(defaultSup.name.split(' ')[0].toLowerCase()));
+  const affectedServicesSup = [];
+  affectedAppsSup.forEach(app => {
+    const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
+    affectedServicesSup.push(...srvs);
+  });
+  const uniqSrvNamesSup = [...new Set(affectedServicesSup.map(s => s.name))];
+
+  // Default region calculation
+  const affectedAssetsReg = state.assets.filter(ast => ast.region && ast.region.toLowerCase().includes(selectedAuditRegion.toLowerCase()));
+  const affectedServicesReg = [];
+  affectedAssetsReg.forEach(ast => {
+    const matchedApps = state.applications.filter(app => ast.name.includes(app.name.split(' ')[0]));
+    matchedApps.forEach(app => {
+      const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
+      affectedServicesReg.push(...srvs);
+    });
+  });
+  const uniqSrvNamesReg = [...new Set(affectedServicesReg.map(s => s.name))];
+
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 12px;">
       <!-- Query 1 -->
@@ -797,7 +821,13 @@ function renderAuditSubPane(container, state, suppliers) {
           </select>
           <button id="btn-audit-supplier" class="btn btn-secondary btn-xs" style="padding: 4px 10px;">Query</button>
         </div>
-        <div id="audit-supplier-result" style="font-size: 0.65rem; color: var(--text-muted);"></div>
+        <div id="audit-supplier-result" style="font-size: 0.65rem; color: var(--text-muted);">
+          <div style="margin-top:5px; border-left: 2px solid #ef4444; padding-left: 6px; display: flex; flex-direction: column; gap: 2px;">
+            <div><b>Downstream Apps Affected:</b> ${affectedAppsSup.map(a => a.name).join(', ') || 'None'}</div>
+            <div><b>Impacted Critical Services:</b> ${uniqSrvNamesSup.join(', ') || 'None'}</div>
+            <div><b>Financial Impact:</b> £${(affectedAppsSup.length * 20000).toLocaleString()}/hour</div>
+          </div>
+        </div>
       </div>
 
       <!-- Query 2 -->
@@ -811,7 +841,13 @@ function renderAuditSubPane(container, state, suppliers) {
           </select>
           <button id="btn-audit-region" class="btn btn-secondary btn-xs" style="padding: 4px 10px;">Query</button>
         </div>
-        <div id="audit-region-result" style="font-size: 0.65rem; color: var(--text-muted);"></div>
+        <div id="audit-region-result" style="font-size: 0.65rem; color: var(--text-muted);">
+          <div style="margin-top:5px; border-left: 2px solid #ef4444; padding-left: 6px; display: flex; flex-direction: column; gap: 2px;">
+            <div><b>Hosting Assets Affected:</b> ${affectedAssetsReg.map(a => a.name).join(', ') || 'None'}</div>
+            <div><b>Impacted Critical Services:</b> ${uniqSrvNamesReg.join(', ') || 'None'}</div>
+            <div><b>Availability Disruption:</b> Complete regional failover required.</div>
+          </div>
+        </div>
       </div>
 
       <!-- Query 3 -->
@@ -834,8 +870,6 @@ function renderAuditSubPane(container, state, suppliers) {
   document.getElementById('btn-audit-supplier').onclick = () => {
     const resBox = document.getElementById('audit-supplier-result');
     const supObj = state.suppliers[selectedAuditTarget];
-    
-    // Find downstream services
     const affectedApps = state.applications.filter(app => app.hostingProvider && app.hostingProvider.toLowerCase().includes(supObj.name.split(' ')[0].toLowerCase()));
     const affectedServices = [];
     affectedApps.forEach(app => {
@@ -859,10 +893,7 @@ function renderAuditSubPane(container, state, suppliers) {
   document.getElementById('audit-region-select').onchange = (e) => { selectedAuditRegion = e.target.value; };
   document.getElementById('btn-audit-region').onclick = () => {
     const resBox = document.getElementById('audit-region-result');
-    
-    // Find assets matching region
     const affectedAssets = state.assets.filter(ast => ast.region && ast.region.toLowerCase().includes(selectedAuditRegion.toLowerCase()));
-    // Apps and Services affected
     const affectedServices = [];
     affectedAssets.forEach(ast => {
       const matchedApps = state.applications.filter(app => ast.name.includes(app.name.split(' ')[0]));
