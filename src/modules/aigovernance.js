@@ -34,10 +34,10 @@ export function renderAiGovernanceModule() {
       </div>
 
       <!-- Sub-Tab Navigation -->
-      <div class="sub-tab-nav" style="display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; flex-wrap: wrap;">
-        <button id="tab-ai-audit" class="nav-sub-item ${activeAiSubTab === 'audit' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">Adversarial Audit &amp; DLP</button>
-        <button id="tab-ai-campaigns" class="nav-sub-item ${activeAiSubTab === 'campaigns' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">TLPT Campaigns</button>
-        <button id="tab-ai-governance" class="nav-sub-item ${activeAiSubTab === 'governance' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">AI Governance Registry</button>
+      <div class="sub-tab-nav" style="display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 0; flex-wrap: wrap; margin-bottom: 15px;">
+        <button id="tab-ai-audit" class="horizontal-sub-tab-btn ${activeAiSubTab === 'audit' ? 'active' : ''}">Adversarial Audit &amp; DLP</button>
+        <button id="tab-ai-campaigns" class="horizontal-sub-tab-btn ${activeAiSubTab === 'campaigns' ? 'active' : ''}">TLPT Campaigns</button>
+        <button id="tab-ai-governance" class="horizontal-sub-tab-btn ${activeAiSubTab === 'governance' ? 'active' : ''}">AI Governance Registry</button>
       </div>
 
       <!-- Dynamic Content Area -->
@@ -88,7 +88,7 @@ export function renderAiGovernanceModule() {
 
 function switchTab(tabId) {
   activeAiSubTab = tabId;
-  document.querySelectorAll('.sub-tab-nav .nav-sub-item').forEach(btn => {
+  document.querySelectorAll('.sub-tab-nav .horizontal-sub-tab-btn').forEach(btn => {
     btn.classList.remove('active');
   });
   const activeBtn = document.getElementById(`tab-ai-${tabId}`);
@@ -118,9 +118,15 @@ function renderAuditTab(container) {
     <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
       <!-- Section 1: LLM Pentesting -->
       <div class="dashboard-card" style="padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-        <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
-          LLM Integration Adversarial Audit Sweep
-        </h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
+            LLM Integration Adversarial Audit Sweep
+          </h3>
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: var(--text-secondary); background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.15); padding: 3px 8px; border-radius: 4px;">
+            <span class="status-dot status-green" style="width: 6px; height: 6px;"></span>
+            <span>Inline DLP Proxy: <b>ACTIVE</b></span>
+          </div>
+        </div>
         <p class="panel-subtitle">Simulate adversarial prompt injection payloads against integrated third-party chatbots and database assistants to verify boundary containment.</p>
         
         <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; margin-top: 10px;">
@@ -150,88 +156,18 @@ function renderAuditTab(container) {
           </button>
         </div>
 
-        <div class="terminal-card" style="margin-top: 10px; min-height: 160px; display: flex; flex-direction: column;">
+        <div class="terminal-card" style="margin-top: 10px; min-height: 240px; display: flex; flex-direction: column;">
           <div class="terminal-header" style="padding: 6px 10px; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between;">
             <span style="font-size:0.7rem; font-weight:700; color:var(--color-cyan);">ADVERSARIAL ATTACK SIMULATION CONSOLE</span>
             <span class="terminal-badge" id="pentest-status" style="font-size:0.6rem;">IDLE</span>
           </div>
-          <div class="terminal-body" id="pentest-logs" style="flex: 1; padding: 10px; font-family: monospace; font-size: 0.72rem; color: #f43f5e; background: rgba(0,0,0,0.25); height: 120px; overflow-y: auto;">
+          <div class="terminal-body" id="pentest-logs" style="flex: 1; padding: 10px; font-family: monospace; font-size: 0.72rem; color: #f43f5e; background: rgba(0,0,0,0.25); height: 200px; overflow-y: auto;">
             <span style="color:var(--text-muted);">Select target and vector above, then click "Launch Pentest Sweep" to begin...</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 2: Outbound DLP Proxy Gateway -->
-      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-        <div class="dashboard-card" style="flex: 1.5; min-width: 320px; padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-          <h3 style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
-            Inline LLM Data Loss Prevention (DLP) Sanitizer
-          </h3>
-          <p class="panel-subtitle">Automatically strip PII, secrets, and credentials from outbound prompts before they leave the corporate network envelope.</p>
-          
-          <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-primary);">DLP Proxy Status</span>
-              <p style="font-size: 0.65rem; color: var(--text-muted); margin: 2px 0 0 0;">Anonymizes API keys, database URLs, emails, and passwords</p>
-            </div>
-            <label class="switch-toggle" style="position: relative; display: inline-block; width: 44px; height: 22px;">
-              <input type="checkbox" id="dlp-toggle" ${state.dlpProxyEnabled ? 'checked' : ''} onchange="toggleDlpProxy()" style="opacity: 0; width: 0; height: 0;">
-              <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .3s; border-radius: 22px;"></span>
-            </label>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
-            <label style="font-size: 0.68rem; color: var(--text-secondary); font-weight: 700;">Prompt Payload Sanitizer Test:</label>
-            <textarea id="dlp-prompt-input" class="textarea-input" placeholder="Type secret credentials or emails to scan (e.g. key: AIzaSyFakeSecretKey)" rows="2" style="font-size: 0.72rem; font-family: monospace;" oninput="testDlpSanitizer()"></textarea>
-            
-            <div style="background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; font-family: monospace; font-size: 0.72rem; min-height: 40px; color: var(--color-cyan);">
-              <span style="font-size: 0.6rem; color: var(--text-muted); display: block; margin-bottom: 2px; font-family: var(--font-body);">Redacted Output sent to external API:</span>
-              <div id="dlp-prompt-output">[No input entered]</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 3: EU AI Act Conformity Calc -->
-        <div class="dashboard-card" style="flex: 1.2; min-width: 280px; padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-          <h3 style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
-            EU AI Act Conformity Assistant
-          </h3>
-          <p class="panel-subtitle">Evaluate governance compliance tiers under the newly enforced European AI Act guidelines.</p>
-          
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <label style="font-size: 0.68rem; color: var(--text-secondary); font-weight: 700;">Select System Deployment Target:</label>
-            <select id="ai-purpose" class="dropdown-control" style="width: 100%;" onchange="assessAiActCompliance()">
-              <option value="minimal">Spam Filtering / General support (Minimal Risk)</option>
-              <option value="transparency">Customer Support Chatbot (Transparency Risk)</option>
-              <option value="high">HR Resume Screening / Credit Scoring (High Risk)</option>
-              <option value="prohibited">Biometric Scraping / Social Scoring (Prohibited System)</option>
-            </select>
-          </div>
-
-          <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 0.68rem; font-weight: 700; color: var(--text-secondary);">Conformity Category:</span>
-              <span id="ai-act-tier" class="badge badge-success" style="font-size: 0.65rem;">Minimal Risk</span>
-            </div>
-            
-            <div style="font-size: 0.7rem; color: var(--text-primary); line-height: 1.4;">
-              <b>Compliance Obligations:</b>
-              <ul id="ai-act-requirements" style="list-style: none; padding: 0; margin: 4px 0 0 0; display: flex; flex-direction: column; gap: 4px;">
-                <li>- No mandatory compliance obligations under EU AI Act.</li>
-                <li>- Voluntary codes of conduct recommended.</li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>
     </div>
   `;
-
-  // Init default checks
-  setTimeout(() => {
-    if (typeof window.testDlpSanitizer === 'function') window.testDlpSanitizer();
-    if (typeof window.assessAiActCompliance === 'function') window.assessAiActCompliance();
-  }, 100);
 }
 
 // --------------------------------------------------------------------------

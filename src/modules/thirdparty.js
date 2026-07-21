@@ -31,11 +31,11 @@ export function renderThirdPartyModule() {
       </div>
 
       <!-- Sub-Tab Navigation -->
-      <div class="sub-tab-nav" style="display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; flex-wrap: wrap;">
-        <button id="tab-tpr-directory" class="nav-sub-item ${activeThirdPartyTab === 'directory' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">Supplier Inventory</button>
-        <button id="tab-tpr-concentration" class="nav-sub-item ${activeThirdPartyTab === 'concentration' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">Concentration Risk</button>
-        <button id="tab-tpr-sla" class="nav-sub-item ${activeThirdPartyTab === 'sla' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">SLA &amp; Performance</button>
-        <button id="tab-tpr-exit" class="nav-sub-item ${activeThirdPartyTab === 'exit' ? 'active' : ''}" style="border: none; background: transparent; cursor: pointer;">Exit Strategies</button>
+      <div class="sub-tab-nav" style="display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 0; flex-wrap: wrap; margin-bottom: 15px;">
+        <button id="tab-tpr-directory" class="horizontal-sub-tab-btn ${activeThirdPartyTab === 'directory' ? 'active' : ''}">Supplier Inventory</button>
+        <button id="tab-tpr-concentration" class="horizontal-sub-tab-btn ${activeThirdPartyTab === 'concentration' ? 'active' : ''}">Concentration Risk</button>
+        <button id="tab-tpr-sla" class="horizontal-sub-tab-btn ${activeThirdPartyTab === 'sla' ? 'active' : ''}">SLA &amp; Performance</button>
+        <button id="tab-tpr-exit" class="horizontal-sub-tab-btn ${activeThirdPartyTab === 'exit' ? 'active' : ''}">Exit Strategies</button>
       </div>
 
       <!-- Dynamic Content Area -->
@@ -88,7 +88,7 @@ export function renderThirdPartyModule() {
 
 function switchTab(tabId) {
   activeThirdPartyTab = tabId;
-  document.querySelectorAll('.sub-tab-nav .nav-sub-item').forEach(btn => {
+  document.querySelectorAll('.sub-tab-nav .horizontal-sub-tab-btn').forEach(btn => {
     btn.classList.remove('active');
   });
   const activeBtn = document.getElementById(`tab-tpr-${tabId}`);

@@ -54,13 +54,28 @@ export function renderReportsModule() {
         <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-size: 0.72rem; color: var(--text-secondary);">Select Report Template:</label>
-            <select id="report-template-select" class="dropdown-control" style="width: 420px; font-size: 0.72rem; padding: 4px 8px;">
-              <option value="operational">Operational Resilience Report (IBS targets & recovery)</option>
-              <option value="executive">Executive Summary Report (C-Suite briefing & loss model)</option>
-              <option value="audit">Regulatory Audit Transcript (Control evidence compliance)</option>
-            </select>
+            <div id="report-template-custom-select" style="position: relative; width: 280px; font-size: 0.72rem; display: inline-block;">
+              <div id="report-template-selected" style="background: var(--color-bg-dark); border: 1px solid var(--border-color); padding: 5px 10px; border-radius: 4px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 38px;">
+                <span id="report-template-selected-text" style="line-height: 1.25; display: block; text-align: left;">
+                  <b>Operational Resilience Report</b><br><span style="color:var(--text-muted); font-size:0.62rem;">(IBS targets & recovery)</span>
+                </span>
+                <span style="font-size: 0.6rem; color: var(--text-muted); margin-left: 8px;">▼</span>
+              </div>
+              <div id="report-template-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; right: 0; background: #070a12; border: 1px solid var(--border-color); border-radius: 4px; margin-top: 4px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.5); overflow: hidden; display: flex; flex-direction: column;">
+                <div class="report-template-option active" data-value="operational" style="padding: 6px 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.03); line-height: 1.25; text-align: left;">
+                  <b>Operational Resilience Report</b><br><span style="color:var(--text-muted); font-size:0.62rem;">(IBS targets & recovery)</span>
+                </div>
+                <div class="report-template-option" data-value="executive" style="padding: 6px 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.03); line-height: 1.25; text-align: left;">
+                  <b>Executive Summary Report</b><br><span style="color:var(--text-muted); font-size:0.62rem;">(C-Suite briefing & loss model)</span>
+                </div>
+                <div class="report-template-option" data-value="audit" style="padding: 6px 12px; cursor: pointer; line-height: 1.25; text-align: left;">
+                  <b>Regulatory Audit Transcript</b><br><span style="color:var(--text-muted); font-size:0.62rem;">(Control evidence compliance)</span>
+                </div>
+              </div>
+              <input type="hidden" id="report-template-select" value="operational">
+            </div>
           </div>
-          <button id="btn-generate-report" class="btn btn-primary btn-sm" style="font-weight: 700;">📄 Generate Report</button>
+          <button id="btn-generate-report" class="btn btn-primary btn-sm" style="font-weight: 700; height: 38px;">📄 Generate Report</button>
         </div>
 
         <div id="generated-report-preview" style="display: none; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.06); padding: 20px; border-radius: 6px; flex-direction: column; gap: 15px; margin-top: 10px;">
@@ -288,5 +303,36 @@ export function renderReportsModule() {
         window.print();
       };
     };
+  }
+
+  // Custom dropdown event handlers for multi-line report selection
+  const customTrigger = document.getElementById('report-template-selected');
+  const customDropdown = document.getElementById('report-template-dropdown');
+  const hiddenInput = document.getElementById('report-template-select');
+  const selectedText = document.getElementById('report-template-selected-text');
+  
+  if (customTrigger && customDropdown && hiddenInput && selectedText) {
+    customTrigger.onclick = (e) => {
+      e.stopPropagation();
+      customDropdown.classList.toggle('hidden');
+    };
+
+    document.addEventListener('click', () => {
+      customDropdown.classList.add('hidden');
+    });
+
+    const options = document.querySelectorAll('.report-template-option');
+    options.forEach(opt => {
+      opt.onclick = (e) => {
+        e.stopPropagation();
+        options.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        
+        const value = opt.getAttribute('data-value');
+        hiddenInput.value = value;
+        selectedText.innerHTML = opt.innerHTML;
+        customDropdown.classList.add('hidden');
+      };
+    });
   }
 }
