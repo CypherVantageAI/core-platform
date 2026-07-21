@@ -14,6 +14,8 @@
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
+  --color-text: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
   
   /* Brand Gradients & Colors */
   --color-violet: #8b5cf6;
@@ -2974,6 +2976,26 @@ body.light-mode .report-template-option:hover {
 }
 body.light-mode .report-template-option.active {
   background: rgba(8, 145, 178, 0.15) !important;
+}
+
+/* Light Mode Global Map Visibility Overrides */
+body.light-mode .region-land {
+  fill: #cbd5e1 !important;
+  stroke: #94a3b8 !important;
+}
+body.light-mode .landmass-passive {
+  fill: #e2e8f0 !important;
+  stroke: #cbd5e1 !important;
+}
+body.light-mode .connection-line {
+  stroke: #7c3aed !important;
+}
+body.light-mode .connection-line.dashed {
+  stroke: #0891b2 !important;
+}
+body.light-mode .world-map-grid {
+  background-color: #f1f5f9 !important;
+  border-radius: var(--border-radius-sm);
 }/* Resilience Knowledge Graph Styles */
 .graph-node circle {
   transition: stroke-width 0.2s ease, filter 0.2s ease;

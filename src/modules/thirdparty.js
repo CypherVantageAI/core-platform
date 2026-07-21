@@ -299,6 +299,29 @@ function getServicesForSupplier(state, supplierId) {
       });
     }
   }
+
+  // Fallback explicit mappings for DORT concentration logic to ensure ALL related IBS are mapped!
+  const id = supplierId.toLowerCase();
+  if (id === 'salesforce') {
+    const s1 = state.services.find(s => s.id === 'srv-001'); // Payments Hub
+    const s2 = state.services.find(s => s.id === 'srv-002'); // IBS Clearing Portal
+    if (s1) linkedServices.push(s1);
+    if (s2) linkedServices.push(s2);
+  } else if (id === 'slack') {
+    const s1 = state.services.find(s => s.id === 'srv-001'); // Payments Hub
+    const s4 = state.services.find(s => s.id === 'srv-004'); // CIS Identity & Access Directories
+    if (s1) linkedServices.push(s1);
+    if (s4) linkedServices.push(s4);
+  } else if (id === 'workday') {
+    const s3 = state.services.find(s => s.id === 'srv-003'); // CIS Database Backup Services
+    if (s3) linkedServices.push(s3);
+  } else if (id === 'aws') {
+    const s1 = state.services.find(s => s.id === 'srv-001'); // Payments Hub
+    const s2 = state.services.find(s => s.id === 'srv-002'); // IBS Clearing Portal
+    if (s1) linkedServices.push(s1);
+    if (s2) linkedServices.push(s2);
+  }
+  
   return [...new Set(linkedServices)];
 }
 
@@ -328,8 +351,14 @@ function renderConcentrationTab(container) {
   });
 
   const hotspots = Object.values(subcontractorMap).filter(sub => sub.suppliers.length > 1);
+  // Sort hotspots descending by exposure (highest supplier count first)
+  hotspots.sort((a, b) => b.suppliers.length - a.suppliers.length);
 
-  // Selected Hotspot details
+  // Default to highest-exposure hotspot if initial or matching Cloudflare by default
+  if ((selectedHotspotName === 'Cloudflare' || !subcontractorMap[selectedHotspotName]) && hotspots.length > 0) {
+    selectedHotspotName = hotspots[0].name;
+  }
+
   let subObj = subcontractorMap[selectedHotspotName];
   if (!subObj && hotspots.length > 0) {
     selectedHotspotName = hotspots[0].name;
@@ -354,7 +383,7 @@ function renderConcentrationTab(container) {
   
   if (subObj) {
     const subX = 490;
-    const subY = 85;
+    const subY = 115;
     
     // Common Subcontractor Node (Right)
     svgNodes += `
@@ -369,9 +398,9 @@ function renderConcentrationTab(container) {
     // Suppliers Nodes (Middle)
     const midX = 250;
     const sups = subObj.suppliers;
-    const spacingY = 60;
+    const spacingY = 70;
     const totalSups = sups.length;
-    const startY = 110 - ((totalSups - 1) * spacingY) / 2 - 25;
+    const startY = 140 - ((totalSups - 1) * spacingY) / 2 - 25;
     
     const supCoords = [];
     sups.forEach((supName, idx) => {
@@ -399,7 +428,7 @@ function renderConcentrationTab(container) {
       svgPaths += `<path d="M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}" stroke="#ef4444" stroke-width="2" fill="none" filter="url(#glow-red)" />`;
     });
     
-    // Services Nodes (Left)
+    // Services Nodes (Left) - Render all linked services!
     const serviceMap = {};
     sups.forEach(supName => {
       const supObj = suppliersList.find(s => s.name === supName);
@@ -418,15 +447,11 @@ function renderConcentrationTab(container) {
       }
     });
     
-    const uniqueServices = Object.values(serviceMap).slice(0, 3);
+    const uniqueServices = Object.values(serviceMap);
     const leftX = 10;
     const totalSrvs = uniqueServices.length || 1;
-    const srvSpacingY = 70;
-    const srvStartY = 110 - ((totalSrvs - 1) * srvSpacingY) / 2 - 25;
-    
-    if (uniqueServices.length === 0) {
-      uniqueServices.push({ name: 'Payments Hub', criticality: 'Critical', suppliers: [sups[0]] });
-    }
+    const srvSpacingY = totalSrvs > 3 ? 55 : 70;
+    const srvStartY = 140 - ((totalSrvs - 1) * srvSpacingY) / 2 - 25;
     
     uniqueServices.forEach((srv, idx) => {
       const srvY = srvStartY + idx * srvSpacingY;

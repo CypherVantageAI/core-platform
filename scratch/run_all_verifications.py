@@ -10,7 +10,7 @@ from selenium import webdriver
 import subprocess
 
 # 1. Start Background HTTP Server
-PORT = 8080
+PORT = 8082
 httpd = None
 
 def start_server():
@@ -72,21 +72,21 @@ def run_syntax_checks(scratch_dir):
     return errors == 0
 
 def kill_port_occupants():
-    print("\nVerifying and releasing local server port 8080...")
+    print(f"\nVerifying and releasing local server port {PORT}...")
     try:
-        # Run Get-NetTCPConnection to find unique owning process IDs for port 8080
-        cmd = ["powershell", "-Command", "Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique"]
+        # Run Get-NetTCPConnection to find unique owning process IDs for port
+        cmd = ["powershell", "-Command", f"Get-NetTCPConnection -LocalPort {PORT} -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique"]
         res = subprocess.run(cmd, capture_output=True, text=True)
         pids = [line.strip() for line in res.stdout.splitlines() if line.strip() and line.strip().isdigit() and line.strip() != '0']
         if pids:
-            print(f"  [WARNING] Port 8080 is occupied by process(es): {', '.join(pids)}. Terminating to prevent conflict...")
+            print(f"  [WARNING] Port {PORT} is occupied by process(es): {', '.join(pids)}. Terminating to prevent conflict...")
             for pid in pids:
                 subprocess.run(["powershell", "-Command", f"Stop-Process -Id {pid} -Force -ErrorAction SilentlyContinue"])
             time.sleep(2) # wait for socket release
-            print("  [PASS] Port 8080 has been successfully released.")
+            print(f"  [PASS] Port {PORT} has been successfully released.")
             return True
         else:
-            print("  [PASS] Port 8080 is clear and available.")
+            print(f"  [PASS] Port {PORT} is clear and available.")
             return True
     except Exception as e:
         print(f"  [WARNING] Could not check or clear port connections: {e}")
@@ -369,14 +369,6 @@ def main():
     elapsed = time.time() - start_time
     print(f"Health check & Capture execution completed in {elapsed:.2f} seconds.")
     
-    # Restart the development server back up for the user's localhost
-    print("\nRestarting localhost development server in background...")
-    try:
-        subprocess.Popen(["python", "-m", "http.server", "8080"])
-        print("  [OK] Localhost server has been successfully restarted on port 8080.")
-    except Exception as e:
-        print(f"  [WARNING] Could not restart development server: {e}")
-        
     if syntax_ok and gh_ok and port_ok and nav_ok and func_ok and cap_ok:
         print("\nSUCCESS: All platform systems verified healthy and screenshots updated!")
         sys.exit(0)

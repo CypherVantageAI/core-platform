@@ -297,8 +297,8 @@ function renderDashboardContent() {
     contentArea.innerHTML = `
       <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
         <!-- Left Column: Global Visualisation Map & Systems -->
-        <div class="dashboard-card map-card" style="flex: 1.8; min-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+        <div class="dashboard-card map-card" style="flex: 1.8; min-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 12px; height: 530px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; flex-shrink: 0;">
             <h3 style="font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
               Global Threat & Service Infrastructure Visualiser
             </h3>
@@ -311,7 +311,7 @@ function renderDashboardContent() {
             </div>
           </div>
 
-          <div class="world-map-wrapper" style="position: relative; height: 350px;">
+          <div class="world-map-wrapper" style="position: relative; height: 280px; flex-shrink: 0;">
             <!-- Simulation Loader Overlay -->
             <div id="simulation-loader-overlay" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 12, 29, 0.85); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: var(--border-radius-lg); backdrop-filter: blur(4px); transition: opacity 0.3s ease;">
               <div class="scanner-line" style="position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--color-cyan), transparent); animation: scanEffect 1.5s infinite linear;"></div>
@@ -376,12 +376,12 @@ function renderDashboardContent() {
           </div>
 
           <!-- Mapped Infrastructure Section (utilizing space below map) -->
-          <div class="map-systems-section" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
-            <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 6px 0; display: flex; justify-content: space-between; align-items: center;">
+          <div class="map-systems-section" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+            <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 6px 0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
               <span>Mapped Infrastructure Services & Systems</span>
               <span id="map-systems-count" style="font-size: 0.68rem; text-transform: none; color: var(--color-cyan); font-weight: 600;">0 Service(s)</span>
             </h4>
-            <div id="map-systems-grid" class="resilience-systems-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+            <div id="map-systems-grid" class="resilience-systems-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; overflow-y: auto; flex: 1; padding-right: 4px;">
               <!-- Dynamically populated in app.js -->
             </div>
           </div>
