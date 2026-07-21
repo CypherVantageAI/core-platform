@@ -1331,6 +1331,7 @@ const DEFAULT_STATE = {
       }
     }
   },
+  },
   scenarios: [
     {
       id: 'sim-ransomware',
@@ -1444,8 +1445,7 @@ const DEFAULT_STATE = {
       preventionEffectiveness: 60,
       recoveryReadiness: 30
     }
-  ]
-  },
+  ],
 
   supplierEvidenceVault: [],
   customAssessments: [],
@@ -1840,8 +1840,8 @@ export function loadState() {
   if (saved) {
     try {
       parsed = JSON.parse(saved);
-      if (!parsed.version || parsed.version < 17) {
-        console.warn("Outdated DORA database state (V17 needed). Reinitializing database.");
+      if (!parsed.version || parsed.version < 17 || !parsed.scenarios) {
+        console.warn("Outdated DORA database state (V17/Scenarios needed). Reinitializing database.");
         parsed = JSON.parse(JSON.stringify(DEFAULT_STATE));
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
       }

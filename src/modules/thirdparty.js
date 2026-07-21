@@ -7,7 +7,7 @@ import { createTable, createCard, createStatusBadge } from '../components/ui.js'
 
 let selectedSupplierId = 'aws';
 let activeThirdPartyTab = 'directory';
-let selectedHotspotName = 'Cloudflare';
+let selectedHotspotName = null;
 
 export function renderThirdPartyModule() {
   const state = getState();
@@ -354,8 +354,8 @@ function renderConcentrationTab(container) {
   // Sort hotspots descending by exposure (highest supplier count first)
   hotspots.sort((a, b) => b.suppliers.length - a.suppliers.length);
 
-  // Default to highest-exposure hotspot if initial or matching Cloudflare by default
-  if ((selectedHotspotName === 'Cloudflare' || !subcontractorMap[selectedHotspotName]) && hotspots.length > 0) {
+  // Default to highest-exposure hotspot if initial or not found
+  if ((!selectedHotspotName || !subcontractorMap[selectedHotspotName]) && hotspots.length > 0) {
     selectedHotspotName = hotspots[0].name;
   }
 

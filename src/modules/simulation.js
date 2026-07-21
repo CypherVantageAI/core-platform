@@ -10,6 +10,7 @@ let isCustomDesigning = false;
 
 // Custom designer form state
 let designerForm = {
+  id: 'sim-custom-default',
   name: 'Custom Active Threat Scenario',
   description: 'Enterprise-wide critical gateway disruption simulated by risk coordinator.',
   threatCategory: 'Cyber',
