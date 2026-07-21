@@ -12,6 +12,7 @@ import { renderIctRiskModule } from '../modules/ictrisk.js';
 import { renderThirdPartyModule } from '../modules/thirdparty.js';
 import { renderReportsModule } from '../modules/reports.js';
 import { renderAiGovernanceModule } from '../modules/aigovernance.js';
+import { renderAnalystModule } from '../modules/analyst.js';
 
 
 export function switchTab(tabId) {
@@ -85,7 +86,7 @@ export function switchTab(tabId) {
       }
       break;
     case 'manager-advisor':
-      // Chat is loaded via static HTML
+      renderAnalystModule();
       break;
     case 'manager-ai-risk':
       renderAiGovernanceModule();

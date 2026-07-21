@@ -288,14 +288,10 @@ def run_screen_captures(artifacts_dir):
         driver.save_screenshot(path_res_drill)
         print("  [OK] Screen capture: Resilience Scenario Drill saved.")
         
-        # H. AI Advisor Chat
+        # H. AI Advisor Chat (AI Operational Resilience Analyst)
         driver.execute_script("window.switchTab('manager-advisor');")
         time.sleep(1)
-        driver.execute_script("document.getElementById('advisor-user-input').value = 'Show DORA gaps';")
-        driver.execute_script("window.sendAdvisorChatMessage();")
-        time.sleep(2)
-        driver.execute_script("document.getElementById('advisor-user-input').value = 'Generate Board Report';")
-        driver.execute_script("window.sendAdvisorChatMessage();")
+        driver.execute_script("document.getElementById('btn-preset-tolerance').click();")
         time.sleep(2)
         path_advisor = os.path.join(artifacts_dir, "ai_copilot_responses.png")
         driver.save_screenshot(path_advisor)
