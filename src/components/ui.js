@@ -539,6 +539,13 @@ export function showModal(title, contentHtml) {
     modal.onclick = (e) => {
       if (e.target === modal) closeFn();
     };
+
+    // Add Escape key handler
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        closeFn();
+      }
+    });
   }
   
   modal.querySelector('#cv-dynamic-modal-title').innerText = title;
