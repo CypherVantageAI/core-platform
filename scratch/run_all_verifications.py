@@ -32,6 +32,18 @@ def stop_server():
         httpd.server_close()
         print("[OK] Test server stopped successfully.")
 
+# Helper to wait for JS bootstrap to avoid race conditions
+def wait_for_bootstrap(driver, timeout=15):
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            if driver.execute_script("return typeof window.switchTab === 'function';"):
+                return True
+        except Exception:
+            pass
+        time.sleep(0.5)
+    raise TimeoutError("Timed out waiting for Cypher Vantage javascript module bootstrap.")
+
 # 2. Syntax check
 def run_syntax_checks(scratch_dir):
     py_files = [os.path.join(scratch_dir, f) for f in os.listdir(scratch_dir) if f.endswith('.py') and f != "run_all_verifications.py"]
@@ -80,7 +92,7 @@ def verify_navigation_tabs():
     all_ok = True
     try:
         driver.get(f'http://localhost:{PORT}/?cb={int(time.time())}')
-        time.sleep(3)
+        wait_for_bootstrap(driver)
         
         tabs = [
             'manager-dashboard', 'manager-resilience', 'manager-dora', 'manager-risk',
@@ -104,6 +116,13 @@ def verify_navigation_tabs():
             print("  [PASS] All workspaces transitioned successfully with zero browser exceptions.")
     except Exception as e:
         print(f"  [FAIL] Navigation test exception: {e}")
+        # Print browser console logs for debug trace
+        try:
+            print("  --- BROWSER CONSOLE TRACE ---")
+            for log in driver.get_log('browser'):
+                print("  ", log)
+        except Exception:
+            pass
         all_ok = False
     finally:
         driver.quit()
@@ -116,11 +135,12 @@ def verify_demo_features():
     options.add_argument('--headless')
     options.add_argument('--window-size=1280,1024')
     options.add_argument('--disk-cache-size=1')
+    options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
     driver = webdriver.Chrome(options=options)
     all_ok = True
     try:
         driver.get(f'http://localhost:{PORT}/?cb={int(time.time())}')
-        time.sleep(4)
+        wait_for_bootstrap(driver)
         
         # Test Global Threat Map drill down
         driver.execute_script("window.switchTab('manager-dashboard');")
@@ -157,6 +177,109 @@ def verify_demo_features():
         print("  [PASS] All interactive workflows completed with zero script faults.")
     except Exception as e:
         print(f"  [FAIL] Functional workflow exception: {e}")
+        # Print browser console logs for debug trace
+        try:
+            print("  --- BROWSER CONSOLE TRACE ---")
+            for log in driver.get_log('browser'):
+                print("  ", log)
+        except Exception:
+            pass
+        all_ok = False
+    finally:
+        driver.quit()
+    return all_ok
+
+# 6. Selenium Screen Captures
+def run_screen_captures(artifacts_dir):
+    print("\nExecuting platform screen capture suite to generate fresh visual artifacts...")
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')
+    options.add_argument('--window-size=1280,1024')
+    options.add_argument('--disk-cache-size=1')
+    options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
+    driver = webdriver.Chrome(options=options)
+    all_ok = True
+    try:
+        driver.get(f'http://localhost:{PORT}/?cb={int(time.time())}')
+        wait_for_bootstrap(driver)
+        
+        # A. TPRM Directory
+        driver.execute_script("window.switchTab('manager-thirdparty');")
+        time.sleep(1)
+        path_tpr_dir = os.path.join(artifacts_dir, "thirdparty_directory.png")
+        driver.save_screenshot(path_tpr_dir)
+        print("  [OK] Screen capture: TPRM Directory saved.")
+        
+        # B. Concentration Risk
+        driver.execute_script("document.getElementById('tab-tpr-concentration').click();")
+        time.sleep(1)
+        path_tpr_conc = os.path.join(artifacts_dir, "thirdparty_concentration.png")
+        driver.save_screenshot(path_tpr_conc)
+        print("  [OK] Screen capture: TPRM Concentration saved.")
+        
+        # C. Exit Strategies
+        driver.execute_script("document.getElementById('tab-tpr-exit').click();")
+        time.sleep(1)
+        path_tpr_exit = os.path.join(artifacts_dir, "thirdparty_exit.png")
+        driver.save_screenshot(path_tpr_exit)
+        print("  [OK] Screen capture: TPRM Exit Strategies saved.")
+        
+        # D. AI Audit & DLP
+        driver.execute_script("window.switchTab('manager-ai-risk');")
+        time.sleep(1)
+        path_ai_audit = os.path.join(artifacts_dir, "ai_audit.png")
+        driver.save_screenshot(path_ai_audit)
+        print("  [OK] Screen capture: AI Audit saved.")
+        
+        # E. TLPT Campaigns
+        driver.execute_script("document.getElementById('tab-ai-campaigns').click();")
+        time.sleep(1)
+        path_ai_camp = os.path.join(artifacts_dir, "ai_campaigns.png")
+        driver.save_screenshot(path_ai_camp)
+        print("  [OK] Screen capture: AI TLPT Campaigns saved.")
+        
+        # F. AI Governance Registry
+        driver.execute_script("document.getElementById('tab-ai-governance').click();")
+        time.sleep(1)
+        path_ai_gov = os.path.join(artifacts_dir, "ai_governance.png")
+        driver.save_screenshot(path_ai_gov)
+        print("  [OK] Screen capture: AI Governance saved.")
+        
+        # G. Operational Resilience tabletop drill
+        driver.execute_script("window.switchTab('manager-resilience');")
+        time.sleep(1)
+        driver.execute_script("document.getElementById('btn-res-tab-readiness').click();")
+        time.sleep(0.5)
+        driver.execute_script("document.getElementById('readiness-drill-select').value = 'payment-drill';")
+        driver.execute_script("document.getElementById('btn-run-drill').click();")
+        time.sleep(5)
+        path_res_drill = os.path.join(artifacts_dir, "resilience_readiness_drill.png")
+        driver.save_screenshot(path_res_drill)
+        print("  [OK] Screen capture: Resilience Scenario Drill saved.")
+        
+        # H. AI Advisor Chat
+        driver.execute_script("window.switchTab('manager-advisor');")
+        time.sleep(1)
+        driver.execute_script("document.getElementById('advisor-user-input').value = 'Show DORA gaps';")
+        driver.execute_script("window.sendAdvisorChatMessage();")
+        time.sleep(2)
+        driver.execute_script("document.getElementById('advisor-user-input').value = 'Generate Board Report';")
+        driver.execute_script("window.sendAdvisorChatMessage();")
+        time.sleep(2)
+        path_advisor = os.path.join(artifacts_dir, "ai_copilot_responses.png")
+        driver.save_screenshot(path_advisor)
+        print("  [OK] Screen capture: AI Copilot Responses saved.")
+        
+        print("  [PASS] Screen capture suite executed successfully.")
+    except Exception as e:
+        print(f"  [FAIL] Screen capture exception: {e}")
+        # Print browser console logs for debug trace
+        try:
+            print("  --- BROWSER CONSOLE TRACE ---")
+            for log in driver.get_log('browser'):
+                print("  ", log)
+        except Exception:
+            pass
         all_ok = False
     finally:
         driver.quit()
@@ -164,12 +287,11 @@ def verify_demo_features():
 
 def main():
     start_time = time.time()
-    # Force search to look in the correct artifacts scratch directory
     artifacts_dir = r"C:\Users\samba\.gemini\antigravity\brain\e6a614fc-148d-470c-8975-25aa303c5b16"
     scratch_dir = os.path.join(artifacts_dir, "scratch")
     
     print("====================================================")
-    print("CYPHER VANTAGE CONSOLIDATED HEALTH CHECK BUNDLE")
+    print("CYPHER VANTAGE CONSOLIDATED HEALTH CHECK & CAPTURE")
     print("====================================================")
     
     # Run checks
@@ -178,13 +300,15 @@ def main():
     
     # Run Selenium tests against local server
     start_server()
-    time.sleep(1) # wait for server thread to bind
+    time.sleep(2) # wait for server thread to bind
     
     nav_ok = False
     func_ok = False
+    cap_ok = False
     try:
         nav_ok = verify_navigation_tabs()
         func_ok = verify_demo_features()
+        cap_ok = run_screen_captures(artifacts_dir)
     finally:
         stop_server()
         
@@ -195,13 +319,14 @@ def main():
     print(f"2. Production URL Status:    {'[PASS]' if gh_ok else '[FAIL]'}")
     print(f"3. Workspace Tab Switches:   {'[PASS]' if nav_ok else '[FAIL]'}")
     print(f"4. Portal Functional Drills: {'[PASS]' if func_ok else '[FAIL]'}")
+    print(f"5. Screen Capture Suite:     {'[PASS]' if cap_ok else '[FAIL]'}")
     print("====================================================")
     
     elapsed = time.time() - start_time
-    print(f"Health check execution completed in {elapsed:.2f} seconds.")
+    print(f"Health check & Capture execution completed in {elapsed:.2f} seconds.")
     
-    if syntax_ok and gh_ok and nav_ok and func_ok:
-        print("\nSUCCESS: All platform systems verified healthy!")
+    if syntax_ok and gh_ok and nav_ok and func_ok and cap_ok:
+        print("\nSUCCESS: All platform systems verified healthy and screenshots updated!")
         sys.exit(0)
     else:
         print("\nERROR: Verification gaps identified.")
