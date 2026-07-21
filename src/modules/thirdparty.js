@@ -515,14 +515,14 @@ function renderConcentrationTab(container) {
       </div>
 
       <!-- Concentration Map Visualization -->
-      <div class="dashboard-card" style="padding: 15px; margin: 0; min-height: 280px; display: flex; flex-direction: column; gap: 10px;">
+      <div class="dashboard-card" style="padding: 15px; margin: 0; min-height: 340px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto;">
         <h3 style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px; margin: 0;">
           Interactive Concentration Overlay Map: ${selectedHotspotName}
         </h3>
         
-        <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); border: 1px solid var(--border-color); border-radius: 6px; padding: 20px; position: relative; overflow: hidden;">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); border: 1px solid var(--border-color); border-radius: 6px; padding: 20px; position: relative; overflow: auto;">
           <!-- SVG Concentration Tree -->
-          <svg viewBox="0 0 700 220" style="width: 100%; height: 100%; max-height: 220px;">
+          <svg viewBox="0 0 700 280" style="width: 100%; height: 100%; max-height: 280px; min-height: 280px; min-width: 680px;">
             <defs>
               <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="3" result="blur" />
