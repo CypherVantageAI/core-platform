@@ -19,7 +19,7 @@ def start_server():
         def log_message(self, format, *args):
             pass # suppress access log prints to avoid cluttering stdout
             
-    class SilentTCPServer(socketserver.TCPServer):
+    class SilentTCPServer(socketserver.ThreadingTCPServer):
         def handle_error(self, request, client_address):
             # Suppress noisy browser connection-reset tracebacks
             exctype, value, tb = sys.exc_info()
@@ -311,6 +311,15 @@ def run_screen_captures(artifacts_dir):
         path_twin = os.path.join(artifacts_dir, "resilience_twin.png")
         driver.save_screenshot(path_twin)
         print("  [OK] Screen capture: Resilience Twin DORT saved.")
+        
+        # J. Scenario Simulation Engine
+        driver.execute_script("window.switchTab('manager-resilience');")
+        time.sleep(1)
+        driver.execute_script("document.getElementById('btn-res-tab-simulation').click();")
+        time.sleep(1.5)
+        path_sim = os.path.join(artifacts_dir, "scenario_simulation.png")
+        driver.save_screenshot(path_sim)
+        print("  [OK] Screen capture: Scenario Simulation Engine saved.")
         
         print("  [PASS] Screen capture suite executed successfully.")
     except Exception as e:

@@ -4,8 +4,9 @@
 
 import { getState, saveState } from '../core/db.js';
 import { createTable, createForm, createStatusBadge } from '../components/ui.js';
+import { renderSimulationTab } from './simulation.js';
 
-let activeResilienceTab = 'services'; // 'services' | 'dependencies' | 'twin' | 'incidents' | 'readiness' | 'monitoring'
+let activeResilienceTab = 'services'; // 'services' | 'dependencies' | 'twin' | 'incidents' | 'readiness' | 'monitoring' | 'simulation'
 let selectedServiceId = 'srv-001';
 let selectedTwinPoint = 'sup-aws'; // default failure point for DORT
 let isEditing = false;
@@ -34,6 +35,7 @@ export function renderResilienceModule() {
         <button id="btn-res-tab-services" class="btn btn-secondary btn-xs ${activeResilienceTab === 'services' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🏢 Business Services</button>
         <button id="btn-res-tab-dependencies" class="btn btn-secondary btn-xs ${activeResilienceTab === 'dependencies' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Dependency Mapping</button>
         <button id="btn-res-tab-twin" class="btn btn-secondary btn-xs ${activeResilienceTab === 'twin' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">♊ Digital Resilience Twin</button>
+        <button id="btn-res-tab-simulation" class="btn btn-secondary btn-xs ${activeResilienceTab === 'simulation' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🧬 Scenario Simulation</button>
         <button id="btn-res-tab-incidents" class="btn btn-secondary btn-xs ${activeResilienceTab === 'incidents' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🚨 Incident Management</button>
         <button id="btn-res-tab-readiness" class="btn btn-secondary btn-xs ${activeResilienceTab === 'readiness' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">⏱️ Recovery Readiness</button>
         <button id="btn-res-tab-monitoring" class="btn btn-secondary btn-xs ${activeResilienceTab === 'monitoring' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">📊 Control Monitoring</button>
@@ -45,7 +47,7 @@ export function renderResilienceModule() {
   `;
 
   // Bind tab switcher clicks
-  const tabs = ['services', 'dependencies', 'twin', 'incidents', 'readiness', 'monitoring'];
+  const tabs = ['services', 'dependencies', 'twin', 'simulation', 'incidents', 'readiness', 'monitoring'];
   tabs.forEach(tab => {
     const btn = document.getElementById(`btn-res-tab-${tab}`);
     if (btn) {
@@ -73,6 +75,9 @@ function renderResilienceContent() {
       break;
     case 'twin':
       renderTwinTab(contentArea);
+      break;
+    case 'simulation':
+      renderSimulationTab(contentArea);
       break;
     case 'incidents':
       renderIncidentsTab(contentArea);

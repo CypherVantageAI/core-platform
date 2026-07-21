@@ -2,11 +2,11 @@
 // Cypher Vantage - Core Database & State Manager (ES6 Module)
 // ==========================================================================
 
-const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v15';
+const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v17';
 
 // Default state structure conforming to the 12 core DORA entities
 const DEFAULT_STATE = {
-  version: 16,
+  version: 17,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
@@ -1330,7 +1330,121 @@ const DEFAULT_STATE = {
         }
       }
     }
-  }
+  },
+  scenarios: [
+    {
+      id: 'sim-ransomware',
+      name: 'Ransomware Gateway Outage',
+      description: 'Lateral ransomware payload locks Identity Directories and clearing servers.',
+      threatCategory: 'Cyber',
+      severity: 'Critical',
+      likelihood: 4,
+      impactRating: 5,
+      servicesAffected: ['srv-001', 'srv-004'],
+      backupStrategy: 'Warm Standby',
+      detectionDelay: 15,
+      preventionEffectiveness: 80,
+      recoveryReadiness: 70
+    },
+    {
+      id: 'sim-cloud-fail',
+      name: 'Cloud Region Outage (AWS us-east-1)',
+      description: 'Physical fiber cut disrupts AWS Virginia region availability zones.',
+      threatCategory: 'Infrastructure',
+      severity: 'Critical',
+      likelihood: 2,
+      impactRating: 5,
+      servicesAffected: ['srv-001', 'srv-002'],
+      backupStrategy: 'None',
+      detectionDelay: 5,
+      preventionEffectiveness: 90,
+      recoveryReadiness: 50
+    },
+    {
+      id: 'sim-idp-fail',
+      name: 'Active Directory Identity Failover',
+      description: 'Broken SSO patch locks internal employee authorization nodes.',
+      threatCategory: 'Software',
+      severity: 'High',
+      likelihood: 3,
+      impactRating: 4,
+      servicesAffected: ['srv-004'],
+      backupStrategy: 'Active-Active',
+      detectionDelay: 2,
+      preventionEffectiveness: 95,
+      recoveryReadiness: 90
+    },
+    {
+      id: 'sim-data-corrupt',
+      name: 'Transaction Database Corruption',
+      description: 'Malformed API bulk update corrupts credit history journal tables.',
+      threatCategory: 'Data',
+      severity: 'High',
+      likelihood: 2,
+      impactRating: 4,
+      servicesAffected: ['srv-003'],
+      backupStrategy: 'Warm Standby',
+      detectionDelay: 30,
+      preventionEffectiveness: 75,
+      recoveryReadiness: 60
+    },
+    {
+      id: 'sim-thirdparty-fail',
+      name: 'Infosys Staging API Outage',
+      description: 'Downstream subcontractor API gateway goes offline due to certificate expiry.',
+      threatCategory: 'Vendor',
+      severity: 'Medium',
+      likelihood: 4,
+      impactRating: 3,
+      servicesAffected: ['srv-002', 'srv-003'],
+      backupStrategy: 'Warm Standby',
+      detectionDelay: 10,
+      preventionEffectiveness: 85,
+      recoveryReadiness: 75
+    },
+    {
+      id: 'sim-payment-fail',
+      name: 'Payments Processing Failure',
+      description: 'Acquiring bank network drops international credit routing paths.',
+      threatCategory: 'Infrastructure',
+      severity: 'Critical',
+      likelihood: 3,
+      impactRating: 5,
+      servicesAffected: ['srv-001'],
+      backupStrategy: 'Active-Active',
+      detectionDelay: 1,
+      preventionEffectiveness: 98,
+      recoveryReadiness: 95
+    },
+    {
+      id: 'sim-market-fail',
+      name: 'JSE Clearing Link Disruption',
+      description: 'Exchange direct gateway disconnects during end-of-day market settlements.',
+      threatCategory: 'Infrastructure',
+      severity: 'High',
+      likelihood: 1,
+      impactRating: 4,
+      servicesAffected: ['srv-002'],
+      backupStrategy: 'None',
+      detectionDelay: 8,
+      preventionEffectiveness: 95,
+      recoveryReadiness: 40
+    },
+    {
+      id: 'sim-insider-threat',
+      name: 'Malicious Privilege Abuse',
+      description: 'Internal administrator exfiltrates credit backup keys and wipes system logs.',
+      threatCategory: 'Cyber',
+      severity: 'Critical',
+      likelihood: 2,
+      impactRating: 5,
+      servicesAffected: ['srv-003', 'srv-004'],
+      backupStrategy: 'None',
+      detectionDelay: 120,
+      preventionEffectiveness: 60,
+      recoveryReadiness: 30
+    }
+  ]
   },
 
   supplierEvidenceVault: [],
@@ -1726,8 +1840,8 @@ export function loadState() {
   if (saved) {
     try {
       parsed = JSON.parse(saved);
-      if (!parsed.version || parsed.version < 16) {
-        console.warn("Outdated DORA database state (V16 needed). Reinitializing database.");
+      if (!parsed.version || parsed.version < 17) {
+        console.warn("Outdated DORA database state (V17 needed). Reinitializing database.");
         parsed = JSON.parse(JSON.stringify(DEFAULT_STATE));
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
       }

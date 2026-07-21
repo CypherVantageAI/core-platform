@@ -3011,3 +3011,27 @@ body.light-mode .world-map-grid {
   fill: #fff;
 }
 
+/* Operational Resilience Scenario Simulation Styles */
+.scenario-template-card:hover {
+  background: var(--bg-card-hover) !important;
+  border-color: var(--color-cyan) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.heatmap-pulse-dot {
+  animation: heatmapPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes heatmapPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
