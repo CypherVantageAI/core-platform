@@ -2391,13 +2391,17 @@ textarea:focus-visible {
 
 .connection-line {
   fill: none;
-  stroke: rgba(139, 92, 246, 0.25);
-  stroke-width: 1.5px;
+  stroke: #38bdf8;
+  stroke-width: 2.2px;
   stroke-linecap: round;
+  filter: drop-shadow(0 0 3px rgba(56, 189, 248, 0.5));
 }
 
 .connection-line.dashed {
+  stroke: #a855f7;
+  stroke-width: 2px;
   stroke-dasharray: 6,6;
+  filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.4));
 }
 
 /* Active simulation fiber flow anim */
@@ -2988,10 +2992,14 @@ body.light-mode .landmass-passive {
   stroke: #cbd5e1 !important;
 }
 body.light-mode .connection-line {
-  stroke: #7c3aed !important;
+  stroke: #0284c7 !important;
+  stroke-width: 2.5px !important;
+  filter: drop-shadow(0 0 2px rgba(2, 132, 199, 0.4));
 }
 body.light-mode .connection-line.dashed {
-  stroke: #0891b2 !important;
+  stroke: #7e22ce !important;
+  stroke-width: 2.2px !important;
+  filter: drop-shadow(0 0 2px rgba(126, 34, 206, 0.4));
 }
 body.light-mode .world-map-grid {
   background-color: #f1f5f9 !important;

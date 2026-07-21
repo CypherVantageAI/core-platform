@@ -8,220 +8,6 @@ import { renderResilienceGraph } from './knowledgegraph.js';
 
 let activeDashboardSubTab = 'overview';
 
-export function renderExecutiveDashboard() {
-  const state = getState();
-  window.activeDashboardSubTab = activeDashboardSubTab;
-  const container = document.getElementById('view-manager-dashboard');
-  if (!container) return;
-
-  container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
-      <!-- Sub-tab switcher -->
-      <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%;">
-        <button id="btn-db-tab-overview" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'overview' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">Executive Overview</button>
-        <button id="btn-db-tab-threatmap" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'threatmap' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🗺️ Global Threat Map & Feed</button>
-        <button id="btn-db-tab-graph" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'graph' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Resilience Knowledge Graph</button>
-      </div>
-
-      <!-- Tab Content Area -->
-      <div id="dashboard-tab-content" style="width: 100%;"></div>
-    </div>
-  `;
-
-  // Bind tab buttons
-  const btnOverview = document.getElementById('btn-db-tab-overview');
-  const btnThreatMap = document.getElementById('btn-db-tab-threatmap');
-  const btnGraph = document.getElementById('btn-db-tab-graph');
-
-  if (btnOverview) {
-    btnOverview.onclick = () => {
-      activeDashboardSubTab = 'overview';
-      window.activeDashboardSubTab = activeDashboardSubTab;
-      renderDashboardContent();
-      // Update active classes
-      btnOverview.classList.add('active');
-      if (btnThreatMap) btnThreatMap.classList.remove('active');
-      if (btnGraph) btnGraph.classList.remove('active');
-    };
-  }
-
-  if (btnThreatMap) {
-    btnThreatMap.onclick = () => {
-      activeDashboardSubTab = 'threatmap';
-      window.activeDashboardSubTab = activeDashboardSubTab;
-      renderDashboardContent();
-      // Update active classes
-      btnThreatMap.classList.add('active');
-      if (btnOverview) btnOverview.classList.remove('active');
-      if (btnGraph) btnGraph.classList.remove('active');
-    };
-  }
-
-  if (btnGraph) {
-    btnGraph.onclick = () => {
-      activeDashboardSubTab = 'graph';
-      window.activeDashboardSubTab = activeDashboardSubTab;
-      renderDashboardContent();
-      // Update active classes
-      btnGraph.classList.add('active');
-      if (btnOverview) btnOverview.classList.remove('active');
-      if (btnThreatMap) btnThreatMap.classList.remove('active');
-    };
-  }
-
-  // Initial load
-  renderDashboardContent();
-}
-
-// Register Executive Export handler to window for inline triggers
-window.triggerDynamicExport = function(format, reportType) {
-  const state = getState();
-  const timestamp = new Date().toISOString().substring(0, 10);
-  const totalServices = state.services.length;
-  const activeIncidents = state.incidents.filter(i => i.status === 'Active').length;
-  const totalGaps = state.obligations.filter(o => o.status !== 'Compliant').length;
-  
-  let body = '';
-  if (reportType === 'board-pack') {
-    body = `====================================================
-CYPHER VANTAGE - EXECUTIVE BOARD RESILIENCE BRIEFING
-====================================================
-Export Date: ${timestamp}
-Target Audience: Board of Directors, CRO, COO, CISO
-Format: ${format.toUpperCase()}
-====================================================
-
-1. EXECUTIVE RESILIENCE STATE
-The platform maintains a composite Resilience Index of 92%. Active risk mitigations are operating within standard parameters, though immediate capital allocation is recommended for key subcontractor vulnerabilities.
-
-2. EXECUTIVE SCORECARD
-* Resilience Score: 92% (Target: >90%)
-* Recovery Readiness: 89% (Based on failed scenario runs)
-* DORA Compliance: 82% (Pillar III/IV gaps remain)
-* Testing Coverage: 94% (15/16 plans tested)
-* Supplier Risk Index: 82.5% (High tier vendor average)
-
-3. STRATEGIC CONCERNS
-* Supplier Overlap: Cloudflare is a critical edge sub-processor shared concurrently by AWS us-east-1 and Salesforce directories.
-* BCP Evidence Gaps: AWS disaster recovery test summary certificates are outdated since October 2024.
-
-4. APPROVAL REQUISITIONS
-* Approve secondary Route53 / Akamai DNS failover budget.
-* Authorize SLA audit notifications to Infosys compliance team.
-`;
-  } else if (reportType === 'audit-pack') {
-    body = `====================================================
-CYPHER VANTAGE - COMPREHENSIVE COMPLIANCE AUDIT PACK
-====================================================
-Export Date: ${timestamp}
-====================================================
-
-1. DORA LEDGER COMPLIANCE COMPILATION
-* Compliance Index: 82%
-* Total Articles: ${state.obligations.length}
-* Compliant: ${state.obligations.filter(o => o.status === 'Compliant').length}
-* Open Gaps: ${totalGaps}
-
-2. CONTROL DESIGN EFFECTIVENESS
-* Preventive controls: Enforced (MFA active, encryption met)
-* Detective controls: Active (SIEM latency reduced to 15m)
-* Recovery controls: Gaps identified (outdated AWS DR tests)
-
-3. EVIDENCE VAULT ARCHIVE
-* AWS_SOC_2_Type_II_2025.pdf - VALID
-* AWS_DR_Testing_Plan_2024.pdf - OUTDATED
-* Infosys_Cyber_Policy_2025.pdf - VALID
-`;
-  } else if (reportType === 'regulator-pack') {
-    body = `====================================================
-CYPHER VANTAGE - REGULATORY DOSSIER (DORA/FCA)
-====================================================
-Export Date: ${timestamp}
-====================================================
-
-1. REGULATORY PILLARS ASSESSMENT SUMMARY
-* Pillar I (ICT Risk Management): 85%
-* Pillar II (Incident Reporting): 100%
-* Pillar III (Resilience Testing): 75%
-* Pillar IV (Third-Party Risk): 60%
-* Pillar V (Information Sharing): 100%
-
-2. OPERATIONAL DISRUPTIONS REGISTER
-* Active incidents: ${activeIncidents}
-* Total downtime cost: £438,750
-* Average incident detection delay: 15 minutes
-
-3. REMEDIATION TIMELINE
-All identified gaps are bound by regulatory timelines with target completion dates set for next quarter.
-`;
-  } else {
-    body = `====================================================
-CYPHER VANTAGE - DORA ARTICLE COMPLIANCE MATRIX
-====================================================
-Export Date: ${timestamp}
-====================================================
-${state.obligations.map(o => `* Article ${o.article}: ${o.title} - Status: ${o.status}`).join('\n')}
-`;
-  }
-
-  // Trigger client-side mockup file download
-  const filename = `${reportType}_export_${timestamp}.${format === 'summary' ? 'txt' : format}`;
-  const blob = new Blob([body], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
-// Helper to show dynamic report summary previews in dashboard
-window.previewReportSummary = function(reportType) {
-  const timestamp = new Date().toISOString().substring(0, 10);
-  let summaryHtml = '';
-  
-  if (reportType === 'board-pack') {
-    summaryHtml = `
-      <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
-        <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: BOARD BRIEFING SUMMARY</strong>
-        * **Resilience Index:** 92% (Target: >90%)
-        <br/>* **Current Posture:** Adequate risk margins. Primary concern is Cloudflare edge infrastructure concentration.
-        <br/>* **Action Required:** Board approval for Q3 multi-cloud DNS routing enhancements.
-      </div>
-    `;
-  } else if (reportType === 'audit-pack') {
-    summaryHtml = `
-      <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
-        <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: AUDIT PACK EVIDENCE SUMMARY</strong>
-        * **Controls Checked:** 15 core frameworks modules.
-        <br/>* **Active Gaps:** AWS recovery planning outdated logs; Infosys security policy mismatch.
-        <br/>* **Evidence Checked:** SOC 2 Type II valid; ISO certificate verified.
-      </div>
-    `;
-  } else if (reportType === 'regulator-pack') {
-    summaryHtml = `
-      <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
-        <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: REGULATOR ASSESSMENT SUMMARY</strong>
-        * **Pillars Scored:** Pillar I (85%), Pillar II (100%), Pillar III (75%), Pillar IV (60%), Pillar V (100%).
-        <br/>* **Regulatory Alignment:** Under FCA/EBA regulatory audit frameworks.
-        <br/>* **Action Plan:** Complete validation drills for critical suppliers by next quarter.
-      </div>
-    `;
-  } else {
-    summaryHtml = `
-      <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
-        <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: DORA ARTICLE ASSESSMENT SUMMARY</strong>
-        * **Scanned Articles:** DORA Articles 5, 11, 12, 14, 26.
-        <br/>* **Compliance Score:** 82% Compliant. Gaps identified in Article 11 (BCP) and Article 14 (Subcontracting).
-      </div>
-    `;
-  }
-  
-  showModal('Report Summary Preview', summaryHtml);
-};
-
 function renderDashboardContent() {
   const state = getState();
   const contentArea = document.getElementById('dashboard-tab-content');
@@ -488,7 +274,7 @@ function renderDashboardContent() {
     contentArea.innerHTML = `
       <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
         <!-- Left Column: Global Visualisation Map & Systems -->
-        <div class="dashboard-card map-card" style="flex: 1.8; min-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 12px; height: 530px;">
+        <div class="dashboard-card map-card" style="flex: 1.8; min-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 12px; height: 610px;">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; flex-shrink: 0;">
             <h3 style="font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
               Global Threat & Service Infrastructure Visualiser
@@ -502,7 +288,7 @@ function renderDashboardContent() {
             </div>
           </div>
 
-          <div class="world-map-wrapper" style="position: relative; height: 280px; flex-shrink: 0;">
+          <div class="world-map-wrapper" style="position: relative; height: 320px; flex-shrink: 0;">
             <!-- Simulation Loader Overlay -->
             <div id="simulation-loader-overlay" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 12, 29, 0.85); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: var(--border-radius-lg); backdrop-filter: blur(4px); transition: opacity 0.3s ease;">
               <div class="scanner-line" style="position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--color-cyan), transparent); animation: scanEffect 1.5s infinite linear;"></div>
@@ -608,3 +394,284 @@ function renderDashboardContent() {
     }
   }
 }
+
+
+export function renderExecutiveDashboard() {
+  const state = getState();
+  window.activeDashboardSubTab = activeDashboardSubTab;
+  const container = document.getElementById('view-manager-dashboard');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+      <!-- Sub-tab switcher -->
+      <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%;">
+        <button id="btn-db-tab-overview" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'overview' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">Executive Overview</button>
+        <button id="btn-db-tab-threatmap" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'threatmap' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🗺️ Global Threat Map & Feed</button>
+        <button id="btn-db-tab-graph" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'graph' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Resilience Knowledge Graph</button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div id="dashboard-tab-content" style="width: 100%;"></div>
+    </div>
+  `;
+
+  // Bind tab buttons
+  const btnOverview = document.getElementById('btn-db-tab-overview');
+  const btnThreatMap = document.getElementById('btn-db-tab-threatmap');
+  const btnGraph = document.getElementById('btn-db-tab-graph');
+
+  if (btnOverview) {
+    btnOverview.onclick = () => {
+      activeDashboardSubTab = 'overview';
+      window.activeDashboardSubTab = activeDashboardSubTab;
+      renderDashboardContent();
+      // Update active classes
+      btnOverview.classList.add('active');
+      if (btnThreatMap) btnThreatMap.classList.remove('active');
+      if (btnGraph) btnGraph.classList.remove('active');
+    };
+  }
+
+  if (btnThreatMap) {
+    btnThreatMap.onclick = () => {
+      activeDashboardSubTab = 'threatmap';
+      window.activeDashboardSubTab = activeDashboardSubTab;
+      renderDashboardContent();
+      // Update active classes
+      btnThreatMap.classList.add('active');
+      if (btnOverview) btnOverview.classList.remove('active');
+      if (btnGraph) btnGraph.classList.remove('active');
+    };
+  }
+
+  if (btnGraph) {
+    btnGraph.onclick = () => {
+      activeDashboardSubTab = 'graph';
+      window.activeDashboardSubTab = activeDashboardSubTab;
+      renderDashboardContent();
+      // Update active classes
+      btnGraph.classList.add('active');
+      if (btnOverview) btnOverview.classList.remove('active');
+      if (btnThreatMap) btnThreatMap.classList.remove('active');
+    };
+  }
+
+  // Initial load
+  renderDashboardContent();
+}
+
+// Register Executive Export handler to window for inline triggers
+window.triggerDynamicExport = function(format, reportType) {
+  const state = getState();
+  const timestamp = new Date().toISOString().substring(0, 10);
+  const totalServices = state.services.length;
+  const activeIncidents = state.incidents.filter(i => i.status === 'Active').length;
+  const totalGaps = state.obligations.filter(o => o.status !== 'Compliant').length;
+  
+  if (format === 'summary') {
+    window.previewReportSummary(reportType);
+    return;
+  }
+
+  let docTitle = 'Executive Resilience Report';
+  let contentHtml = '';
+
+  if (reportType === 'board-pack') {
+    docTitle = 'CYPHER VANTAGE - EXECUTIVE BOARD BRIEFING PACK';
+    contentHtml = `
+      <div style="font-family:'Segoe UI', system-ui, sans-serif; padding:40px; color:#0f172a; max-width:850px; margin:0 auto; background:#ffffff;">
+        <div style="display:flex; justify-content:space-between; border-bottom:3px solid #0284c7; padding-bottom:15px; margin-bottom:25px;">
+          <div>
+            <h1 style="font-size:22px; margin:0; color:#0f172a; text-transform:uppercase; letter-spacing:0.05em;">${docTitle}</h1>
+            <p style="margin:4px 0 0 0; font-size:12px; color:#64748b;">Target Audience: Board of Directors, CRO, COO, CISO | Classification: Highly Confidential</p>
+          </div>
+          <div style="text-align:right; font-size:12px; color:#64748b;">
+            <b>Date:</b> ${timestamp}<br/>
+            <b>Format:</b> ${format.toUpperCase()}
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:25px;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:6px; text-align:center;">
+            <div style="font-size:10px; color:#64748b; font-weight:700; text-transform:uppercase;">Resilience Score</div>
+            <div style="font-size:22px; font-weight:800; color:#059669; margin-top:2px;">92%</div>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:6px; text-align:center;">
+            <div style="font-size:10px; color:#64748b; font-weight:700; text-transform:uppercase;">Recovery Readiness</div>
+            <div style="font-size:22px; font-weight:800; color:#0284c7; margin-top:2px;">89%</div>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:6px; text-align:center;">
+            <div style="font-size:10px; color:#64748b; font-weight:700; text-transform:uppercase;">DORA Compliance</div>
+            <div style="font-size:22px; font-weight:800; color:#7c3aed; margin-top:2px;">82%</div>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:6px; text-align:center;">
+            <div style="font-size:10px; color:#64748b; font-weight:700; text-transform:uppercase;">Testing Coverage</div>
+            <div style="font-size:22px; font-weight:800; color:#d97706; margin-top:2px;">94%</div>
+          </div>
+        </div>
+
+        <h3 style="font-size:14px; color:#0284c7; border-bottom:1px solid #e2e8f0; padding-bottom:5px; margin-top:20px;">1. Executive Summary & Operational Posture</h3>
+        <p style="font-size:13px; line-height:1.6; color:#334155;">
+          Cypher Vantage is currently maintaining a composite <b>Resilience Score of 92%</b> across all 16 catalogued Important Business Services (IBS). Active risk mitigations operate within accepted tolerance margins. However, critical sub-processor dependency overlaps require immediate capital allocation to safeguard business continuity under DORA Article 11 standards.
+        </p>
+
+        <h3 style="font-size:14px; color:#0284c7; border-bottom:1px solid #e2e8f0; padding-bottom:5px; margin-top:25px;">2. Strategic Vulnerabilities & Concentration Risks</h3>
+        <ul style="font-size:13px; line-height:1.6; color:#334155; padding-left:20px;">
+          <li><b>Subprocessor Overlap:</b> Cloudflare edge infrastructure serves concurrently as a single point of dependency across AWS US-East hosting and Salesforce CRM directories.</li>
+          <li><b>BCP Evidence Gaps:</b> AWS Disaster Recovery test summary certificates are outdated since October 2024.</li>
+          <li><b>Third-Party Configuration:</b> Infosys developer TLS certificates exhibit configuration gaps under Section 14.0 guidelines.</li>
+        </ul>
+
+        <h3 style="font-size:14px; color:#0284c7; border-bottom:1px solid #e2e8f0; padding-bottom:5px; margin-top:25px;">3. Executive Requisitions & Action Plan</h3>
+        <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:10px;">
+          <thead>
+            <tr style="background:#f1f5f9; text-align:left;">
+              <th style="padding:8px; border:1px solid #cbd5e1;">Requisition Item</th>
+              <th style="padding:8px; border:1px solid #cbd5e1;">Target Timeline</th>
+              <th style="padding:8px; border:1px solid #cbd5e1;">Owner</th>
+              <th style="padding:8px; border:1px solid #cbd5e1;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px; border:1px solid #e2e8f0;">Approve secondary Route53 / Akamai DNS failover budget</td>
+              <td style="padding:8px; border:1px solid #e2e8f0;">Q3 2026</td>
+              <td style="padding:8px; border:1px solid #e2e8f0;">CISO / Lead Architect</td>
+              <td style="padding:8px; border:1px solid #e2e8f0;"><span style="color:#d97706; font-weight:700;">Pending Board Approval</span></td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid #e2e8f0;">Issue formal SLA compliance notice to Infosys integration team</td>
+              <td style="padding:8px; border:1px solid #e2e8f0;">30 Days</td>
+              <td style="padding:8px; border:1px solid #e2e8f0;">Head of TPRM</td>
+              <td style="padding:8px; border:1px solid #e2e8f0;"><span style="color:#0284c7; font-weight:700;">Drafted</span></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div style="margin-top:40px; padding-top:15px; border-top:1px solid #e2e8f0; text-align:center; font-size:11px; color:#94a3b8;">
+          Generated automatically by Cypher Vantage Operational Resilience Engine v5.0 | ${timestamp}
+        </div>
+      </div>
+    `;
+  } else {
+    docTitle = `CYPHER VANTAGE - ${reportType.replace('-', ' ').toUpperCase()} EXPORT`;
+    contentHtml = `
+      <div style="font-family:'Segoe UI', system-ui, sans-serif; padding:40px; color:#0f172a; max-width:850px; margin:0 auto; background:#ffffff;">
+        <div style="border-bottom:3px solid #0284c7; padding-bottom:15px; margin-bottom:25px;">
+          <h1 style="font-size:22px; margin:0; color:#0f172a; text-transform:uppercase;">${docTitle}</h1>
+          <p style="margin:4px 0 0 0; font-size:12px; color:#64748b;">Statutory Regulatory Dossier & Compliance Evidence | Date: ${timestamp}</p>
+        </div>
+        <h3 style="font-size:14px; color:#0284c7;">Obligations Matrix Audit Summary</h3>
+        <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:10px;">
+          <thead>
+            <tr style="background:#f1f5f9; text-align:left;">
+              <th style="padding:8px; border:1px solid #cbd5e1;">Article</th>
+              <th style="padding:8px; border:1px solid #cbd5e1;">Title</th>
+              <th style="padding:8px; border:1px solid #cbd5e1;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${state.obligations.map(o => `
+              <tr>
+                <td style="padding:8px; border:1px solid #e2e8f0;"><b>Article ${o.article}</b></td>
+                <td style="padding:8px; border:1px solid #e2e8f0;">${o.title}</td>
+                <td style="padding:8px; border:1px solid #e2e8f0;"><span style="font-weight:700; color:${o.status === 'Compliant' ? '#059669' : o.status === 'Partial' ? '#d97706' : '#dc2626'};">${o.status}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  // Open printable document window
+  const exportWindow = window.open('', '_blank', 'width=950,height=800');
+  if (!exportWindow) {
+    alert('Please allow popups to open the PDF/PPTX report viewer.');
+    return;
+  }
+
+  exportWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>${docTitle}</title>
+        <style>
+          body { margin:0; padding:20px; background:#e2e8f0; font-family:system-ui, sans-serif; }
+          .toolbar { max-width:850px; margin:0 auto 15px auto; display:flex; justify-content:space-between; align-items:center; }
+          .btn { background:#0284c7; color:#fff; border:none; padding:8px 16px; border-radius:4px; font-weight:600; cursor:pointer; font-size:13px; }
+          .btn-secondary { background:#64748b; }
+          @media print {
+            .toolbar { display:none !important; }
+            body { background:#fff; padding:0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="toolbar">
+          <div>
+            <strong style="color:#0f172a; font-size:14px;">${format.toUpperCase()} Document Preview Mode</strong>
+            <span style="font-size:12px; color:#64748b; display:block;">Click "Save as PDF / Print" to export clean PDF or slides.</span>
+          </div>
+          <div>
+            <button class="btn btn-secondary" onclick="window.close()">Close</button>
+            <button class="btn" onclick="window.print()">🖨️ Save as PDF / Print</button>
+          </div>
+        </div>
+        <div id="print-area">
+          ${contentHtml}
+        </div>
+      </body>
+    </html>
+  `);
+  exportWindow.document.close();
+};
+
+// Helper to show dynamic report summary previews in dashboard
+window.previewReportSummary = function(reportType) {
+window.previewReportSummary = function(reportType) {
+  const timestamp = new Date().toISOString().substring(0, 10);
+  let summaryHtml = '';
+  
+  if (reportType === 'board-pack') {
+    summaryHtml = `
+      <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
+        <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: BOARD BRIEFING SUMMARY</strong>
+        * **Resilience Index:** 92% (Target: >90%)
+        <br/>* **Current Posture:** Adequate risk margins. Primary concern is Cloudflare edge infrastructure concentration.
+        <br/>* **Action Required:** Board approval for Q3 multi-cloud DNS routing enhancements.
+      </div>
+    `;
+  } else if (reportType === 'audit-pack') {
+    summaryHtml = `
+      <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
+        <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: AUDIT PACK EVIDENCE SUMMARY</strong>
+        * **Controls Checked:** 15 core frameworks modules.
+        <br/>* **Active Gaps:** AWS recovery planning outdated logs; Infosys security policy mismatch.
+        <br/>* **Evidence Checked:** SOC 2 Type II valid; ISO certificate verified.
+      </div>
+    `;
+  } else if (reportType === 'regulator-pack') {
+    summaryHtml = `
+      <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
+        <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: REGULATOR ASSESSMENT SUMMARY</strong>
+        * **Pillars Scored:** Pillar I (85%), Pillar II (100%), Pillar III (75%), Pillar IV (60%), Pillar V (100%).
+        <br/>* **Regulatory Alignment:** Under FCA/EBA regulatory audit frameworks.
+        <br/>* **Action Plan:** Complete validation drills for critical suppliers by next quarter.
+      </div>
+    `;
+  } else {
+    summaryHtml = `
+      <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
+        <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: DORA ARTICLE ASSESSMENT SUMMARY</strong>
+        * **Scanned Articles:** DORA Articles 5, 11, 12, 14, 26.
+        <br/>* **Compliance Score:** 82% Compliant. Gaps identified in Article 11 (BCP) and Article 14 (Subcontracting).
+      </div>
+    `;
+  }
+  
+  showModal('Report Summary Preview', summaryHtml);
+};
+}
+

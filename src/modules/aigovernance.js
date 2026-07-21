@@ -51,7 +51,21 @@ export function renderAiGovernanceModule() {
     title: 'AI Models Registered',
     value: `${totalModels}`,
     icon: '🤖',
-    borderLeftColor: '#14b8a6'
+    borderLeftColor: '#14b8a6',
+    tooltip: 'Click to view institutional AI Model Registry summary.',
+    onclick: () => {
+      const modalHtml = `
+        <div style="font-size:0.75rem; line-height:1.5;">
+          <b>AI Model Registry Overview (${totalModels} Models):</b><br/>
+          * Customer Support LLM Assistant (GPT-4o)<br/>
+          * Finance Market Strategy Bot (Claude 3.5 Sonnet)<br/>
+          * Salesforce Copilot Integrator (GPT-4)<br/>
+          * Resume Screening Recruiter Bot (Llama 3 70B)<br/><br/>
+          All models require risk tiering, DORA Article 5 alignment, and automated prompt vulnerability scanning.
+        </div>
+      `;
+      window.showModal('AI Model Registry Summary', modalHtml);
+    }
   });
 
   createCard('ai-kpi-critical', {
@@ -59,7 +73,20 @@ export function renderAiGovernanceModule() {
     value: `${criticalModels}`,
     subtext: 'Requires continuous audit log validation',
     icon: '⚠️',
-    borderLeftColor: '#ef4444'
+    borderLeftColor: '#ef4444',
+    tooltip: 'Click for High/Critical Risk Models details.',
+    onclick: () => {
+      const modalHtml = `
+        <div style="font-size:0.75rem; line-height:1.5;">
+          <b>High/Critical Models Count: ${criticalModels}</b><br/>
+          * <b>Resume Screening Recruiter Bot</b> (Critical - HR bias audit required)<br/>
+          * <b>Finance Market Strategy Bot</b> (High - Market data API access)<br/>
+          * <b>Salesforce Copilot Integrator</b> (High - PII exposure potential)<br/><br/>
+          Mandatory DLP proxy anonymization and monthly vulnerability sweeps active.
+        </div>
+      `;
+      window.showModal('Critical Risk AI Models', modalHtml);
+    }
   });
 
   createCard('ai-kpi-campaigns', {
@@ -67,7 +94,19 @@ export function renderAiGovernanceModule() {
     value: `${activeCampaigns}`,
     subtext: 'TIBER-EU aligned simulations',
     icon: '🎯',
-    borderLeftColor: '#6366f1'
+    borderLeftColor: '#6366f1',
+    tooltip: 'Click to view active Red/Purple Team penetration campaigns.',
+    onclick: () => {
+      const modalHtml = `
+        <div style="font-size:0.75rem; line-height:1.5;">
+          <b>Active Threat-Led Penetration Testing (TLPT): ${activeCampaigns} Active</b><br/>
+          * <b>TLPT-001:</b> Automated Red-Team Prompt Injection Blitz (Target: Customer Support Assistant)<br/>
+          * <b>TLPT-002:</b> Infosys API Supply Chain Pentest (Target: Core DB Ledger)<br/><br/>
+          Aligned with TIBER-EU testing frameworks for EU financial institutions.
+        </div>
+      `;
+      window.showModal('TLPT Campaigns Breakdown', modalHtml);
+    }
   });
 
   createCard('ai-kpi-blocked', {
@@ -75,7 +114,20 @@ export function renderAiGovernanceModule() {
     value: `${blockedPayloads}`,
     subtext: 'Intercepted by inline DLP gateway',
     icon: '🛡️',
-    borderLeftColor: '#10b981'
+    borderLeftColor: '#10b981',
+    tooltip: 'Click to view blocked prompt risk log.',
+    onclick: () => {
+      const modalHtml = `
+        <div style="font-size:0.75rem; line-height:1.5;">
+          <b>Blocked Security Threats (${blockedPayloads} Injections):</b><br/>
+          * Adversarial System Prompt Exfiltration Attempts<br/>
+          * Outbound PII / API Token Exfiltration<br/>
+          * Direct Jailbreak Payload Sequences<br/><br/>
+          All suspicious prompts are recorded in real-time within the Prompt Risk Register.
+        </div>
+      `;
+      window.showModal('Blocked Security Incidents', modalHtml);
+    }
   });
 
   // Bind tab buttons

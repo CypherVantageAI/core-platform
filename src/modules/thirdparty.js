@@ -225,11 +225,20 @@ function renderSupplierDetails() {
     </tr>
   `;
 
+  // Compute supplier active gaps across risk register, SCO assessments, and remediations actions
   const supplierRisks = state.risks.filter(r => r.owner.includes(sup.contactName) || r.title.includes(sup.id.toUpperCase()) || r.title.includes(sup.name.split(' ')[0]));
-  const supplierGapsHtml = supplierRisks.length > 0 ? supplierRisks.map(r => `
-    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(239,68,68,0.02); border:1px solid rgba(239,68,68,0.1); border-radius:4px; padding:6px 10px; font-size:0.68rem;">
-      <span style="color:var(--text-primary);">⚠️ ${r.title}</span>
-      ${createStatusBadge(r.status)}
+  const assessmentGaps = (sup.assessments || []).filter(a => a.status === 'Gap');
+  const actionGaps = (state.actions || []).filter(a => a.supplierId === sup.id);
+
+  let gapItems = [];
+  supplierRisks.forEach(r => gapItems.push({ title: r.title, status: r.status }));
+  assessmentGaps.forEach(a => gapItems.push({ title: `${a.section} ${a.title}: ${a.snippet}`, status: 'Gap Identified' }));
+  actionGaps.forEach(a => gapItems.push({ title: `${a.title} (${a.domain})`, status: a.status || 'Open Gap' }));
+
+  const supplierGapsHtml = gapItems.length > 0 ? gapItems.map(g => `
+    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(239,68,68,0.02); border:1px solid rgba(239,68,68,0.1); border-radius:4px; padding:6px 10px; font-size:0.68rem; gap:8px;">
+      <span style="color:var(--text-primary); font-weight:600;">⚠️ ${g.title}</span>
+      ${createStatusBadge(g.status)}
     </div>
   `).join('') : `<div style="font-size:0.68rem; color:var(--text-muted); font-style:italic;">No active compliance gaps logged.</div>`;
 

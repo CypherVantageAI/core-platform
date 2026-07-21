@@ -401,8 +401,8 @@ export function renderResilienceGraph(containerId, options = {}) {
     if (!fromNode || !toNode) return '';
 
     // Calculate edge highlight state
-    let strokeColor = 'rgba(255,255,255,0.08)';
-    let strokeWidth = '1.5';
+    let strokeColor = 'rgba(56, 189, 248, 0.35)';
+    let strokeWidth = '1.8';
     let dasharray = 'none';
     let flowParticle = '';
 
