@@ -33,7 +33,7 @@ export function renderIctRiskModule() {
       <!-- Main Columns: 5x5 Heatmap & Risk Register -->
       <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
         <!-- Left: Heatmap Grid (Shrunk and configured width) -->
-        <div class="dashboard-card" style="width: 340px; flex: none; display: flex; flex-direction: column; padding: 12px; margin: 0; min-height: 380px;">
+        <div class="dashboard-card" style="width: 250px; flex: none; display: flex; flex-direction: column; padding: 10px; margin: 0; min-height: 380px;">
           <div id="risk-heatmap-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;"></div>
           
           <div id="active-heatmap-filter-indicator" style="text-align: center; font-size: 0.65rem; color: var(--color-cyan); margin-top: 10px; font-weight: 600; min-height: 20px;">

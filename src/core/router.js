@@ -146,12 +146,15 @@ export function setPersona(persona) {
   const userRoleText = document.getElementById('user-role-name');
   const userAvatar = document.querySelector('.user-avatar');
 
+  const brandTagline = document.querySelector('.brand-tagline');
+
   if (persona === 'manager') {
     if (btnManager) btnManager.classList.add('active');
     if (btnSupplier) btnSupplier.classList.remove('active');
     if (navManager) navManager.classList.remove('hidden');
     if (navSupplier) navSupplier.classList.add('hidden');
-    if (supplierSelector) supplierSelector.classList.add('hidden');
+    if (supplierSelector) supplierSelector.containerId ? null : supplierSelector.classList.add('hidden');
+    if (brandTagline) brandTagline.style.display = 'block';
     if (userRoleText) userRoleText.innerText = 'Sarah Jenkins';
     if (userAvatar) {
       userAvatar.innerText = 'RM';
@@ -164,6 +167,7 @@ export function setPersona(persona) {
     if (navManager) navManager.classList.add('hidden');
     if (navSupplier) navSupplier.classList.remove('hidden');
     if (supplierSelector) supplierSelector.classList.remove('hidden');
+    if (brandTagline) brandTagline.style.display = 'none';
     
     if (typeof window.populateSupplierPortalSwitcher === 'function') {
       window.populateSupplierPortalSwitcher();

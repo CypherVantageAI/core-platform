@@ -3,7 +3,7 @@
 // ==========================================================================
 
 import { getState } from '../core/db.js';
-import { createCard, createSVGChart, createStatusBadge } from '../components/ui.js';
+import { createCard, createSVGChart, createStatusBadge, showModal } from '../components/ui.js';
 
 let activeDashboardSubTab = 'overview';
 
@@ -151,7 +151,24 @@ function renderDashboardContent() {
       trendText: 'Stable',
       trendClass: 'positive',
       icon: '🛡️',
-      borderLeftColor: '#10b981'
+      borderLeftColor: '#10b981',
+      tooltip: 'Click to view the weighted Resilience Score formula.',
+      onclick: () => {
+        const modalHtml = `
+          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.72rem; line-height: 1.45;">
+            <p>The <b>Resilience Score</b> is a composite risk-weighted readiness index calculated dynamically as follows:</p>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.7rem; text-align: center;">
+              Score = (Average Supplier Compliance * 0.8) + (Internal Controls Index * 0.2)
+            </div>
+            <ul>
+              <li><b>80% Weight (Third-Party Posture):</b> Evaluates the average compliance score across all critical and high-priority supplier accounts (averaging <b>${Math.round(avgSupplierScore)}%</b>).</li>
+              <li><b>20% Weight (Internal Risk Reduction):</b> Evaluates internal control metrics by deducting points for active risks (<b>-${openRisks * 5}%</b> for ${openRisks} open risks) and open audit findings (<b>-${openFindings * 3}%</b> for ${openFindings} findings).</li>
+            </ul>
+            <p style="margin-top: 4px; color: var(--color-cyan);"><b>Current Rating:</b> ${resilienceScore}% (Target threshold: >90% to align with DORA article standards).</p>
+          </div>
+        `;
+        showModal('Resilience Score Explanation', modalHtml);
+      }
     });
 
     createCard('kpi-dora', {
@@ -160,7 +177,23 @@ function renderDashboardContent() {
       trendText: '+5% MoM',
       trendClass: 'positive',
       icon: '📜',
-      borderLeftColor: '#14b8a6'
+      borderLeftColor: '#14b8a6',
+      tooltip: 'Click to view compliance gaps and weighted pillar calculations.',
+      onclick: () => {
+        const modalHtml = `
+          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.72rem; line-height: 1.45;">
+            <p>The <b>DORA Compliance Index</b> measures alignment with the five core pillars of the EU Digital Operational Resilience Act:</p>
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.7rem;">
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);"><td style="padding: 4px 0;">✅ <b>Compliant Articles:</b></td><td style="text-align: right;"><b>${compliantObligations}</b></td></tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);"><td style="padding: 4px 0;">⚠️ <b>Partially Compliant Articles:</b></td><td style="text-align: right;"><b>${partialObligations}</b></td></tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);"><td style="padding: 4px 0;">❌ <b>Non-Compliant Articles:</b></td><td style="text-align: right;"><b>${totalObligations - compliantObligations - partialObligations}</b></td></tr>
+            </table>
+            <p style="margin-top: 4px;"><b>Weighted Score Calculation:</b> <code>((Compliant + 0.5 * Partial) / Total) * 100</code></p>
+            <p style="font-size: 0.65rem; color: var(--text-muted);">Points are partially awarded for implementation controls under review, but non-compliant gaps must be actively closed to reach 100% compliance.</p>
+          </div>
+        `;
+        showModal('DORA Compliance Index Explanation', modalHtml);
+      }
     });
 
     createCard('kpi-risks', {
@@ -168,7 +201,20 @@ function renderDashboardContent() {
       value: `${openRisks}`,
       subtext: 'High/Critical risks in register',
       icon: '⚠️',
-      borderLeftColor: '#f97316'
+      borderLeftColor: '#f97316',
+      tooltip: 'Click to view ICT Risk Register summary.',
+      onclick: () => {
+        const modalHtml = `
+          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.72rem; line-height: 1.45;">
+            <p>This count represents active security, operational, and technological risks catalogued in the <b>Operational ICT Risk Register</b> that are in an <b>Open</b> state.</p>
+            <ul>
+              <li>These cover cloud connectivity failover gaps, supplier regulatory dependencies, and AI security control vulnerabilities.</li>
+              <li>Risk owners are contractually assigned and required to implement mitigation plans to lower risk scores below threshold limits.</li>
+            </ul>
+          </div>
+        `;
+        showModal('Open Risks Explanation', modalHtml);
+      }
     });
 
     createCard('kpi-incidents', {
@@ -176,7 +222,20 @@ function renderDashboardContent() {
       value: `${activeIncidents}`,
       subtext: 'Ongoing operational issues',
       icon: '🚨',
-      borderLeftColor: '#ef4444'
+      borderLeftColor: '#ef4444',
+      tooltip: 'Click to view incident logging requirements under DORA.',
+      onclick: () => {
+        const modalHtml = `
+          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.72rem; line-height: 1.45;">
+            <p>The count of active operational disruptions, security incidents, or infrastructure outages currently impacting Important Business Services (IBS) or Critical Internal Services (CIS).</p>
+            <ul>
+              <li>Logged under <b>DORA Article 19</b> guidelines.</li>
+              <li>An incident is marked active until incident response workflows complete, fallback directory routing is verified, and standard service levels are restored.</li>
+            </ul>
+          </div>
+        `;
+        showModal('Active Incidents Explanation', modalHtml);
+      }
     });
 
     createCard('kpi-findings', {
@@ -184,7 +243,20 @@ function renderDashboardContent() {
       value: `${openFindings}`,
       subtext: 'Pending audit remediations',
       icon: '🔍',
-      borderLeftColor: '#eab308'
+      borderLeftColor: '#eab308',
+      tooltip: 'Click to view audit findings and remediation protocols.',
+      onclick: () => {
+        const modalHtml = `
+          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.72rem; line-height: 1.45;">
+            <p>Active audit findings, regulatory alignment gaps, and pen-testing vulnerability flags waiting for remediation and verification.</p>
+            <ul>
+              <li>Findings are generated during internal audits, TIBER-EU campaign sweeps, or external third-party vulnerability reviews.</li>
+              <li>Findings require cryptographic proof of remediation to be uploaded into the document vault before they can be officially closed.</li>
+            </ul>
+          </div>
+        `;
+        showModal('Open Findings Explanation', modalHtml);
+      }
     });
 
     createSVGChart('readiness-radial-chart', 'radial', { score: readinessScore }, { color: '#14b8a6' });

@@ -460,11 +460,11 @@ export function createRiskHeatmap(containerId, risks, onCellClick, thresholds) {
   }
 
   container.innerHTML = `
-    <div style="display: flex; flex-direction: column; width: 100%; max-width: 320px; align-self: center; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
+    <div style="display: flex; flex-direction: column; width: 100%; max-width: 230px; align-self: center; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
       <div style="text-align: center; font-size: 0.6rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">ICT RISK HEATMAP MATRIX</div>
-      <div style="display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: center; width: 100%;">
+      <div style="display: grid; grid-template-columns: 16px 1fr; gap: 6px; align-items: center; width: 100%;">
         <!-- Y-Axis label -->
-        <div style="writing-mode: vertical-rl; transform: rotate(180deg); font-size: 0.6rem; color: var(--text-muted); font-weight: 600; text-align: center; text-transform: uppercase; letter-spacing: 0.05em; height: 180px;">Likelihood ➔</div>
+        <div style="writing-mode: vertical-rl; transform: rotate(180deg); font-size: 0.58rem; color: var(--text-muted); font-weight: 600; text-align: center; text-transform: uppercase; letter-spacing: 0.05em; height: 120px;">Likelihood ➔</div>
         
         <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
           <!-- Grid cells -->

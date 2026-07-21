@@ -1984,6 +1984,11 @@ body.dark-mode {
   display: none;
 }
 
+.app-sidebar.collapsed .nav-sub-list,
+.app-sidebar.collapsed .nav-sub-sub-list {
+  display: none !important;
+}
+
 .app-sidebar.collapsed .nav-section {
   display: none;
 }
