@@ -42,6 +42,17 @@ window.onload = function() {
 
   // 6. Initialize Theme Selector
   initTheme(state);
+
+  // 7. Global card click fallback delegate
+  document.body.addEventListener('click', function(e) {
+    const card = e.target.closest('[onclick]');
+    if (card && card.getAttribute('onclick')) {
+      const onclickAttr = card.getAttribute('onclick');
+      if (onclickAttr.includes('showModal')) {
+        // Handled natively by inline handler
+      }
+    }
+  });
 };
 
 function initTheme(state) {
