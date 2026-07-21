@@ -24,7 +24,7 @@ export function renderAnalystModule() {
         <div class="dashboard-card" style="padding: 15px; margin: 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(6, 182, 212, 0.2); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
           <div>
             <h2 style="font-size: 0.95rem; font-family: var(--font-headings); font-weight: 800; margin: 0; color: var(--color-cyan); display: flex; align-items: center; gap: 8px;">
-              <span>🕵️‍♂️</span> AI Operational Resilience Analyst
+              <span>🕵️‍♂️</span> AI Resilience Analyst
             </h2>
             <p class="panel-subtitle" style="margin: 0; margin-top: 3px; font-size: 0.7rem;">Automated DORA audit ledger parsing, risk diagnostics, and explainable recommendations engine.</p>
           </div>

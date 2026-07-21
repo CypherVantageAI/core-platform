@@ -234,6 +234,13 @@ def run_screen_captures(artifacts_dir):
         driver.get(f'http://localhost:{PORT}/?cb={int(time.time())}')
         wait_for_bootstrap(driver)
         
+        # Dashboard Overview (Executive Cockpit)
+        driver.execute_script("window.switchTab('manager-dashboard');")
+        time.sleep(1.5)
+        path_overview = os.path.join(artifacts_dir, "resilience_services.png")
+        driver.save_screenshot(path_overview)
+        print("  [OK] Screen capture: Executive Cockpit saved.")
+
         # A. TPRM Directory
         driver.execute_script("window.switchTab('manager-thirdparty');")
         time.sleep(1)
