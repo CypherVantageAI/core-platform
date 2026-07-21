@@ -6071,22 +6071,40 @@ window.showHelpGuide = function() {
     `
   };
 
-  // Determine starting tab based on active application content pane
+  // Determine starting tab based on active application content pane and sub-tabs
   let activeTabId = 'overview';
   const activePane = document.querySelector('.content-pane.active');
   if (activePane) {
     const paneId = activePane.id;
     if (paneId === 'view-manager-dashboard') {
-      const graphBtn = document.getElementById('btn-db-tab-graph');
-      if (graphBtn && graphBtn.classList.contains('active')) activeTabId = 'graph';
+      const sub = window.activeDashboardSubTab || 'overview';
+      if (sub === 'graph') activeTabId = 'graph';
       else activeTabId = 'overview';
     }
-    else if (paneId === 'view-manager-navigator') activeTabId = 'navigator';
-    else if (paneId === 'view-manager-ai-risk') activeTabId = 'aigovern';
-    else if (paneId === 'view-manager-risk') activeTabId = 'tlpt';
-    else if (paneId === 'view-manager-thirdparty' || paneId === 'view-manager-actions') activeTabId = 'tprm';
-    else if (paneId === 'view-manager-resilience') activeTabId = 'drills';
-    else if (paneId === 'view-manager-advisor') activeTabId = 'advisor';
+    else if (paneId === 'view-manager-navigator') {
+      activeTabId = 'navigator';
+    }
+    else if (paneId === 'view-manager-ai-risk') {
+      const sub = window.activeAiSubTab || 'audit';
+      if (sub === 'campaigns') activeTabId = 'tlpt';
+      else activeTabId = 'aigovern';
+    }
+    else if (paneId === 'view-manager-risk') {
+      activeTabId = 'tlpt';
+    }
+    else if (paneId === 'view-manager-thirdparty' || paneId === 'view-manager-actions') {
+      activeTabId = 'tprm';
+    }
+    else if (paneId === 'view-manager-resilience') {
+      const sub = window.activeResilienceTab || 'services';
+      if (sub === 'services') activeTabId = 'navigator';
+      else if (sub === 'dependencies' || sub === 'twin') activeTabId = 'graph';
+      else if (sub === 'incidents' || sub === 'readiness') activeTabId = 'drills';
+      else activeTabId = 'overview';
+    }
+    else if (paneId === 'view-manager-advisor') {
+      activeTabId = 'advisor';
+    }
   }
 
   // HTML content structure with side-tab navigator

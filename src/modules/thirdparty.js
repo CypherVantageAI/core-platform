@@ -10,6 +10,7 @@ let activeThirdPartyTab = 'directory';
 
 export function renderThirdPartyModule() {
   const state = getState();
+  window.activeThirdPartyTab = activeThirdPartyTab;
   const container = document.getElementById('view-manager-thirdparty');
   if (!container) return;
 
@@ -88,6 +89,7 @@ export function renderThirdPartyModule() {
 
 function switchTab(tabId) {
   activeThirdPartyTab = tabId;
+  window.activeThirdPartyTab = activeThirdPartyTab;
   document.querySelectorAll('.sub-tab-nav .horizontal-sub-tab-btn').forEach(btn => {
     btn.classList.remove('active');
   });

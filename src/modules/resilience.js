@@ -22,6 +22,7 @@ let mapFilter = 'all'; // 'all' | 'critical' | 'infra'
 let highlightCriticalPath = false;
 
 export function renderResilienceModule() {
+  window.activeResilienceTab = activeResilienceTab;
   const container = document.getElementById('view-manager-resilience');
   if (!container) return;
 
@@ -50,6 +51,7 @@ export function renderResilienceModule() {
     if (btn) {
       btn.onclick = () => {
         activeResilienceTab = tab;
+        window.activeResilienceTab = activeResilienceTab;
         renderResilienceModule();
       };
     }

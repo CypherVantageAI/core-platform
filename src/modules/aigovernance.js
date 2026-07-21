@@ -10,6 +10,7 @@ let selectedCampaignId = 'tlpt-001';
 
 export function renderAiGovernanceModule() {
   const state = getState();
+  window.activeAiSubTab = activeAiSubTab;
   const container = document.getElementById('view-manager-ai-risk');
   if (!container) return;
 
@@ -88,6 +89,7 @@ export function renderAiGovernanceModule() {
 
 function switchTab(tabId) {
   activeAiSubTab = tabId;
+  window.activeAiSubTab = activeAiSubTab;
   document.querySelectorAll('.sub-tab-nav .horizontal-sub-tab-btn').forEach(btn => {
     btn.classList.remove('active');
   });

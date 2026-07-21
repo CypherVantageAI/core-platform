@@ -10,6 +10,7 @@ let activeDashboardSubTab = 'overview';
 
 export function renderExecutiveDashboard() {
   const state = getState();
+  window.activeDashboardSubTab = activeDashboardSubTab;
   const container = document.getElementById('view-manager-dashboard');
   if (!container) return;
 
@@ -35,6 +36,7 @@ export function renderExecutiveDashboard() {
   if (btnOverview) {
     btnOverview.onclick = () => {
       activeDashboardSubTab = 'overview';
+      window.activeDashboardSubTab = activeDashboardSubTab;
       renderDashboardContent();
       // Update active classes
       btnOverview.classList.add('active');
@@ -46,6 +48,7 @@ export function renderExecutiveDashboard() {
   if (btnThreatMap) {
     btnThreatMap.onclick = () => {
       activeDashboardSubTab = 'threatmap';
+      window.activeDashboardSubTab = activeDashboardSubTab;
       renderDashboardContent();
       // Update active classes
       btnThreatMap.classList.add('active');
@@ -57,6 +60,7 @@ export function renderExecutiveDashboard() {
   if (btnGraph) {
     btnGraph.onclick = () => {
       activeDashboardSubTab = 'graph';
+      window.activeDashboardSubTab = activeDashboardSubTab;
       renderDashboardContent();
       // Update active classes
       btnGraph.classList.add('active');
