@@ -310,7 +310,7 @@ function renderDashboardContent() {
     contentArea.innerHTML = `
       <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
         <!-- Left Column: Global Visualisation Map & Systems -->
-        <div class="dashboard-card map-card" style="flex: 1.8; min-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 10px; height: 550px; box-sizing: border-box;">
+        <div class="dashboard-card map-card" style="flex: 1.8; min-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box;">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; flex-shrink: 0;">
             <h3 style="font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
               Global Threat & Service Infrastructure Visualiser
@@ -388,20 +388,20 @@ function renderDashboardContent() {
             </div>
           </div>
 
-          <!-- Mapped Infrastructure Section (utilizing space below map) -->
-          <div class="map-systems-section" style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; flex: 1; display: flex; flex-direction: column; overflow: hidden;">
-            <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 6px 0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+          <!-- Mapped Infrastructure Section (expanded height to fit all services and align with right column bottom) -->
+          <div class="map-systems-section" style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; display: flex; flex-direction: column;">
+            <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 8px 0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
               <span>Mapped Infrastructure Services & Systems</span>
               <span id="map-systems-count" style="font-size: 0.68rem; text-transform: none; color: var(--color-cyan); font-weight: 600;">0 Service(s)</span>
             </h4>
-            <div id="map-systems-grid" class="resilience-systems-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; overflow-y: auto; flex: 1; padding-right: 4px;">
+            <div id="map-systems-grid" class="resilience-systems-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; overflow-y: auto; min-height: 480px; max-height: 520px; padding-right: 4px;">
               <!-- Dynamically populated in app.js -->
             </div>
           </div>
         </div>
 
         <!-- Right Column: Detail Card & Live Threat Feed -->
-        <div style="flex: 1.2; min-width: 350px; display: flex; flex-direction: column; gap: 16px; height: 550px; box-sizing: border-box;">
+        <div style="flex: 1.2; min-width: 350px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box;">
           <!-- Region Detail Card -->
           <div class="dashboard-card info-card" id="resilience-detail-card" style="display: flex; flex-direction: column; min-height: 200px; padding: 15px; margin: 0; box-sizing: border-box;">
             <!-- Dynamically populated in app.js -->
