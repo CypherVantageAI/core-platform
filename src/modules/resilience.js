@@ -789,22 +789,29 @@ function renderAuditSubPane(container, state, suppliers) {
   });
 
   // Default supplier calculation
-  const defaultSup = state.suppliers[selectedAuditTarget] || suppliers[0];
-  const affectedAppsSup = state.applications.filter(app => app.hostingProvider && app.hostingProvider.toLowerCase().includes(defaultSup.name.split(' ')[0].toLowerCase()));
+  const defaultSup = (state.suppliers && state.suppliers[selectedAuditTarget]) || (suppliers && suppliers[0]) || {};
+  const defaultSupName = defaultSup.name || 'AWS';
+  const supSearchTerm = defaultSupName.split(' ')[0].toLowerCase();
+  const affectedAppsSup = state.applications ? state.applications.filter(app => 
+    app.hostingProvider && app.hostingProvider.toLowerCase().includes(supSearchTerm)
+  ) : [];
   const affectedServicesSup = [];
   affectedAppsSup.forEach(app => {
-    const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
+    const srvs = state.services ? state.services.filter(s => s.applications && s.applications.includes(app.id)) : [];
     affectedServicesSup.push(...srvs);
   });
   const uniqSrvNamesSup = [...new Set(affectedServicesSup.map(s => s.name))];
 
   // Default region calculation
-  const affectedAssetsReg = state.assets.filter(ast => ast.region && ast.region.toLowerCase().includes(selectedAuditRegion.toLowerCase()));
+  const regionSearch = (selectedAuditRegion || 'us-east-1').toLowerCase();
+  const affectedAssetsReg = state.assets ? state.assets.filter(ast => 
+    ast.region && ast.region.toLowerCase().includes(regionSearch)
+  ) : [];
   const affectedServicesReg = [];
   affectedAssetsReg.forEach(ast => {
-    const matchedApps = state.applications.filter(app => ast.name.includes(app.name.split(' ')[0]));
+    const matchedApps = state.applications ? state.applications.filter(app => ast.name.includes(app.name.split(' ')[0])) : [];
     matchedApps.forEach(app => {
-      const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
+      const srvs = state.services ? state.services.filter(s => s.applications && s.applications.includes(app.id)) : [];
       affectedServicesReg.push(...srvs);
     });
   });

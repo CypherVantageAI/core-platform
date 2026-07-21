@@ -6,7 +6,7 @@ const LOCAL_STORAGE_KEY = 'cypher_vantage_dora_state_v15';
 
 // Default state structure conforming to the 12 core DORA entities
 const DEFAULT_STATE = {
-  version: 15,
+  version: 16,
   activePersona: 'manager', // 'manager' | 'supplier'
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
@@ -1725,8 +1725,8 @@ export function loadState() {
   if (saved) {
     try {
       parsed = JSON.parse(saved);
-      if (!parsed.version || parsed.version < 14) {
-        console.warn("Outdated DORA database state (V14 needed). Reinitializing database.");
+      if (!parsed.version || parsed.version < 16) {
+        console.warn("Outdated DORA database state (V16 needed). Reinitializing database.");
         parsed = JSON.parse(JSON.stringify(DEFAULT_STATE));
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
       }

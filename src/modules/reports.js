@@ -89,6 +89,7 @@ export function renderReportsModule() {
   createCard('reports-kpi-tests', {
     title: 'Total Tests Run',
     value: `${totalTests}`,
+    subtext: 'Cumulative scenario simulations and sanity checks',
     icon: '📊',
     borderLeftColor: '#14b8a6'
   });
@@ -96,7 +97,7 @@ export function renderReportsModule() {
   createCard('reports-kpi-success', {
     title: 'Success Pass Rate',
     value: `${totalTests ? Math.round((passedTests / totalTests) * 100) : 100}%`,
-    subtext: 'Passed integrity audits',
+    subtext: 'Ratio of passed integrity audits to total tests',
     icon: '✅',
     borderLeftColor: '#10b981'
   });
@@ -104,6 +105,7 @@ export function renderReportsModule() {
   createCard('reports-kpi-incidents', {
     title: 'DORA Incidents Logged',
     value: `${totalIncidents}`,
+    subtext: 'Outages matching DORA Article 19 classification',
     icon: '🚨',
     borderLeftColor: '#ef4444'
   });
@@ -111,7 +113,7 @@ export function renderReportsModule() {
   createCard('reports-kpi-loss', {
     title: 'Estimated Loss Prevented',
     value: `£${totalLossPrevented.toLocaleString()}`,
-    subtext: 'Through automated failovers',
+    subtext: 'Modeled financial savings from automated failovers',
     icon: '💰',
     borderLeftColor: '#eab308'
   });
