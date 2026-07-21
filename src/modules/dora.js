@@ -170,9 +170,9 @@ export function renderDoraModule() {
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.03); padding:6px 0; font-size:0.7rem;">
           <div>
             <b>📂 ${e.name}</b>
-            <div style="font-size:0.62rem; color:var(--text-muted);">Hash: <span style="font-family:monospace;">${e.hash ? e.hash.slice(0, 16) : 'SHA-256'}...</span></div>
+            <div style="font-size:0.62rem; color:var(--text-muted);">Hash: <span style="font-family:monospace;">${(e.fileHash || e.hash || 'SHA-256').slice(0, 16)}...</span></div>
           </div>
-          <span style="font-size:0.65rem; color:var(--color-cyan); font-weight:600;">${e.uploaded}</span>
+          <span style="font-size:0.65rem; color:var(--color-cyan); font-weight:600;">Uploaded: ${e.uploadedDate || e.uploaded || '2026-07-01'}</span>
         </div>
       `).join('');
       showModal('Cryptographic Evidence Vault', `

@@ -138,11 +138,11 @@ export function renderReportsModule() {
       const incHtml = state.incidents.map(i => `
         <div style="border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem; display:flex; flex-direction:column; gap:2px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <b>${i.name}</b>
+            <b>${i.title || i.name || 'Disruption Incident'}</b>
             ${createStatusBadge(i.status === 'Closed' ? 'Compliant' : 'Non-Compliant')}
           </div>
-          <div style="font-size:0.65rem; color:var(--text-secondary);">${i.description}</div>
-          <div style="font-size:0.62rem; color:#ef4444; margin-top:2px;">Financial Loss: £${(i.financialLoss || 0).toLocaleString()}</div>
+          <div style="font-size:0.65rem; color:var(--text-secondary);">${i.description || i.rootCause || ('Service: ' + (i.serviceAffected || 'Infrastructure'))}</div>
+          <div style="font-size:0.62rem; color:#ef4444; margin-top:2px;">Financial Loss: £${(i.financialLoss || 0).toLocaleString()} | Downtime: ${i.downtime || '30m'}</div>
         </div>
       `).join('');
       window.showModal('DORA Article 19 Incident Registry', `<div style="display:flex; flex-direction:column; gap:8px; max-height:350px; overflow-y:auto;">${incHtml}</div>`);
