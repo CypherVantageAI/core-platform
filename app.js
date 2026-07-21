@@ -5992,70 +5992,162 @@ window.startSupplierSlaCountdown = function() {
 };
 
 window.showHelpGuide = function() {
+  const sections = {
+    overview: `
+      <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">📊 Executive Overview & KPI Metrics</h4>
+      <p>The <b>Executive Overview</b> tab displays the core key performance indicators (KPIs) and operational alerts for the entire enterprise. Clicking on any of the KPI cards launches an interactive breakdown modal:</p>
+      <ul>
+        <li><b>Resilience Score:</b> Combines Third-Party Supplier compliance scores (80% weight) with outstanding internal open risks and audit findings (20% weight).</li>
+        <li><b>DORA Compliance:</b> Evaluates overall alignment with the 5 core pillars of DORA based on article mappings.</li>
+        <li><b>Open Risks / Active Incidents / Open Findings:</b> Displays active issues. Active incidents list outages affecting Important Business Services (IBS) or Critical Internal Services (CIS).</li>
+      </ul>
+      <p style="margin-top: 6px;"><b>How to Use:</b> Click on any metric card at the top to view its mathematical formulation, outstanding counts, and supervisory thresholds.</p>
+    `,
+    graph: `
+      <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">🕸️ Operational Resilience Knowledge Graph</h4>
+      <p>The <b>Resilience Knowledge Graph</b> compiles all 12 operational DORA domains (Services, Processes, Apps, Infrastructure, Cloud, Data, Suppliers, Risks, Controls, Incidents, Recovery Plans, and Obligations) into a unified visual model.</p>
+      <ul style="display:flex; flex-direction:column; gap:4px; margin-top:6px;">
+        <li><b>Dependency Tracking:</b> Click on any node to trace its **upstream dependencies** (rendered as cyan links) and **downstream dependencies** (rendered as purple links).</li>
+        <li><b>Outage Blast Radius Simulation:</b> Select any Infrastructure or Cloud Service node and click <b>⚡ Trigger Failure</b>. The propagation engine walks the downstream graph in real-time to compute cumulative financial penalties, total customer impact statements, and violated DORA regulations.</li>
+        <li><b>Viewport Navigation:</b> Click and drag the grid background to pan. Click <b>+</b> and <b>-</b> to zoom. Click <b>Reset</b> to return to normal focus.</li>
+      </ul>
+    `,
+    navigator: `
+      <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">📡 IBS & CIS SLA Monitor (Service Navigator)</h4>
+      <p>The <b>SLA Monitor</b> lists Important Business Services (IBS) and Critical Internal Services (CIS) mapping their technology stacks, active vulnerabilities, and adjacent dependencies.</p>
+      <ul>
+        <li><b>Tech Stack & Security Profile:</b> Displays technical packages, components, and active vulnerability records with severity SLA boundaries (9h for Urgent, 24h for Critical, 48h for Major).</li>
+        <li><b>Dependency Mapping:</b> Draws the localized sub-graph neighborhood (1 degree of separation) of the selected service, linking it to data snapshots, hosting assets, and active incident tickets.</li>
+        <li><b>Supplier Action Dispatches:</b> Risk Managers can click **Dispatch Action** to send a direct questionnaire and upload request to the vendor's portal.</li>
+      </ul>
+    `,
+    tlpt: `
+      <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">⚡ Threat-Led Penetration Testing (TLPT)</h4>
+      <p>The <b>TLPT Campaigns</b> workspace governs security simulations structured under the EU TIBER-EU framework. It outlines a complete 6-stage lifecycle:</p>
+      <div style="background: rgba(0,0,0,0.25); padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.65rem; margin: 5px 0;">
+        Threat Intelligence ➔ Planning ➔ White Team ➔ Red Team ➔ Purple Team ➔ Remediation
+      </div>
+      <ul>
+        <li><b>Campaign Builder:</b> Allows launching custom tests using realistic template models (e.g. ransomware lockouts, edge API bypasses, or distributed DNS spoofing).</li>
+        <li><b>Remediation Links:</b> Links campaign findings directly to DORA compliance obligation registers.</li>
+      </ul>
+    `,
+    aigovern: `
+      <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">🤖 AI Governance & Audit Registry</h4>
+      <p>Governs deployed LLMs and cognitive agents across the platform, mapping risk classification boundaries under the EU AI Act.</p>
+      <ul>
+        <li><b>AI Model Registry:</b> Tracks model names, risk levels (Prohibited, High, Transparency, Minimal), and approval states.</li>
+        <li><b>Adversarial Prompt Pentesting:</b> Sandbox to test models against jailbreaks, prompt injections, and exfiltration payloads.</li>
+        <li><b>DLP Sanitizer Proxy:</b> Integrates an automatic Data Loss Prevention filter to scan and sanitize outbound messages dynamically.</li>
+      </ul>
+    `,
+    tprm: `
+      <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">🤝 Nth-Party TPRM & Exit Strategies</h4>
+      <p>Manages third-party supplier risk profiles, concentration hotspots, and service exit roadmaps:</p>
+      <ul>
+        <li><b>Supplier Directory:</b> Lists contact details, compliance scoring matrices, and 4th-party subcontractor boundaries.</li>
+        <li><b>Concentration Risk:</b> Displays a visual diagram highlighting shared subprocessor dependencies (e.g. cloud CDN bottlenecks like Cloudflare or physical colocation hubs like Equinix).</li>
+        <li><b>SLA & Performance:</b> Real-time status dials for vendor response speed and SLA fulfillment.</li>
+        <li><b>Exit Strategies:</b> Maps alternative suppliers, transition complexity ratings (1-100), and test logs for database migration playbooks.</li>
+      </ul>
+    `,
+    drills: `
+      <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">🔄 Scenario Drills & Lessons Learned</h4>
+      <p>Allows coordinators to orchestrate tabletop simulations and recovery drills (e.g. Cloud Outage, Ransomware locks, Database data corruption):</p>
+      <ul>
+        <li><b>Planning:</b> Declares coordinators, recovery RTO targets, and failover methods before starting.</li>
+        <li><b>Lessons Learned:</b> After the drill completes, coordinators submit a post-mortem review, which is logged back to the database.</li>
+      </ul>
+    `,
+    advisor: `
+      <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">💬 State-Aware AI Advisor Commands</h4>
+      <p>The AI chatbot is state-aware and directly queries the active database to return formatted markdown tables. Try typing these commands in the chat input box:</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.65rem; margin-top: 6px;">
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px 0; font-weight: bold; color: var(--color-cyan);">"Show DORA gaps"</td><td style="color: var(--text-muted);">Lists all active obligation articles in a non-compliant state.</td></tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px 0; font-weight: bold; color: var(--color-cyan);">"Which suppliers support Payments?"</td><td style="color: var(--text-muted);">Traces downstream applications supporting payment gates.</td></tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px 0; font-weight: bold; color: var(--color-cyan);">"Which critical services lack testing?"</td><td style="color: var(--text-muted);">Checks Tier-1 services without recent recovery drills.</td></tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px 0; font-weight: bold; color: var(--color-cyan);">"Generate Board Report"</td><td style="color: var(--text-muted);">Compiles active incidents, risks, and compliance scores.</td></tr>
+      </table>
+    `
+  };
+
+  // Determine starting tab based on active application content pane
+  let activeTabId = 'overview';
+  const activePane = document.querySelector('.content-pane.active');
+  if (activePane) {
+    const paneId = activePane.id;
+    if (paneId === 'view-manager-dashboard') {
+      const graphBtn = document.getElementById('btn-db-tab-graph');
+      if (graphBtn && graphBtn.classList.contains('active')) activeTabId = 'graph';
+      else activeTabId = 'overview';
+    }
+    else if (paneId === 'view-manager-navigator') activeTabId = 'navigator';
+    else if (paneId === 'view-manager-ai-risk') activeTabId = 'aigovern';
+    else if (paneId === 'view-manager-risk') activeTabId = 'tlpt';
+    else if (paneId === 'view-manager-thirdparty' || paneId === 'view-manager-actions') activeTabId = 'tprm';
+    else if (paneId === 'view-manager-resilience') activeTabId = 'drills';
+    else if (paneId === 'view-manager-advisor') activeTabId = 'advisor';
+  }
+
+  // HTML content structure with side-tab navigator
   const guideHtml = `
-    <div style="font-size: 0.72rem; line-height: 1.5; color: var(--text-secondary); display: flex; flex-direction: column; gap: 15px; max-height: 500px; overflow-y: auto; padding-right: 8px;">
-      <p>Welcome to <b>Cypher Vantage</b>, the market-leading digital operational resilience platform designed for DORA compliance, Nth-party risk tracking, and threat-led resilience orchestration.</p>
-      
-      <!-- Section 1 -->
-      <div>
-        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">1. Executive Overview & KPI Interactive Details</h4>
-        <p>The dashboard provides high-level resilience summaries. Clicking any of the top KPI cards (<b>Resilience Score, DORA Compliance, Open Risks, Active Incidents, or Open Findings</b>) opens an explanation modal displaying calculation weightings, current counts, and compliance targets.</p>
+    <div style="display: flex; gap: 15px; height: 380px; font-size: 0.72rem; width: 100%;">
+      <!-- Sidebar tab controllers -->
+      <div style="width: 160px; border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 4px; padding-right: 8px; overflow-y: auto;">
+        <button id="guide-tab-btn-overview" class="horizontal-sub-tab-btn" onclick="switchGuideTab('overview')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">📊 Dashboard KPIs</button>
+        <button id="guide-tab-btn-graph" class="horizontal-sub-tab-btn" onclick="switchGuideTab('graph')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">🕸️ Knowledge Graph</button>
+        <button id="guide-tab-btn-navigator" class="horizontal-sub-tab-btn" onclick="switchGuideTab('navigator')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">📡 Service Navigator</button>
+        <button id="guide-tab-btn-tlpt" class="horizontal-sub-tab-btn" onclick="switchGuideTab('tlpt')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">⚡ TLPT Campaigns</button>
+        <button id="guide-tab-btn-aigovern" class="horizontal-sub-tab-btn" onclick="switchGuideTab('aigovern')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">🤖 AI Governance</button>
+        <button id="guide-tab-btn-tprm" class="horizontal-sub-tab-btn" onclick="switchGuideTab('tprm')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">🤝 TPRM & Exits</button>
+        <button id="guide-tab-btn-drills" class="horizontal-sub-tab-btn" onclick="switchGuideTab('drills')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">🔄 Tabletop Drills</button>
+        <button id="guide-tab-btn-advisor" class="horizontal-sub-tab-btn" onclick="switchGuideTab('advisor')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">💬 Chat Copilot</button>
       </div>
-
-      <!-- Section 2 -->
-      <div>
-        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">2. Operational Resilience Knowledge Graph</h4>
-        <p>Accessible in the <b>Executive Dashboard</b> sub-tab. It connects 12 key resilience entities (Services, Processes, Apps, Assets, Cloud nodes, Data, Suppliers, Risks, Controls, Incidents, Recovery Plans, and Obligations).</p>
-        <ul>
-          <li><b>Pan & Zoom:</b> Drag the canvas to pan. Use <b>+</b> / <b>-</b> to zoom.</li>
-          <li><b>Upstream/Downstream:</b> Click any node to highlight its upstream dependencies in cyan and downstream targets in purple.</li>
-          <li><b>Outage Simulation:</b> Click <b>Trigger Failure</b> in the sidebar to simulate an outage. The engine calculates cascading financial exposure, customer impact, and violated DORA articles in real-time.</li>
-        </ul>
-      </div>
-
-      <!-- Section 3 -->
-      <div>
-        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">3. IBS & CIS SLA Monitor (Service Navigator)</h4>
-        <p>Accessible via the left sidebar. Lets you select a critical service (IBS/CIS) to view its technology stack and active security vulnerabilities. Under the <b>Dependency Mapping</b> tab, a focused sub-graph renders the localized neighborhood of that service.</p>
-      </div>
-
-      <!-- Section 4 -->
-      <div>
-        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">4. Threat-Led Penetration Testing (TLPT)</h4>
-        <p>Manage penetration campaigns following the <b>TIBER-EU</b> lifecycle: Threat Intelligence ➔ Planning ➔ White Team ➔ Red Team ➔ Purple Team ➔ Findings ➔ Remediation. Pre-populated templates are available for ransomware, API breaches, and DDoS outages.</p>
-      </div>
-
-      <!-- Section 5 -->
-      <div>
-        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">5. AI Audit & Governance Registry</h4>
-        <p>Ensures security compliance for LLMs. Includes the **AI Model Registry**, prompt injection testing playbooks, hallucination metrics logs, and an **Inline DLP Sanitizer** proxy badge indicating active filters.</p>
-      </div>
-
-      <!-- Section 6 -->
-      <div>
-        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">6. Nth-Party TPRM & Exit Strategies</h4>
-        <p>Provides a Supplier Directory with subcontractor mappings, vendor concentration risk matrices, active SLA meters, and transition playbooks to alternative suppliers (Exit Strategies).</p>
-      </div>
-
-      <!-- Section 7 -->
-      <div>
-        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">7. Crisis Scenario Drills</h4>
-        <p>Run simulated tabletop or operational drills. coordinators set coordinators, recovery RTO targets, and mitigation methods. After completion, coordinators submit <b>Lessons Learned</b> which are logged back to the dashboard.</p>
-      </div>
-
-      <!-- Section 8 -->
-      <div>
-        <h4 style="color: var(--color-cyan); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 2px;">8. State-Aware AI Advisor Commands</h4>
-        <p>Ask the chatbot helper questions regarding the live state database:
-          <br>• <i>"Show DORA gaps"</i>
-          <br>• <i>"Which suppliers support Payments?"</i>
-          <br>• <i>"Which critical services lack testing?"</i>
-          <br>• <i>"Generate Board Report"</i>
-        </p>
+      <!-- Details panel -->
+      <div id="guide-detail-panel" style="flex: 1; overflow-y: auto; padding-left: 6px; line-height: 1.5; color: var(--text-secondary); display: flex; flex-direction: column; gap: 8px;">
+        <!-- Loaded dynamically -->
       </div>
     </div>
   `;
+
+  // Define dynamic tab switcher inside the modal scope
+  window.switchGuideTab = function(sectionId) {
+    const detailPanel = document.getElementById('guide-detail-panel');
+    if (!detailPanel) return;
+
+    detailPanel.innerHTML = sections[sectionId] || '<p>Section not found.</p>';
+
+    // Update active tab button styles
+    const buttons = [
+      'overview', 'graph', 'navigator', 'tlpt', 'aigovern', 'tprm', 'drills', 'advisor'
+    ];
+    buttons.forEach(btnId => {
+      const btn = document.getElementById(`guide-tab-btn-${btnId}`);
+      if (btn) {
+        if (btnId === sectionId) {
+          btn.style.background = 'rgba(6, 182, 212, 0.1)';
+          btn.style.color = 'var(--color-cyan)';
+          btn.style.fontWeight = 'bold';
+        } else {
+          btn.style.background = 'none';
+          btn.style.color = 'var(--text-secondary)';
+          btn.style.fontWeight = 'normal';
+        }
+      }
+    });
+  };
+
+  // Launch modal
   window.showModal('Cypher Vantage Platform User Guide', guideHtml);
+
+  // Expand modal container width dynamically for guide sidebar layout
+  const modalBox = document.querySelector('#cv-dynamic-modal .modal-box');
+  if (modalBox) {
+    modalBox.style.maxWidth = '680px';
+  }
+
+  // Load target tab
+  window.switchGuideTab(activeTabId);
 };
 
 
