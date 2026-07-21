@@ -269,6 +269,17 @@ def run_screen_captures(artifacts_dir):
         path_advisor = os.path.join(artifacts_dir, "ai_copilot_responses.png")
         driver.save_screenshot(path_advisor)
         print("  [OK] Screen capture: AI Copilot Responses saved.")
+
+        # I. Digital Resilience Twin (DORT)
+        driver.execute_script("window.switchTab('manager-resilience');")
+        time.sleep(1)
+        driver.execute_script("document.getElementById('btn-res-tab-twin').click();")
+        time.sleep(1)
+        driver.execute_script("document.getElementById('btn-twin-simulate').click();")
+        time.sleep(2)
+        path_twin = os.path.join(artifacts_dir, "resilience_twin.png")
+        driver.save_screenshot(path_twin)
+        print("  [OK] Screen capture: Resilience Twin DORT saved.")
         
         print("  [PASS] Screen capture suite executed successfully.")
     except Exception as e:

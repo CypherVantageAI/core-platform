@@ -564,8 +564,6 @@ function drawDependencyGraph(srv) {
       <!-- Paths -->
       ${pathsHtml}
       
-      <!-- Nodes -->
-      ${nodesHtml}
     </svg>
   `;
 }
@@ -573,56 +571,197 @@ function drawDependencyGraph(srv) {
 // ==========================================================================
 // 3. DIGITAL OPERATIONAL RESILIENCE TWIN (DORT)
 // ==========================================================================
+let activeTwinSubTab = 'simulate';
+let selectedAuditTarget = 'aws';
+let selectedAuditRegion = 'us-east-1';
+
+function getTwinMetrics() {
+  const state = getState();
+  const activeIncidents = state.incidents.filter(i => i.status === 'Active').length;
+  const controlGaps = state.actions.filter(a => a.status !== 'Closed').length;
+  const openRisks = state.risks.filter(r => r.status === 'Open').length;
+  
+  let healthScore = 100 - (activeIncidents * 12) - (controlGaps * 5) - (openRisks * 3);
+  healthScore = Math.max(30, Math.min(100, healthScore));
+
+  const atRiskServices = [];
+  state.incidents.forEach(inc => {
+    if (inc.status === 'Active') atRiskServices.push(inc.serviceAffected);
+  });
+  state.risks.forEach(rsk => {
+    if (rsk.status === 'Open' && rsk.associatedServiceId) {
+      const s = state.services.find(srv => srv.id === rsk.associatedServiceId);
+      if (s) atRiskServices.push(s.name);
+    }
+  });
+  const uniqueAtRiskServices = [...new Set(atRiskServices)];
+
+  const totalServices = state.services.length;
+  const servicesWithPlans = state.services.filter(s => {
+    return state.recoveryPlans.some(rp => rp.associatedServices && rp.associatedServices.includes(s.id));
+  }).length;
+  const readinessIndex = totalServices ? Math.round((servicesWithPlans / totalServices) * 100) : 100;
+
+  const supplierAppCounts = {};
+  state.applications.forEach(app => {
+    const provider = app.hostingProvider || 'Internal';
+    if (provider !== 'Internal') {
+      supplierAppCounts[provider] = (supplierAppCounts[provider] || 0) + 1;
+    }
+  });
+  let topSupplier = 'None';
+  let topCount = 0;
+  for (const [sup, count] of Object.entries(supplierAppCounts)) {
+    if (count > topCount) {
+      topSupplier = sup;
+      topCount = count;
+    }
+  }
+  const concentrationStatus = topCount > 1 ? `High (${topSupplier})` : `Nominal`;
+
+  return {
+    healthScore,
+    activeIncidents,
+    controlGaps,
+    openRisks,
+    uniqueAtRiskServices,
+    readinessIndex,
+    concentrationStatus
+  };
+}
+
 function renderTwinTab(container) {
   const state = getState();
+  const metrics = getTwinMetrics();
   
-  // Collect all suppliers and assets for simulation select
   const suppliers = Object.values(state.suppliers);
   const assets = state.assets;
 
   container.innerHTML = `
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-      <!-- Simulation Controls -->
-      <div class="dashboard-card" style="flex: 1; min-width: 320px; padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 15px;">
-        <h3 style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; font-weight:700; border-bottom:1px dashed rgba(255,255,255,0.06); padding-bottom:8px; margin:0; width:100%; text-align:left;">
-          DORT Fail-Point Simulator
-        </h3>
-        
-        <div style="display:flex; flex-direction:column; gap:6px;">
-          <label style="font-size:0.7rem; color:var(--text-secondary); font-weight:600;">Choose Target Fail-Point:</label>
-          <select id="twin-target-select" class="dropdown-control" style="width:100%; font-size:0.72rem;">
-            <optgroup label="Critical Suppliers">
-              ${suppliers.map(s => `<option value="sup-${s.id}" ${selectedTwinPoint === 'sup-' + s.id ? 'selected' : ''}>Supplier: ${s.name} (${s.riskTier} Risk)</option>`).join('')}
-            </optgroup>
-            <optgroup label="Infrastructure Assets">
-              ${assets.map(a => `<option value="ast-${a.id}" ${selectedTwinPoint === 'ast-' + a.id ? 'selected' : ''}>Asset: ${a.name}</option>`).join('')}
-            </optgroup>
-          </select>
+    <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+      <!-- 1. DORT Operational Health Dashboard Row -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; width: 100%;">
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Twin Posture Health</span>
+          <span style="font-size: 1.3rem; font-weight: 700; color: ${metrics.healthScore >= 80 ? 'var(--color-cyan)' : '#ef4444'};">${metrics.healthScore}%</span>
+          <span style="font-size: 0.55rem; color: var(--text-secondary);">${metrics.healthScore >= 80 ? '✅ Secure Posture' : '⚠️ Degraded state'}</span>
         </div>
-
-        <button id="btn-twin-simulate" class="btn btn-primary" style="width:100%; font-size:0.72rem; padding: 8px;">📊 Trigger Outage & Analyze Blast Radius</button>
-
-        <!-- Blast radius stats card -->
-        <div id="twin-impact-summary" style="display:none; flex-direction:column; gap:8px; margin-top:10px;">
-          <!-- Dynamically populated -->
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Critical Services at Risk</span>
+          <span style="font-size: 1.3rem; font-weight: 700; color: ${metrics.uniqueAtRiskServices.length > 0 ? '#ef4444' : '#10b981'};">${metrics.uniqueAtRiskServices.length}</span>
+          <span style="font-size: 0.55rem; color: var(--text-secondary); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="${metrics.uniqueAtRiskServices.join(', ') || 'None'}">${metrics.uniqueAtRiskServices.join(', ') || 'All Services Secure'}</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Recovery Readiness</span>
+          <span style="font-size: 1.3rem; font-weight: 700; color: var(--color-cyan);">${metrics.readinessIndex}%</span>
+          <span style="font-size: 0.55rem; color: var(--text-secondary);">Tested DR Plans</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Open Control Weaknesses</span>
+          <span style="font-size: 1.3rem; font-weight: 700; color: #eab308;">${metrics.controlGaps}</span>
+          <span style="font-size: 0.55rem; color: var(--text-secondary);">Pending audit remediation</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Supplier Concentration</span>
+          <span style="font-size: 1.3rem; font-weight: 700; color: #a855f7;">${metrics.concentrationStatus.split(' ')[0]}</span>
+          <span style="font-size: 0.55rem; color: var(--text-secondary); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="${metrics.concentrationStatus}">${metrics.concentrationStatus}</span>
         </div>
       </div>
 
-      <!-- Blast Radius Network Visualization -->
-      <div class="dashboard-card" style="flex: 1.8; min-width: 450px; padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 10px; min-height: 480px;">
-        <h3 style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; font-weight:700; border-bottom:1px dashed rgba(255,255,255,0.06); padding-bottom:8px; margin:0;">
-          Impact Propagation Map
-        </h3>
-        <div id="twin-propagation-map" style="flex:1; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.25); border:1px dashed rgba(255,255,255,0.04); border-radius:6px; min-height:300px;">
-          <div style="text-align:center; color:var(--text-muted); font-size:0.76rem; font-style:italic;">
-            Trigger an outage on the left panel to display dynamic impact propagation and cascading failure chains.
+      <!-- 2. Dual Workspace Columns -->
+      <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
+        <!-- Left: Control & Audit Panel -->
+        <div class="dashboard-card" style="flex: 1.2; min-width: 380px; padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 15px;">
+          <!-- sub-navigation buttons -->
+          <div style="display: flex; gap: 5px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+            <button id="btn-twin-sub-simulate" class="btn btn-secondary btn-xs ${activeTwinSubTab === 'simulate' ? 'active' : ''}" style="padding: 4px 10px; font-size: 0.65rem;">Simulation Workspace</button>
+            <button id="btn-twin-sub-audit" class="btn btn-secondary btn-xs ${activeTwinSubTab === 'audit' ? 'active' : ''}" style="padding: 4px 10px; font-size: 0.65rem;">Impact &amp; Audit Queries</button>
+            <button id="btn-twin-sub-recovery" class="btn btn-secondary btn-xs ${activeTwinSubTab === 'recovery' ? 'active' : ''}" style="padding: 4px 10px; font-size: 0.65rem;">Recovery Plans</button>
+          </div>
+
+          <div id="twin-sub-pane-content" style="display: flex; flex-direction: column; gap: 12px; min-height: 320px;">
+            <!-- Dynamically Rendered Controls -->
+          </div>
+        </div>
+
+        <!-- Right: Visual Impact Map -->
+        <div class="dashboard-card" style="flex: 1.8; min-width: 450px; padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 10px; min-height: 480px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+            <h3 style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; font-weight:700; margin:0;">
+              Operational Twin Visual Impact Map
+            </h3>
+            <span style="font-size: 0.6rem; color: var(--text-muted); padding: 2px 6px; background: rgba(0,0,0,0.2); border-radius: 4px;">Dynamic Path Graph</span>
+          </div>
+          <div id="twin-propagation-map" style="flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.04); border-radius: 6px; min-height: 380px; position: relative;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.76rem; font-style: italic;">
+              Select a target fail-point and trigger an outage on the left panel to display dynamic impact propagation and cascading failure chains.
+            </div>
           </div>
         </div>
       </div>
     </div>
   `;
 
-  // Selector hook
+  // Bind Sub-Tabs
+  document.getElementById('btn-twin-sub-simulate').onclick = () => {
+    activeTwinSubTab = 'simulate';
+    renderTwinTab(container);
+  };
+  document.getElementById('btn-twin-sub-audit').onclick = () => {
+    activeTwinSubTab = 'audit';
+    renderTwinTab(container);
+  };
+  document.getElementById('btn-twin-sub-recovery').onclick = () => {
+    activeTwinSubTab = 'recovery';
+    renderTwinTab(container);
+  };
+
+  // Render Sub-Pane Content
+  const subContent = document.getElementById('twin-sub-pane-content');
+  if (activeTwinSubTab === 'simulate') {
+    renderSimulateSubPane(subContent, state, suppliers, assets);
+  } else if (activeTwinSubTab === 'audit') {
+    renderAuditSubPane(subContent, state, suppliers);
+  } else if (activeTwinSubTab === 'recovery') {
+    renderRecoverySubPane(subContent, state);
+  }
+}
+
+// --------------------------------------------------------------------------
+// SUB-TAB 1: OUTAGE SIMULATOR
+// --------------------------------------------------------------------------
+function renderSimulateSubPane(container, state, suppliers, assets) {
+  container.innerHTML = `
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <label style="font-size:0.7rem; color:var(--text-secondary); font-weight:600;">Choose Target Fail-Point:</label>
+      <select id="twin-target-select" class="dropdown-control" style="width:100%; font-size:0.72rem; padding: 6px;">
+        <optgroup label="Critical Suppliers">
+          ${suppliers.map(s => `<option value="sup-${s.id}" ${selectedTwinPoint === 'sup-' + s.id ? 'selected' : ''}>Supplier: ${s.name}</option>`).join('')}
+        </optgroup>
+        <optgroup label="Infrastructure Assets">
+          ${assets.map(a => `<option value="ast-${a.id}" ${selectedTwinPoint === 'ast-' + a.id ? 'selected' : ''}>Asset: ${a.name}</option>`).join('')}
+        </optgroup>
+      </select>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <label style="font-size:0.7rem; color:var(--text-secondary); font-weight:600;">Disruption Scenario:</label>
+      <select id="twin-scenario-select" class="dropdown-control" style="width:100%; font-size:0.72rem; padding: 6px;">
+        <option value="region-loss">Complete Cloud Region Outage</option>
+        <option value="ransomware">Ransomware Data Integrity Hijack</option>
+        <option value="ddos">Distributed DDoS Flood Attack</option>
+        <option value="power">Physical Facility Power Failure</option>
+      </select>
+    </div>
+
+    <button id="btn-twin-simulate" class="btn btn-primary" style="width:100%; font-size:0.72rem; padding: 10px; margin-top: 5px;">⚡ Trigger Outage &amp; Analyze Blast Radius</button>
+
+    <div id="twin-impact-summary" style="display:none; flex-direction:column; gap:8px;">
+      <!-- Populated dynamically -->
+    </div>
+  `;
+
+  // Hooks
   const selectNode = document.getElementById('twin-target-select');
   if (selectNode) {
     selectNode.onchange = (e) => {
@@ -630,7 +769,6 @@ function renderTwinTab(container) {
     };
   }
 
-  // Simulate trigger click
   const btnSimulate = document.getElementById('btn-twin-simulate');
   if (btnSimulate) {
     btnSimulate.onclick = () => {
@@ -639,6 +777,148 @@ function renderTwinTab(container) {
   }
 }
 
+// --------------------------------------------------------------------------
+// SUB-TAB 2: IMPACT & AUDIT QUERIES
+// --------------------------------------------------------------------------
+function renderAuditSubPane(container, state, suppliers) {
+  const untestedServices = state.services.filter(s => {
+    const hasDrill = state.incidents.some(inc => inc.serviceAffected === s.name && inc.classification === 'Recovery Drill');
+    return !hasDrill;
+  });
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <!-- Query 1 -->
+      <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 8px;">
+        <span style="font-weight: 700; color: var(--color-cyan); font-size: 0.72rem;">❓ What breaks if Supplier fails?</span>
+        <div style="display: flex; gap: 8px;">
+          <select id="audit-supplier-select" class="dropdown-control" style="flex: 1; font-size: 0.7rem; padding: 4px;">
+            ${suppliers.map(s => `<option value="${s.id}" ${selectedAuditTarget === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+          </select>
+          <button id="btn-audit-supplier" class="btn btn-secondary btn-xs" style="padding: 4px 10px;">Query</button>
+        </div>
+        <div id="audit-supplier-result" style="font-size: 0.65rem; color: var(--text-muted);"></div>
+      </div>
+
+      <!-- Query 2 -->
+      <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 8px;">
+        <span style="font-weight: 700; color: var(--color-cyan); font-size: 0.72rem;">❓ What breaks if Cloud Region fails?</span>
+        <div style="display: flex; gap: 8px;">
+          <select id="audit-region-select" class="dropdown-control" style="flex: 1; font-size: 0.7rem; padding: 4px;">
+            <option value="us-east-1" ${selectedAuditRegion === 'us-east-1' ? 'selected' : ''}>AWS N. Virginia (us-east-1)</option>
+            <option value="eu-central-1" ${selectedAuditRegion === 'eu-central-1' ? 'selected' : ''}>AWS Frankfurt (eu-central-1)</option>
+            <option value="us-west-2" ${selectedAuditRegion === 'us-west-2' ? 'selected' : ''}>Azure Oregon (us-west-2)</option>
+          </select>
+          <button id="btn-audit-region" class="btn btn-secondary btn-xs" style="padding: 4px 10px;">Query</button>
+        </div>
+        <div id="audit-region-result" style="font-size: 0.65rem; color: var(--text-muted);"></div>
+      </div>
+
+      <!-- Query 3 -->
+      <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 6px;">
+        <span style="font-weight: 700; color: #ef4444; font-size: 0.72rem;">⚠️ Untested Critical Services (Lack Drills)</span>
+        <div style="display: flex; flex-direction: column; gap: 4px; max-height: 120px; overflow-y: auto;">
+          ${untestedServices.length > 0 ? untestedServices.map(s => `
+            <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 4px; font-size: 0.65rem;">
+              <span>🏢 <b>${s.name}</b> (${s.serviceType.toUpperCase()})</span>
+              <span style="color: #ef4444; font-weight: 700; animation: blink 1s infinite;">❌ 0 Drills Logged</span>
+            </div>
+          `).join('') : '<div style="font-size:0.65rem; color:#10b981; font-style:italic;">All critical services have active recovery test logs.</div>'}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Bind Query 1
+  document.getElementById('audit-supplier-select').onchange = (e) => { selectedAuditTarget = e.target.value; };
+  document.getElementById('btn-audit-supplier').onclick = () => {
+    const resBox = document.getElementById('audit-supplier-result');
+    const supObj = state.suppliers[selectedAuditTarget];
+    
+    // Find downstream services
+    const affectedApps = state.applications.filter(app => app.hostingProvider && app.hostingProvider.toLowerCase().includes(supObj.name.split(' ')[0].toLowerCase()));
+    const affectedServices = [];
+    affectedApps.forEach(app => {
+      const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
+      affectedServices.push(...srvs);
+    });
+    const uniqSrvNames = [...new Set(affectedServices.map(s => s.name))];
+
+    resBox.innerHTML = `
+      <div style="margin-top:5px; border-left: 2px solid #ef4444; padding-left: 6px; display: flex; flex-direction: column; gap: 2px;">
+        <div><b>Downstream Apps Affected:</b> ${affectedApps.map(a => a.name).join(', ') || 'None'}</div>
+        <div><b>Impacted Critical Services:</b> ${uniqSrvNames.join(', ') || 'None'}</div>
+        <div><b>Financial Impact:</b> £${(affectedApps.length * 20000).toLocaleString()}/hour</div>
+      </div>
+    `;
+    selectedTwinPoint = `sup-${selectedAuditTarget}`;
+    executeTwinSimulation();
+  };
+
+  // Bind Query 2
+  document.getElementById('audit-region-select').onchange = (e) => { selectedAuditRegion = e.target.value; };
+  document.getElementById('btn-audit-region').onclick = () => {
+    const resBox = document.getElementById('audit-region-result');
+    
+    // Find assets matching region
+    const affectedAssets = state.assets.filter(ast => ast.region && ast.region.toLowerCase().includes(selectedAuditRegion.toLowerCase()));
+    // Apps and Services affected
+    const affectedServices = [];
+    affectedAssets.forEach(ast => {
+      const matchedApps = state.applications.filter(app => ast.name.includes(app.name.split(' ')[0]));
+      matchedApps.forEach(app => {
+        const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
+        affectedServices.push(...srvs);
+      });
+    });
+    const uniqSrvNames = [...new Set(affectedServices.map(s => s.name))];
+
+    resBox.innerHTML = `
+      <div style="margin-top:5px; border-left: 2px solid #ef4444; padding-left: 6px; display: flex; flex-direction: column; gap: 2px;">
+        <div><b>Hosting Assets Affected:</b> ${affectedAssets.map(a => a.name).join(', ') || 'None'}</div>
+        <div><b>Impacted Critical Services:</b> ${uniqSrvNames.join(', ') || 'None'}</div>
+        <div><b>Availability Disruption:</b> Complete regional failover required.</div>
+      </div>
+    `;
+    if (affectedAssets.length > 0) {
+      selectedTwinPoint = `ast-${affectedAssets[0].id}`;
+      executeTwinSimulation();
+    }
+  };
+}
+
+// --------------------------------------------------------------------------
+// SUB-TAB 3: RECOVERY PLANS & BOTTLENECKS
+// --------------------------------------------------------------------------
+function renderRecoverySubPane(container, state) {
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 10px; height: 320px; overflow-y: auto; padding-right: 4px;">
+      <h4 style="font-size: 0.72rem; color: var(--text-secondary); margin: 0; font-weight: 700; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom: 4px;">Active Disaster Recovery (DR) Plans</h4>
+      ${state.recoveryPlans.map(plan => {
+        let confidenceColor = '#10b981';
+        if (plan.confidenceScore < 70) confidenceColor = '#ef4444';
+        else if (plan.confidenceScore < 85) confidenceColor = '#eab308';
+        
+        return `
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 700; color: var(--text-primary); font-size: 0.7rem;">📋 ${plan.name}</span>
+              <span style="font-size: 0.65rem; font-weight: 700; color: ${confidenceColor};">${plan.confidenceScore}% Conf.</span>
+            </div>
+            <div style="font-size: 0.62rem; color: var(--text-muted);">
+              <div><b>Target RTO:</b> ${plan.rtoTarget || '4 Hours'} | <b>Owner:</b> BCP Delivery Group</div>
+              <div style="color: #f97316; font-weight: 600; margin-top: 2px;">⚠️ Bottleneck: ${plan.bottleneck || 'None'}</div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// --------------------------------------------------------------------------
+// TWIN SIMULATOR PROPAGATION CALCULATION
+// --------------------------------------------------------------------------
 function executeTwinSimulation() {
   const state = getState();
   const summaryBox = document.getElementById('twin-impact-summary');
@@ -649,10 +929,11 @@ function executeTwinSimulation() {
   let failPointLabel = '';
   let affectedServices = [];
   let affectedApps = [];
-  let affectedProcesses = [];
   let hourlyLoss = 0;
   let targetSla = '4 Hours';
   let mtdLimit = '4 Hours';
+  let associatedPlan = 'General BCP Failover Protocol';
+  let confidence = 85;
 
   const type = selectedTwinPoint.split('-')[0];
   const id = selectedTwinPoint.replace(`${type}-`, '');
@@ -660,9 +941,7 @@ function executeTwinSimulation() {
   if (type === 'sup') {
     const sup = state.suppliers[id];
     failPointLabel = `Supplier: ${sup.name}`;
-    // Find all assets for supplier
     const supAssets = state.assets.filter(a => a.supplierId === id);
-    // Find all apps matching these assets
     supAssets.forEach(ast => {
       hourlyLoss += ast.downtimeCostPerHour || 25000;
       const matchedApps = state.applications.filter(app => ast.name.includes(app.name.split(' ')[0]));
@@ -676,10 +955,7 @@ function executeTwinSimulation() {
     affectedApps.push(...matchedApps);
   }
 
-  // Deduplicate apps
   affectedApps = [...new Set(affectedApps)];
-
-  // Find affected business services & processes
   affectedApps.forEach(app => {
     const matchedSrv = state.services.filter(s => s.applications && s.applications.includes(app.id));
     affectedServices.push(...matchedSrv);
@@ -687,12 +963,15 @@ function executeTwinSimulation() {
   affectedServices = [...new Set(affectedServices)];
 
   affectedServices.forEach(s => {
-    const matchedPrc = state.processes.filter(p => s.processes && s.processes.includes(p.id));
-    affectedProcesses.push(...matchedPrc);
     targetSla = s.rto;
     mtdLimit = s.mtd || s.rto;
+    // Get plan details
+    const plan = state.recoveryPlans.find(rp => rp.associatedServices && rp.associatedServices.includes(s.id));
+    if (plan) {
+      associatedPlan = plan.name;
+      confidence = plan.confidenceScore;
+    }
   });
-  affectedProcesses = [...new Set(affectedProcesses)];
 
   if (affectedServices.length === 0 && state.services.length > 0) {
     affectedServices = [state.services[0]];
@@ -708,30 +987,30 @@ function executeTwinSimulation() {
       <div><b>Root Outage:</b> ${failPointLabel}</div>
       <div><b>Affected Applications:</b> ${affectedApps.length ? affectedApps.map(a => a.name).join(', ') : 'None'}</div>
       <div><b>Affected Services:</b> ${affectedServices.map(s => s.name).join(', ')}</div>
-      <div style="border-top:1px dashed rgba(239,68,68,0.1); padding-top:4px; margin-top:2px;">
-        <div>⚠️ <b>Financial Exposure:</b> £${hourlyLoss.toLocaleString()}/hour</div>
+      <div style="border-top:1px dashed rgba(239,68,68,0.1); padding-top:4px; margin-top:2px; display:flex; flex-direction:column; gap:2px;">
+        <div>💰 <b>Financial Loss:</b> £${hourlyLoss.toLocaleString()}/hour</div>
         <div>⏱️ <b>Service SLA RTO:</b> ${targetSla} | <b>Max Tolerable MTD:</b> ${mtdLimit}</div>
+        <div style="color:var(--color-cyan);">🛡️ <b>Recovery Plan:</b> ${associatedPlan} (${confidence}% confidence)</div>
       </div>
     </div>
     
     <div style="display:flex; gap:6px; margin-top:4px;">
-      <button id="btn-dort-failover" class="btn btn-primary btn-sm" style="flex:1; font-size:0.65rem; background:#10b981; color:#000; border:none; font-weight:700;">⚡ Execute Simulated Failover</button>
-      <button id="btn-dort-ticket" class="btn btn-secondary btn-sm" style="flex:1; font-size:0.65rem;">🚨 Raise Incident Ticket</button>
+      <button id="btn-dort-failover" class="btn btn-primary btn-sm" style="flex:1; font-size:0.65rem; background:#10b981; color:#000; border:none; font-weight:700;">⚡ Execute Recovery Plan</button>
+      <button id="btn-dort-ticket" class="btn btn-secondary btn-sm" style="flex:1; font-size:0.65rem;">🚨 Log incident Ticket</button>
     </div>
   `;
 
   // Bind failover intervention
   document.getElementById('btn-dort-failover').onclick = () => {
-    alert(`Mitigation control triggered successfully!\nRerouting traffic to secondary failover nodes in EU region.\nOutage resolved within 3 minutes; financial loss prevented.`);
     summaryBox.innerHTML = `
       <div style="background:rgba(16,185,129,0.03); border:1px solid rgba(16,185,129,0.15); padding:10px; border-radius:6px; font-size:0.7rem; display:flex; flex-direction:column; gap:4px; margin-top:10px;">
-        <div style="font-weight:700; color:#10b981; font-size:0.74rem;">✅ Failover Mitigation Complete</div>
-        <div><b>Mitigation:</b> Rerouted traffic using Control ctl-003.</div>
-        <div><b>Recovery Speed:</b> 3 Minutes (Target RTO Met)</div>
-        <div><b>Mitigated Loss prevented:</b> £${hourlyLoss.toLocaleString()}</div>
+        <div style="font-weight:700; color:#10b981; font-size:0.74rem;">✅ Recovery Plan Executed Successfully</div>
+        <div><b>Executed Plan:</b> ${associatedPlan}</div>
+        <div><b>Recovery Speed:</b> 2 Hours (Target RTO Met)</div>
+        <div><b>Loss Prevented:</b> £${(hourlyLoss * 2).toLocaleString()}</div>
       </div>
     `;
-    drawTwinOutageGraph(false);
+    drawTwinOutageGraph(false, failPointLabel, affectedApps, affectedServices);
   };
 
   // Bind incident creation from DORT
@@ -739,95 +1018,102 @@ function executeTwinSimulation() {
     const srvName = affectedServices.length ? affectedServices[0].name : 'IBS Payments';
     const newInc = {
       id: `inc-${String(state.incidents.length + 1).padStart(3, '0')}`,
-      title: `Simulated Failure on ${failPointLabel.split('-')[1].toUpperCase()}`,
+      title: `Simulated Failure on ${failPointLabel.split(':')[1].trim()}`,
       severity: 'Major',
       status: 'Active',
       serviceAffected: srvName,
       downtime: 'Pending',
       financialLoss: hourlyLoss,
       classification: 'Vendor Outage',
-      escalationStatus: 'Escalated automatically to CISO dashboard via ServiceNow API',
+      escalationStatus: 'Escalated to DORT Response Team',
       rootCause: `DORT simulations flagged critical path disruption via ${failPointLabel}.`,
       lessonsLearned: 'Pending validation post-mortem.'
     };
     state.incidents.push(newInc);
     saveState();
-    alert(`Incident Ticket Raised! ServiceNow Integration Synced successfully.\nTicket ID: SN-INC-2026-${Math.floor(1000 + Math.random()*9000)}`);
+    alert(`Incident Ticket Logged successfully.\nTicket ID: CV-INC-${Math.floor(1000 + Math.random()*9000)}`);
   };
 
   // Draw propagation path graph
-  drawTwinOutageGraph(true);
+  drawTwinOutageGraph(true, failPointLabel, affectedApps, affectedServices);
+}
 
-  function drawTwinOutageGraph(isBroken) {
-    const isLight = document.body.classList.contains('light-mode');
-    const stateColor = isBroken ? '#ef4444' : '#10b981';
-    const nodeStatusText = isBroken ? '💥 BROKEN' : '✅ RECOVERED';
+function drawTwinOutageGraph(isBroken, failPointLabel, affectedApps, affectedServices) {
+  const mapBox = document.getElementById('twin-propagation-map');
+  if (!mapBox) return;
 
-    const nodeBg = isLight ? '#ffffff' : 'rgba(10,12,25,0.9)';
-    const headerBg = isLight ? 'rgba(15,23,42,0.03)' : 'rgba(255,255,255,0.02)';
-    const titleColor = isLight ? '#0f172a' : '#f8fafc';
-    const textColor = isLight ? '#475569' : '#94a3b8';
-    const labelColor = isLight ? '#64748b' : '#64748b';
-    const connectionColor = isBroken ? '#ef4444' : (isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.06)');
-    const glowFilter = isBroken ? 'filter="url(#glow-red)"' : '';
+  const isLight = document.body.classList.contains('light-mode');
+  const stateColor = isBroken ? '#ef4444' : '#10b981';
+  const nodeStatusText = isBroken ? '💥 BROKEN' : '✅ ACTIVE';
 
-    mapBox.innerHTML = `
-      <svg viewBox="0 0 700 350" style="width:100%; height:100%;">
-        <defs>
-          <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
+  const nodeBg = isLight ? '#ffffff' : 'rgba(10,12,25,0.9)';
+  const headerBg = isLight ? 'rgba(15,23,42,0.03)' : 'rgba(255,255,255,0.02)';
+  const titleColor = isLight ? '#0f172a' : '#f8fafc';
+  const textColor = isLight ? '#475569' : '#94a3b8';
+  const labelColor = isLight ? '#64748b' : '#64748b';
+  const connectionColor = isBroken ? '#ef4444' : (isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.06)');
+  const glowFilter = isBroken ? 'filter="url(#glow-red)"' : '';
 
-        <!-- Connecting lines -->
-        <path d="M 120 175 C 200 175, 200 85, 280 85" fill="none" stroke="${connectionColor}" stroke-width="2" ${glowFilter} />
-        <path d="M 120 175 C 200 175, 200 235, 280 235" fill="none" stroke="${connectionColor}" stroke-width="2" ${glowFilter} />
-        <path d="M 400 85 C 480 85, 480 160, 520 160" fill="none" stroke="${connectionColor}" stroke-width="2" ${glowFilter} />
-        <path d="M 400 235 C 480 235, 480 160, 520 160" fill="none" stroke="${connectionColor}" stroke-width="2" ${glowFilter} />
+  const label = failPointLabel ? failPointLabel.split(':')[1].trim() : 'AWS-US-EAST';
+  const appName = affectedApps && affectedApps.length > 0 ? affectedApps[0].name : 'Payments API Gateways';
+  const serviceName = affectedServices && affectedServices.length > 0 ? affectedServices[0].name : 'IBS Payments Processing';
 
-        <!-- Node 1: Fail Point -->
-        <g transform="translate(10, 150)">
-          <rect width="110" height="50" rx="4" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.8" />
-          <rect width="110" height="15" fill="${headerBg}" />
-          <text x="5" y="10" font-size="7" font-weight="700" fill="${labelColor}">FAIL-POINT</text>
-          <text x="5" y="27" font-size="7" font-weight="700" fill="${titleColor}">${id.toUpperCase()}</text>
-          <text x="5" y="42" font-size="8" font-weight="700" fill="${stateColor}">${nodeStatusText}</text>
-        </g>
+  mapBox.innerHTML = `
+    <svg viewBox="0 0 700 380" style="width:100%; height:100%;">
+      <defs>
+        <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
 
-        <!-- Node 2a: Application -->
-        <g transform="translate(280, 60)">
-          <rect width="120" height="50" rx="4" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.5" />
-          <rect width="120" height="15" fill="${headerBg}" />
-          <text x="5" y="10" font-size="7" font-weight="700" fill="${labelColor}">APP NODE</text>
-          <text x="5" y="27" font-size="7.5" font-weight="700" fill="${titleColor}">Spring Core Engine</text>
-          <text x="5" y="42" font-size="7" fill="${textColor}">Status: ${isBroken ? 'Degraded' : 'Nominal'}</text>
-        </g>
+      <!-- Connecting lines -->
+      <path d="M 120 190 C 200 190, 200 100, 280 100" fill="none" stroke="${connectionColor}" stroke-width="2.5" ${glowFilter} />
+      <path d="M 120 190 C 200 190, 200 280, 280 280" fill="none" stroke="${connectionColor}" stroke-width="2.5" ${glowFilter} />
+      <path d="M 400 100 C 480 100, 480 190, 520 190" fill="none" stroke="${connectionColor}" stroke-width="2.5" ${glowFilter} />
+      <path d="M 400 280 C 480 280, 480 190, 520 190" fill="none" stroke="${connectionColor}" stroke-width="2.5" ${glowFilter} />
 
-        <!-- Node 2b: Process -->
-        <g transform="translate(280, 210)">
-          <rect width="120" height="50" rx="4" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.5" />
-          <rect width="120" height="15" fill="${headerBg}" />
-          <text x="5" y="10" font-size="7" font-weight="700" fill="${labelColor}">PROCESS PATH</text>
-          <text x="5" y="27" font-size="7.5" font-weight="700" fill="${titleColor}">Settlement Clearance</text>
-          <text x="5" y="42" font-size="7" fill="${textColor}">Status: ${isBroken ? 'Stalled' : 'Nominal'}</text>
-        </g>
+      <!-- Level 1: Fail Point -->
+      <g transform="translate(10, 160)">
+        <rect width="110" height="60" rx="6" fill="${nodeBg}" stroke="${stateColor}" stroke-width="2" />
+        <rect width="110" height="16" fill="${headerBg}" />
+        <text x="6" y="11" font-size="7" font-weight="700" fill="${labelColor}">FAIL-POINT</text>
+        <text x="6" y="30" font-size="7.5" font-weight="700" fill="${titleColor}">${label.substring(0, 18)}</text>
+        <text x="6" y="50" font-size="8.5" font-weight="700" fill="${stateColor}">${nodeStatusText}</text>
+      </g>
 
-        <!-- Node 3: Mapped IBS Service -->
-        <g transform="translate(520, 135)">
-          <rect width="150" height="60" rx="4" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.8" />
-          <rect width="150" height="16" fill="${headerBg}" />
-          <text x="5" y="11" font-size="7" font-weight="700" fill="${labelColor}">AFFECTED SERVICE</text>
-          <text x="5" y="28" font-size="8.5" font-weight="700" fill="${titleColor}">Payments Processing</text>
-          <text x="5" y="42" font-size="7" fill="${textColor}">RTO: ${targetSla}</text>
-          <text x="5" y="52" font-size="7" font-weight="700" fill="${stateColor}">${isBroken ? '⚠️ RTO AT RISK' : '✅ SLA SECURED'}</text>
-        </g>
-      </svg>
-    `;
-  }
+      <!-- Level 2a: Application -->
+      <g transform="translate(280, 70)">
+        <rect width="120" height="60" rx="6" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.8" />
+        <rect width="120" height="16" fill="${headerBg}" />
+        <text x="6" y="11" font-size="7" font-weight="700" fill="${labelColor}">APP NODE</text>
+        <text x="6" y="30" font-size="7.5" font-weight="700" fill="${titleColor}">${appName.substring(0, 20)}</text>
+        <text x="6" y="48" font-size="7" fill="${textColor}">Status: ${isBroken ? 'Degraded' : 'Nominal'}</text>
+      </g>
+
+      <!-- Level 2b: Process Path -->
+      <g transform="translate(280, 250)">
+        <rect width="120" height="60" rx="6" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.8" />
+        <rect width="120" height="16" fill="${headerBg}" />
+        <text x="6" y="11" font-size="7" font-weight="700" fill="${labelColor}">PROCESS PATH</text>
+        <text x="6" y="30" font-size="7.5" font-weight="700" fill="${titleColor}">Settlement Clearing</text>
+        <text x="6" y="48" font-size="7" fill="${textColor}">Status: ${isBroken ? 'Stalled' : 'Nominal'}</text>
+      </g>
+
+      <!-- Level 3: Affected Service -->
+      <g transform="translate(520, 155)">
+        <rect width="160" height="70" rx="6" fill="${nodeBg}" stroke="${stateColor}" stroke-width="2.2" />
+        <rect width="160" height="18" fill="${headerBg}" />
+        <text x="6" y="12" font-size="7" font-weight="700" fill="${labelColor}">AFFECTED SERVICE</text>
+        <text x="6" y="32" font-size="8.5" font-weight="700" fill="${titleColor}">${serviceName.substring(0, 22)}</text>
+        <text x="6" y="50" font-size="7" fill="${textColor}">RTO SLA: 4 Hours</text>
+        <text x="6" y="62" font-size="7.5" font-weight="700" fill="${stateColor}">${isBroken ? '⚠️ RTO OUTAGE RISK' : '✅ SLA SECURED'}</text>
+      </g>
+    </svg>
+  `;
 }
 
 // ==========================================================================
