@@ -7,6 +7,7 @@ import { createTable, createCard, createStatusBadge } from '../components/ui.js'
 
 let selectedSupplierId = 'aws';
 let activeThirdPartyTab = 'directory';
+let selectedHotspotName = 'Cloudflare';
 
 export function renderThirdPartyModule() {
   const state = getState();
@@ -274,6 +275,33 @@ function renderSupplierDetails() {
   `;
 }
 
+function getServicesForSupplier(state, supplierId) {
+  const linkedServices = [];
+  const assets = state.assets || [];
+  const supAssets = assets.filter(a => a.supplierId === supplierId);
+  
+  if (state.applications && state.services) {
+    supAssets.forEach(ast => {
+      const matchedApps = state.applications.filter(app => ast.name && ast.name.includes(app.name.split(' ')[0]));
+      matchedApps.forEach(app => {
+        const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
+        linkedServices.push(...srvs);
+      });
+    });
+    
+    if (linkedServices.length === 0) {
+      const matchedApps = state.applications.filter(app => 
+        app.hostingProvider && app.hostingProvider.toLowerCase().includes(supplierId.toLowerCase())
+      );
+      matchedApps.forEach(app => {
+        const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
+        linkedServices.push(...srvs);
+      });
+    }
+  }
+  return [...new Set(linkedServices)];
+}
+
 // --------------------------------------------------------------------------
 // TAB 2: CONCENTRATION RISK
 // --------------------------------------------------------------------------
@@ -299,11 +327,20 @@ function renderConcentrationTab(container) {
     }
   });
 
-  const hotspotRows = Object.values(subcontractorMap)
-    .filter(sub => sub.suppliers.length > 1)
-    .map(sub => `
-      <tr style="border-bottom: 1px solid var(--border-color); font-size: 0.72rem;">
-        <td style="padding: 10px; color: var(--text-primary);"><b>⚠️ ${sub.name}</b></td>
+  const hotspots = Object.values(subcontractorMap).filter(sub => sub.suppliers.length > 1);
+
+  // Selected Hotspot details
+  let subObj = subcontractorMap[selectedHotspotName];
+  if (!subObj && hotspots.length > 0) {
+    selectedHotspotName = hotspots[0].name;
+    subObj = subcontractorMap[selectedHotspotName];
+  }
+
+  const hotspotRows = hotspots.map(sub => `
+      <tr class="hotspot-row ${selectedHotspotName === sub.name ? 'active-row' : ''}" data-name="${sub.name}" style="border-bottom: 1px solid var(--border-color); font-size: 0.72rem; cursor: pointer; transition: background 0.15s ease;">
+        <td style="padding: 10px; color: var(--text-primary); font-weight: 700;">
+          ${selectedHotspotName === sub.name ? '👉 ' : ''}⚠️ ${sub.name}
+        </td>
         <td style="padding: 10px; color: var(--text-secondary);">${sub.role}</td>
         <td style="padding: 10px; color: var(--text-muted);">${sub.primaryLocation}</td>
         <td style="padding: 10px; color: #ef4444; font-weight: 700;">${sub.suppliers.length} Primary Vendors</td>
@@ -311,13 +348,128 @@ function renderConcentrationTab(container) {
       </tr>
     `).join('');
 
+  // Generate dynamic nodes & paths for SVG
+  let svgPaths = '';
+  let svgNodes = '';
+  
+  if (subObj) {
+    const subX = 490;
+    const subY = 85;
+    
+    // Common Subcontractor Node (Right)
+    svgNodes += `
+      <g transform="translate(${subX}, ${subY})">
+        <rect width="140" height="50" rx="4" fill="#ef4444" stroke="#ef4444" stroke-width="2" />
+        <text x="5" y="15" font-size="7" font-weight="800" fill="rgba(255,255,255,0.7)">⚠️ CONCENTRATION POINT</text>
+        <text x="5" y="32" font-size="8.5" font-weight="800" fill="#ffffff">${subObj.name}</text>
+        <text x="5" y="43" font-size="6.5" fill="rgba(255,255,255,0.9)">Shared by ${subObj.suppliers.length} vendors</text>
+      </g>
+    `;
+    
+    // Suppliers Nodes (Middle)
+    const midX = 250;
+    const sups = subObj.suppliers;
+    const spacingY = 60;
+    const totalSups = sups.length;
+    const startY = 110 - ((totalSups - 1) * spacingY) / 2 - 25;
+    
+    const supCoords = [];
+    sups.forEach((supName, idx) => {
+      const supY = startY + idx * spacingY;
+      supCoords.push({ name: supName, x: midX, y: supY });
+      
+      // Node Box
+      svgNodes += `
+        <g transform="translate(${midX}, ${supY})">
+          <rect width="120" height="50" rx="4" fill="var(--bg-card)" stroke="#ef4444" stroke-width="1.5" />
+          <text x="5" y="15" font-size="7" font-weight="700" fill="var(--text-muted)">PRIMARY SUPPLIER</text>
+          <text x="5" y="32" font-size="8" font-weight="700" fill="var(--text-primary)">${supName.slice(0, 20)}</text>
+        </g>
+      `;
+      
+      // Path Supplier -> Subcontractor (Bezier curve)
+      const x1 = midX + 120;
+      const y1 = supY + 25;
+      const x2 = subX;
+      const y2 = subY + 25;
+      const cx1 = x1 + (x2 - x1) / 2;
+      const cy1 = y1;
+      const cx2 = x1 + (x2 - x1) / 2;
+      const cy2 = y2;
+      svgPaths += `<path d="M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}" stroke="#ef4444" stroke-width="2" fill="none" filter="url(#glow-red)" />`;
+    });
+    
+    // Services Nodes (Left)
+    const serviceMap = {};
+    sups.forEach(supName => {
+      const supObj = suppliersList.find(s => s.name === supName);
+      if (supObj) {
+        const services = getServicesForSupplier(state, supObj.id);
+        services.forEach(srv => {
+          if (!serviceMap[srv.name]) {
+            serviceMap[srv.name] = {
+              name: srv.name,
+              criticality: srv.criticality,
+              suppliers: []
+            };
+          }
+          serviceMap[srv.name].suppliers.push(supName);
+        });
+      }
+    });
+    
+    const uniqueServices = Object.values(serviceMap).slice(0, 3);
+    const leftX = 10;
+    const totalSrvs = uniqueServices.length || 1;
+    const srvSpacingY = 70;
+    const srvStartY = 110 - ((totalSrvs - 1) * srvSpacingY) / 2 - 25;
+    
+    if (uniqueServices.length === 0) {
+      uniqueServices.push({ name: 'Payments Hub', criticality: 'Critical', suppliers: [sups[0]] });
+    }
+    
+    uniqueServices.forEach((srv, idx) => {
+      const srvY = srvStartY + idx * srvSpacingY;
+      const borderCol = srv.criticality === 'Critical' ? 'var(--color-danger)' : 'var(--border-color)';
+      
+      svgNodes += `
+        <g transform="translate(${leftX}, ${srvY})">
+          <rect width="120" height="50" rx="4" fill="var(--bg-card)" stroke="${borderCol}" stroke-width="1.5" />
+          <text x="5" y="15" font-size="7" font-weight="700" fill="var(--text-muted)">CRITICAL SERVICE</text>
+          <text x="5" y="32" font-size="8" font-weight="700" fill="var(--text-primary)">${srv.name.slice(0, 20)}</text>
+        </g>
+      `;
+      
+      srv.suppliers.forEach(supName => {
+        const matchingSup = supCoords.find(sc => sc.name === supName);
+        if (matchingSup) {
+          const x1 = leftX + 120;
+          const y1 = srvY + 25;
+          const x2 = matchingSup.x;
+          const y2 = matchingSup.y + 25;
+          const cx1 = x1 + (x2 - x1) / 2;
+          const cy1 = y1;
+          const cx2 = x1 + (x2 - x1) / 2;
+          const cy2 = y2;
+          svgPaths += `<path d="M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" fill="none" />`;
+        }
+      });
+    });
+  }
+
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+      <!-- CSS styling for active row -->
+      <style>
+        .hotspot-row:hover { background: rgba(255,255,255,0.03); }
+        .hotspot-row.active-row { background: rgba(239, 68, 68, 0.08) !important; border-left: 3px solid #ef4444; }
+      </style>
+      
       <div class="dashboard-card" style="padding: 15px; margin: 0;">
         <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 10px;">
           Nth-Party Subprocessor Concentration Hotspots
         </h3>
-        <p class="panel-subtitle" style="margin-bottom: 15px;">DORA Chapter V mandates identifying critical services sharing downstream subcontractors to prevent systemic failures.</p>
+        <p class="panel-subtitle" style="margin-bottom: 15px;">DORA Chapter V mandates identifying critical services sharing downstream subcontractors to prevent systemic failures. Click a row to map below.</p>
         
         <div style="overflow-x: auto; width: 100%; border: 1px solid var(--border-color); border-radius: 6px;">
           <table style="width: 100%; border-collapse: collapse; text-align: left;">
@@ -340,7 +492,7 @@ function renderConcentrationTab(container) {
       <!-- Concentration Map Visualization -->
       <div class="dashboard-card" style="padding: 15px; margin: 0; min-height: 280px; display: flex; flex-direction: column; gap: 10px;">
         <h3 style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px; margin: 0;">
-          Interactive Concentration Overlay Map
+          Interactive Concentration Overlay Map: ${selectedHotspotName}
         </h3>
         
         <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); border: 1px solid var(--border-color); border-radius: 6px; padding: 20px; position: relative; overflow: hidden;">
@@ -357,42 +509,23 @@ function renderConcentrationTab(container) {
             </defs>
 
             <!-- Lines -->
-            <path d="M 50 110 L 250 50" stroke="rgba(15,23,42,0.15)" stroke-width="1.5" fill="none" />
-            <path d="M 50 110 L 250 170" stroke="rgba(15,23,42,0.15)" stroke-width="1.5" fill="none" />
-            <path d="M 250 50 L 520 110" stroke="#ef4444" stroke-width="2.5" fill="none" filter="url(#glow-red)" />
-            <path d="M 250 170 L 520 110" stroke="#ef4444" stroke-width="2.5" fill="none" filter="url(#glow-red)" />
+            ${svgPaths}
             
-            <!-- Level 1: Primary Bank Service -->
-            <g transform="translate(10, 85)">
-              <rect width="110" height="50" rx="4" fill="var(--bg-card)" stroke="var(--border-color)" stroke-width="1.5" />
-              <text x="5" y="15" font-size="7" font-weight="700" fill="var(--text-muted)">CRITICAL SERVICE</text>
-              <text x="5" y="32" font-size="8.5" font-weight="700" fill="var(--text-primary)">Payments Hub</text>
-            </g>
-
-            <!-- Level 2: Primary Vendors -->
-            <g transform="translate(200, 25)">
-              <rect width="110" height="50" rx="4" fill="var(--bg-card)" stroke="#ef4444" stroke-width="1.5" />
-              <text x="5" y="15" font-size="7" font-weight="700" fill="var(--text-muted)">PRIMARY SUPPLIER</text>
-              <text x="5" y="32" font-size="8" font-weight="700" fill="var(--text-primary)">AWS (Cloud Hosting)</text>
-            </g>
-            <g transform="translate(200, 145)">
-              <rect width="110" height="50" rx="4" fill="var(--bg-card)" stroke="#ef4444" stroke-width="1.5" />
-              <text x="5" y="15" font-size="7" font-weight="700" fill="var(--text-muted)">PRIMARY SUPPLIER</text>
-              <text x="5" y="32" font-size="8" font-weight="700" fill="var(--text-primary)">Salesforce (SaaS)</text>
-            </g>
-
-            <!-- Level 3: Common Downstream Subprocessor -->
-            <g transform="translate(480, 85)">
-              <rect width="130" height="50" rx="4" fill="#ef4444" stroke="#ef4444" stroke-width="2" />
-              <text x="5" y="15" font-size="7" font-weight="700" fill="rgba(255,255,255,0.7)">⚠️ CONCENTRATION POINT</text>
-              <text x="5" y="32" font-size="9" font-weight="800" fill="#ffffff">Cloudflare (CDN/DNS)</text>
-              <text x="5" y="44" font-size="7" fill="rgba(255,255,255,0.9)">Shared by AWS & SFDC</text>
-            </g>
+            <!-- Nodes -->
+            ${svgNodes}
           </svg>
         </div>
       </div>
     </div>
   `;
+
+  // Bind row click handlers
+  document.querySelectorAll('.hotspot-row').forEach(row => {
+    row.onclick = () => {
+      selectedHotspotName = row.getAttribute('data-name');
+      renderConcentrationTab(container);
+    };
+  });
 }
 
 // --------------------------------------------------------------------------

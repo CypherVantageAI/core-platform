@@ -248,7 +248,8 @@ const DEFAULT_STATE = {
       secondarySupportLocation: 'Dublin, Ireland',
       subcontractors: [
         { name: 'Amazon Web Services (AWS)', role: 'Hosting Infrastructure & Storage', primaryLocation: 'Seattle, WA (USA)', secondaryLocation: 'Dublin, Ireland', additionalLocations: 'Frankfurt, Tokyo' },
-        { name: 'Twilio', role: 'SMS Authentication Gateway', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'London, UK', additionalLocations: 'Sydney' }
+        { name: 'Twilio', role: 'SMS Authentication Gateway', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'London, UK', additionalLocations: 'Sydney' },
+        { name: 'Cloudflare', role: 'Edge CDN & Security Gateway', primaryLocation: 'San Francisco, CA (USA)', secondaryLocation: 'Dublin, Ireland', additionalLocations: 'Frankfurt, Singapore' }
       ],
       documents: [
         { name: 'SFDC_SOC_2_Type_II_2025.pdf', type: 'SOC 2 Report', date: '2025-03-01', scanned: '2026-07-02', status: 'Valid' },
