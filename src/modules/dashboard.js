@@ -67,7 +67,7 @@ function renderDashboardContent() {
           <h4 style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-secondary); margin: 0; font-weight: 700; letter-spacing: 0.05em;">🛡️ Executive Resilience Cockpit</h4>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; width: 100%;">
             <!-- Metric 1: Resilience Score -->
-            <div onclick="window.showModal('Resilience Score Formula & Explanation', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>Resilience Score: ${resilienceScore}%</b><br/>Weighted Index = (Average Supplier Compliance * 0.8) + (Internal Controls Index * 0.2)<br/><br/>Evaluates high-tier supplier compliance ratings (averaging ${supplierRiskScore}%) and deductions for open risk register entries (-${openRisks * 5}%) and findings (-${openFindings * 3}%).</div>')" class="dashboard-card" style="padding: 12px; border-left: 3px solid #10b981; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for score explanation">
+            <div id="cockpit-kpi-resilience" class="dashboard-card" style="padding: 12px; border-left: 3px solid #10b981; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for score explanation">
               <span style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Resilience Score 🔍</span>
               <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px;">
                 <strong style="font-size: 1.25rem; color: #10b981;">${resilienceScore}%</strong>
@@ -77,7 +77,7 @@ function renderDashboardContent() {
             </div>
             
             <!-- Metric 2: Recovery Readiness -->
-            <div onclick="window.showModal('Recovery Readiness Breakdown', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>Recovery Readiness Index: ${readinessScore}%</b><br/>Based on ${passedTests} passed validation tests out of ${totalTests} total scenario simulations catalogued in the state database.</div>')" class="dashboard-card" style="padding: 12px; border-left: 3px solid #14b8a6; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for readiness breakdown">
+            <div id="cockpit-kpi-readiness" class="dashboard-card" style="padding: 12px; border-left: 3px solid #14b8a6; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for readiness breakdown">
               <span style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Recovery Readiness 🔍</span>
               <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px;">
                 <strong style="font-size: 1.25rem; color: #14b8a6;">${readinessScore}%</strong>
@@ -87,7 +87,7 @@ function renderDashboardContent() {
             </div>
 
             <!-- Metric 3: DORA Compliance -->
-            <div onclick="window.showModal('DORA Compliance Score', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>DORA Compliance Index: ${doraScore}%</b><br/>Weighted calculation: ((Compliant + 0.5 * Partial) / Total Obligations) * 100<br/><br/>Compliant: ${compliantObligations} Articles | Partial: ${partialObligations} Articles | Non-Compliant: ${totalObligations - compliantObligations - partialObligations} Articles.</div>')" class="dashboard-card" style="padding: 12px; border-left: 3px solid #a855f7; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for compliance breakdown">
+            <div id="cockpit-kpi-dora" class="dashboard-card" style="padding: 12px; border-left: 3px solid #a855f7; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for compliance breakdown">
               <span style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">DORA Compliance Score 🔍</span>
               <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px;">
                 <strong style="font-size: 1.25rem; color: #a855f7;">${doraScore}%</strong>
@@ -97,7 +97,7 @@ function renderDashboardContent() {
             </div>
 
             <!-- Metric 4: Testing Coverage -->
-            <div onclick="window.showModal('Testing Coverage Breakdown', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>Testing Coverage: ${testingCoverage}%</b><br/>Evaluates the ratio of recovery plans with status Tested & Approved (${testedPlans}/${plans.length} recovery playbooks tested).</div>')" class="dashboard-card" style="padding: 12px; border-left: 3px solid #eab308; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for testing coverage details">
+            <div id="cockpit-kpi-testing" class="dashboard-card" style="padding: 12px; border-left: 3px solid #eab308; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for testing coverage details">
               <span style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Testing Coverage 🔍</span>
               <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px;">
                 <strong style="font-size: 1.25rem; color: #eab308;">${testingCoverage}%</strong>
@@ -107,7 +107,7 @@ function renderDashboardContent() {
             </div>
 
             <!-- Metric 5: Supplier Risk Index -->
-            <div onclick="window.showModal('Supplier Risk Score Breakdown', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>Supplier Risk Score: ${supplierRiskScore}%</b><br/>Average compliance rating across all catalogued Nth-party suppliers (AWS: 80%, Salesforce: 100%, ServiceNow: 90%, Infosys: 60%, Workday: 80%).</div>')" class="dashboard-card" style="padding: 12px; border-left: 3px solid #f97316; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for supplier score details">
+            <div id="cockpit-kpi-supplier" class="dashboard-card" style="padding: 12px; border-left: 3px solid #f97316; display: flex; flex-direction: column; justify-content: space-between; min-height: 80px; cursor: pointer;" title="Click for supplier score details">
               <span style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Supplier Risk Score 🔍</span>
               <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px;">
                 <strong style="font-size: 1.25rem; color: #f97316;">${supplierRiskScore}%</strong>
@@ -264,6 +264,42 @@ function renderDashboardContent() {
 
       </div>
     `;
+
+    // Bind clean addEventListener handlers for Cockpit cards
+    const kpiResilience = document.getElementById('cockpit-kpi-resilience');
+    if (kpiResilience) {
+      kpiResilience.addEventListener('click', () => {
+        showModal('Resilience Score Formula & Explanation', `<div style="font-size:0.75rem; line-height:1.5;"><b>Resilience Score: ${resilienceScore}%</b><br/>Weighted Index = (Average Supplier Compliance * 0.8) + (Internal Controls Index * 0.2)<br/><br/>Evaluates high-tier supplier compliance ratings (averaging ${supplierRiskScore}%) and deductions for open risk register entries (-${openRisks * 5}%) and findings (-${openFindings * 3}%).</div>`);
+      });
+    }
+
+    const kpiReadiness = document.getElementById('cockpit-kpi-readiness');
+    if (kpiReadiness) {
+      kpiReadiness.addEventListener('click', () => {
+        showModal('Recovery Readiness Breakdown', `<div style="font-size:0.75rem; line-height:1.5;"><b>Recovery Readiness Index: ${readinessScore}%</b><br/>Based on ${passedTests} passed validation tests out of ${totalTests} total scenario simulations catalogued in the state database.</div>`);
+      });
+    }
+
+    const kpiDora = document.getElementById('cockpit-kpi-dora');
+    if (kpiDora) {
+      kpiDora.addEventListener('click', () => {
+        showModal('DORA Compliance Score', `<div style="font-size:0.75rem; line-height:1.5;"><b>DORA Compliance Index: ${doraScore}%</b><br/>Weighted calculation: ((Compliant + 0.5 * Partial) / Total Obligations) * 100<br/><br/>Compliant: ${compliantObligations} Articles | Partial: ${partialObligations} Articles | Non-Compliant: ${totalObligations - compliantObligations - partialObligations} Articles.</div>`);
+      });
+    }
+
+    const kpiTesting = document.getElementById('cockpit-kpi-testing');
+    if (kpiTesting) {
+      kpiTesting.addEventListener('click', () => {
+        showModal('Testing Coverage Breakdown', `<div style="font-size:0.75rem; line-height:1.5;"><b>Testing Coverage: ${testingCoverage}%</b><br/>Evaluates the ratio of recovery plans with status Tested & Approved (${testedPlans}/${plans.length} recovery playbooks tested).</div>`);
+      });
+    }
+
+    const kpiSupplier = document.getElementById('cockpit-kpi-supplier');
+    if (kpiSupplier) {
+      kpiSupplier.addEventListener('click', () => {
+        showModal('Supplier Risk Score Breakdown', `<div style="font-size:0.75rem; line-height:1.5;"><b>Supplier Risk Score: ${supplierRiskScore}%</b><br/>Average compliance rating across all catalogued Nth-party suppliers (AWS: 80%, Salesforce: 100%, ServiceNow: 90%, Infosys: 60%, Workday: 80%).</div>`);
+      });
+    }
   } else if (activeDashboardSubTab === 'graph') {
     contentArea.innerHTML = `
       <div id="resilience-global-graph-container" style="width: 100%;"></div>

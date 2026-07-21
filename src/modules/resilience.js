@@ -648,27 +648,27 @@ function renderTwinTab(container) {
     <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
       <!-- 1. DORT Operational Health Dashboard Row -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; width: 100%;">
-        <div onclick="window.showModal('Twin Posture Health', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>Twin Posture Score: ${metrics.healthScore}%</b><br/>Calculated dynamically from total active nodes, redundancy paths, and supplier compliance indices. Target threshold is >85% for full DORA Art. 5 compliance.</div>')" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
+        <div id="dort-kpi-health" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
           <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Twin Posture Health 🔍</span>
           <span style="font-size: 1.3rem; font-weight: 700; color: ${metrics.healthScore >= 80 ? 'var(--color-cyan)' : '#ef4444'};">${metrics.healthScore}%</span>
           <span style="font-size: 0.55rem; color: var(--text-secondary);">${metrics.healthScore >= 80 ? '✅ Secure Posture' : '⚠️ Degraded state'}</span>
         </div>
-        <div onclick="window.showModal('Critical Services at Risk Details', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>At-Risk Services:</b> ${metrics.uniqueAtRiskServices.join(', ') || 'None'}<br/><br/>These Important Business Services (IBS) exceed maximum tolerable disruption (MTD) limits during single-node failover simulations.</div>')" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
+        <div id="dort-kpi-risk" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
           <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Critical Services at Risk 🔍</span>
           <span style="font-size: 1.3rem; font-weight: 700; color: ${metrics.uniqueAtRiskServices.length > 0 ? '#ef4444' : '#10b981'};">${metrics.uniqueAtRiskServices.length}</span>
           <span style="font-size: 0.55rem; color: var(--text-secondary); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="${metrics.uniqueAtRiskServices.join(', ') || 'None'}">${metrics.uniqueAtRiskServices.join(', ') || 'All Services Secure'}</span>
         </div>
-        <div onclick="window.showModal('Recovery Readiness Breakdown', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>Recovery Readiness Index: ${metrics.readinessIndex}%</b><br/>Derived from automated scenario simulation passes and verified disaster recovery playbooks catalogued in the state database.</div>')" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
+        <div id="dort-kpi-readiness" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
           <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Recovery Readiness 🔍</span>
           <span style="font-size: 1.3rem; font-weight: 700; color: var(--color-cyan);">${metrics.readinessIndex}%</span>
           <span style="font-size: 0.55rem; color: var(--text-secondary);">Tested DR Plans</span>
         </div>
-        <div onclick="window.showModal('Open Control Weaknesses', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>Control Weaknesses: ${metrics.controlGaps} Open</b><br/>Represents unmitigated audit findings and supplier TLS/encryption compliance gaps requiring resolution.</div>')" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
+        <div id="dort-kpi-gaps" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
           <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Open Control Weaknesses 🔍</span>
           <span style="font-size: 1.3rem; font-weight: 700; color: #eab308;">${metrics.controlGaps}</span>
           <span style="font-size: 0.55rem; color: var(--text-secondary);">Pending audit remediation</span>
         </div>
-        <div onclick="window.showModal('Supplier Concentration Audit', '<div style=\'font-size:0.75rem; line-height:1.5;\'><b>Concentration Assessment: ${metrics.concentrationStatus}</b><br/>Evaluates multi-cloud single points of failure across AWS, Salesforce, and Cloudflare subprocessors.</div>')" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
+        <div id="dort-kpi-concentration" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
           <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Supplier Concentration 🔍</span>
           <span style="font-size: 1.3rem; font-weight: 700; color: #a855f7;">${metrics.concentrationStatus.split(' ')[0]}</span>
           <span style="font-size: 0.55rem; color: var(--text-secondary); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="${metrics.concentrationStatus}">${metrics.concentrationStatus}</span>
@@ -722,6 +722,42 @@ function renderTwinTab(container) {
     activeTwinSubTab = 'recovery';
     renderTwinTab(container);
   };
+
+  // Bind DORT KPI Metric Card Popups
+  const kpiHealth = document.getElementById('dort-kpi-health');
+  if (kpiHealth) {
+    kpiHealth.addEventListener('click', () => {
+      showModal('Twin Posture Health', `<div style="font-size:0.75rem; line-height:1.5;"><b>Twin Posture Score: ${metrics.healthScore}%</b><br/>Calculated dynamically from total active nodes, redundancy paths, and supplier compliance indices. Target threshold is >85% for full DORA Art. 5 compliance.</div>`);
+    });
+  }
+
+  const kpiRisk = document.getElementById('dort-kpi-risk');
+  if (kpiRisk) {
+    kpiRisk.addEventListener('click', () => {
+      showModal('Critical Services at Risk Details', `<div style="font-size:0.75rem; line-height:1.5;"><b>At-Risk Services:</b> ${metrics.uniqueAtRiskServices.join(', ') || 'None'}<br/><br/>These Important Business Services (IBS) exceed maximum tolerable disruption (MTD) limits during single-node failover simulations.</div>`);
+    });
+  }
+
+  const kpiReadiness = document.getElementById('dort-kpi-readiness');
+  if (kpiReadiness) {
+    kpiReadiness.addEventListener('click', () => {
+      showModal('Recovery Readiness Breakdown', `<div style="font-size:0.75rem; line-height:1.5;"><b>Recovery Readiness Index: ${metrics.readinessIndex}%</b><br/>Derived from automated scenario simulation passes and verified disaster recovery playbooks catalogued in the state database.</div>`);
+    });
+  }
+
+  const kpiGaps = document.getElementById('dort-kpi-gaps');
+  if (kpiGaps) {
+    kpiGaps.addEventListener('click', () => {
+      showModal('Open Control Weaknesses', `<div style="font-size:0.75rem; line-height:1.5;"><b>Control Weaknesses: ${metrics.controlGaps} Open</b><br/>Represents unmitigated audit findings and supplier TLS/encryption compliance gaps requiring resolution.</div>`);
+    });
+  }
+
+  const kpiConcentration = document.getElementById('dort-kpi-concentration');
+  if (kpiConcentration) {
+    kpiConcentration.addEventListener('click', () => {
+      showModal('Supplier Concentration Audit', `<div style="font-size:0.75rem; line-height:1.5;"><b>Concentration Assessment: ${metrics.concentrationStatus}</b><br/>Evaluates multi-cloud single points of failure across AWS, Salesforce, and Cloudflare subprocessors.</div>`);
+    });
+  }
 
   // Render Sub-Pane Content
   const subContent = document.getElementById('twin-sub-pane-content');

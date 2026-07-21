@@ -97,8 +97,8 @@ export function renderReportsModule() {
       const testsHtml = state.tests.map(t => `
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.04); padding:6px 0; font-size:0.7rem;">
           <div>
-            <b>${t.scenario}</b>
-            <div style="font-size:0.64rem; color:var(--text-muted);">Execution Date: ${t.date}</div>
+            <b>${t.title || t.scenario || t.name || 'Resilience Test'}</b>
+            <div style="font-size:0.64rem; color:var(--text-muted);">Execution Date: ${t.lastRun || t.date || '2026-07-18'}</div>
           </div>
           ${createStatusBadge(t.results === 'Passed' ? 'Compliant' : 'Non-Compliant')}
         </div>

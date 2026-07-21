@@ -2745,7 +2745,7 @@ textarea:focus-visible {
 /* Dashboard KPI Card Tooltips */
 .dashboard-card {
   position: relative;
-  cursor: help;
+  cursor: pointer;
 }
 
 .dashboard-card .tooltip-text {
