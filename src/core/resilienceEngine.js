@@ -306,7 +306,8 @@ export function calculateResilienceExposureScore(targetId = 'global') {
   const readinessWeighted = Math.round(readinessScore * 0.25);
 
   // 4. Supplier Concentration Component (15%)
-  const suppliersList = Object.values(state.suppliers || {});
+  const rawSuppliers = state.suppliers || [];
+  const suppliersList = Array.isArray(rawSuppliers) ? rawSuppliers : Object.values(rawSuppliers);
   const avgSupplierScore = suppliersList.length ? (suppliersList.reduce((sum, s) => sum + (s.complianceScore || 80), 0) / suppliersList.length) : 80;
   const concentrationScore = Math.round(avgSupplierScore);
   const concentrationWeighted = Math.round(concentrationScore * 0.15);
