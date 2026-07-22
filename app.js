@@ -101,13 +101,14 @@ function getSupplierAvatar(id) {
 // --------------------------------------------------------------------------
 // 3. TAB NAVIGATION CONTROL
 // --------------------------------------------------------------------------
-// Overridden by src/core/router.js switchTab
-// window.switchTab = function(tabId) { ... }// --------------------------------------------------------------------------
-// 4. PERSONA / ROLE SWITCHER
-// --------------------------------------------------------------------------
-// Overridden by src/core/router.js setPersona
-// // Overridden by src/core/router.js setPersona
-// window.setPersona = function(persona) { ... }
+window.toggleSidebar = function() {
+  const sidebar = document.querySelector('.app-sidebar');
+  if (sidebar) {
+    sidebar.classList.toggle('collapsed');
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    localStorage.setItem('cv_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+  }
+};
 
 function populateSupplierPortalSwitcher() {
   const select = document.getElementById('active-supplier-select');

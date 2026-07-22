@@ -39,6 +39,16 @@ let highlightCriticalPath = false;
 export function renderResilienceModule() {
   window.activeResilienceTab = activeResilienceTab;
   window.executeTwinSimulation = executeTwinSimulation;
+  window.toggleDortFullscreen = function() {
+    const banner = document.querySelector('.dort-executive-banner');
+    if (banner) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        banner.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+      }
+    }
+  };
   const container = document.getElementById('view-manager-resilience');
   if (!container) return;
 
@@ -682,6 +692,7 @@ function renderTwinTab(container) {
             </h2>
           </div>
           <div style="font-size: 0.62rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+            <button class="btn btn-secondary btn-xs" onclick="toggleDortFullscreen()" style="padding: 2px 8px; font-size: 0.64rem; border: 1px solid var(--border-color);">⛶ Fullscreen</button>
             <span>Real-time Dynamic Twin Feed</span>
             <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
           </div>

@@ -273,6 +273,30 @@ body.dark-mode {
   justify-content: space-between;
   padding: 24px 0;
   overflow-y: auto;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.app-sidebar.collapsed {
+  width: 68px;
+}
+
+.app-sidebar.collapsed .nav-item span,
+.app-sidebar.collapsed .nav-sub-item span,
+.app-sidebar.collapsed .badge,
+.app-sidebar.collapsed .nav-section,
+.app-sidebar.collapsed .nav-sub-list {
+  display: none !important;
+}
+
+.app-sidebar.collapsed .nav-item,
+.app-sidebar.collapsed .nav-sub-item {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.app-sidebar.collapsed .nav-icon {
+  margin-right: 0 !important;
 }
 
 .sidebar-nav {
