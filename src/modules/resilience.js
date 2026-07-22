@@ -652,6 +652,9 @@ function getTwinMetrics() {
 
 function renderTwinTab(container) {
   const state = getState();
+  const rawSuppliers = state.suppliers || [];
+  const suppliers = Array.isArray(rawSuppliers) ? rawSuppliers : Object.values(rawSuppliers);
+  const assets = state.assets || [];
 
   // Calculate 6 Executive-Grade Scores
   const serviceHealth = calculateCriticalServiceHealthScore();
