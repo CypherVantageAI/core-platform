@@ -571,7 +571,8 @@ export function calculateDoraReadinessIndex() {
  */
 export function getExecutiveBoardAnswers() {
   const state = getState();
-  const suppliers = state.suppliers || [];
+  const rawSuppliers = state.suppliers || [];
+  const suppliers = Array.isArray(rawSuppliers) ? rawSuppliers : Object.values(rawSuppliers);
   const services = state.services || [];
   const incidents = state.incidents || [];
 
@@ -597,4 +598,3 @@ export function getExecutiveBoardAnswers() {
     ]
   };
 }
-

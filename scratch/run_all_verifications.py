@@ -43,7 +43,7 @@ def stop_server():
         print("[OK] Test server stopped successfully.")
 
 # Helper to wait for JS bootstrap to avoid race conditions
-def wait_for_bootstrap(driver, timeout=15):
+def wait_for_bootstrap(driver, timeout=3):
     start = time.time()
     while time.time() - start < timeout:
         try:
@@ -51,7 +51,7 @@ def wait_for_bootstrap(driver, timeout=15):
                 return True
         except Exception:
             pass
-        time.sleep(0.5)
+        time.sleep(0.2)
     raise TimeoutError("Timed out waiting for Cypher Vantage javascript module bootstrap.")
 
 # 2. Syntax check
@@ -309,7 +309,7 @@ def run_screen_captures(artifacts_dir):
         time.sleep(1)
         driver.execute_script("document.getElementById('btn-res-tab-twin').click();")
         time.sleep(1)
-        driver.execute_script("document.getElementById('btn-twin-simulate').click();")
+        driver.execute_script("const b = document.getElementById('btn-twin-sub-simulate') || document.getElementById('btn-twin-simulate'); if (b) b.click();")
         time.sleep(2)
         path_twin = os.path.join(artifacts_dir, "resilience_twin.png")
         driver.save_screenshot(path_twin)
