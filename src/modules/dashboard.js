@@ -493,10 +493,15 @@ export function renderExecutiveDashboard() {
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
       <!-- Sub-tab switcher -->
-      <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%;">
-        <button id="btn-db-tab-overview" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'overview' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">Executive Overview</button>
-        <button id="btn-db-tab-threatmap" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'threatmap' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🗺️ Global Threat Map & Feed</button>
-        <button id="btn-db-tab-graph" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'graph' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Resilience Knowledge Graph</button>
+      <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button id="btn-db-tab-overview" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'overview' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">Executive Overview</button>
+          <button id="btn-db-tab-threatmap" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'threatmap' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🗺️ Global Threat Map &amp; Feed</button>
+          <button id="btn-db-tab-graph" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'graph' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Resilience Knowledge Graph</button>
+        </div>
+        <button class="btn btn-primary btn-xs" onclick="switchTab('manager-resilience'); setTimeout(() => { const btn = document.getElementById('btn-res-tab-twin'); if(btn) btn.click(); }, 100);" style="font-size: 0.68rem; padding: 5px 12px; background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: #fff; border: none; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+          ♊ Launch Digital Resilience Twin ➔
+        </button>
       </div>
 
       <!-- Tab Content Area -->

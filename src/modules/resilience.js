@@ -1265,9 +1265,12 @@ function drawTwinOutageGraph(isBroken, chain, blast) {
 
   const isLight = document.body.classList.contains('light-mode');
   const stateColor = isBroken ? '#ef4444' : '#10b981';
+  const bgFill = isLight ? 'linear-gradient(135deg, #f8fafc, #f1f5f9)' : 'rgba(0,0,0,0.25)';
+  const barBg = isLight ? '#ffffff' : 'rgba(0,0,0,0.25)';
+  const borderCol = isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.05)';
 
   mapBox.innerHTML = `
-    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-around; padding:10px; gap:8px; box-sizing:border-box; overflow:hidden;">
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-around; padding:10px; gap:8px; box-sizing:border-box; overflow:hidden; background:${bgFill}; border-radius:6px;">
       <div style="font-size:0.65rem; font-weight:700; color:var(--color-cyan); text-transform:uppercase; letter-spacing:0.05em; text-align:center;">
         ⚡ Operational Failure Propagation Chain Across Architecture Graph
       </div>
@@ -1291,7 +1294,7 @@ function drawTwinOutageGraph(isBroken, chain, blast) {
       </div>
 
       <!-- Financial & Regulatory Impact Bar -->
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.05); padding:8px 12px; border-radius:6px; font-size:0.65rem; margin-top:5px; width:100%; box-sizing:border-box;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; background:${barBg}; border:1px solid ${borderCol}; padding:8px 12px; border-radius:6px; font-size:0.65rem; margin-top:5px; width:100%; box-sizing:border-box;">
         <div><span style="color:var(--text-muted);">Downtime Cost Rate:</span> <strong style="color:#ef4444;">${blast.revenueImpact.formattedCost}</strong></div>
         <div><span style="color:var(--text-muted);">Market Exposure:</span> <strong style="color:var(--color-cyan);">~${blast.customersAffected.totalCount.toLocaleString()} Users</strong></div>
         <div><span style="color:var(--text-muted);">DORA Compliance Status:</span> <strong style="color:#f43f5e;">CRITICAL EXPOSURE</strong></div>
