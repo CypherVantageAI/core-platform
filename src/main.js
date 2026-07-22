@@ -84,5 +84,11 @@ function initTheme(state) {
     state.theme = isLightNow ? 'dark' : 'light';
     saveState();
     applyTheme(!isLightNow);
+
+    // Refresh DORT outage graph if visible
+    const mapBox = document.getElementById('twin-propagation-map');
+    if (mapBox && typeof window.refreshCurrentTwinOutageGraph === 'function') {
+      window.refreshCurrentTwinOutageGraph();
+    }
   };
 }
