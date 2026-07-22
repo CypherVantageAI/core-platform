@@ -37,6 +37,7 @@ let highlightCriticalPath = false;
 
 export function renderResilienceModule() {
   window.activeResilienceTab = activeResilienceTab;
+  window.executeTwinSimulation = executeTwinSimulation;
   const container = document.getElementById('view-manager-resilience');
   if (!container) return;
 
@@ -901,7 +902,7 @@ function renderSimulateSubPane(container, state, suppliers, assets) {
       </select>
     </div>
 
-    <button id="btn-twin-simulate" class="btn btn-primary" style="width:100%; font-size:0.72rem; padding: 10px; margin-top: 5px;">⚡ Trigger Outage &amp; Analyze Blast Radius</button>
+    <button id="btn-twin-simulate" class="btn btn-primary" onclick="if(window.executeTwinSimulation) window.executeTwinSimulation();" style="width:100%; font-size:0.72rem; padding: 10px; margin-top: 5px;">⚡ Trigger Outage &amp; Analyze Blast Radius</button>
 
     <div id="twin-impact-summary" style="display:none; flex-direction:column; gap:8px;">
       <!-- Populated dynamically -->
@@ -921,7 +922,8 @@ function renderSimulateSubPane(container, state, suppliers, assets) {
 
   const btnSimulate = document.getElementById('btn-twin-simulate');
   if (btnSimulate) {
-    btnSimulate.onclick = () => {
+    btnSimulate.onclick = (e) => {
+      e.preventDefault();
       executeTwinSimulation();
     };
   }
