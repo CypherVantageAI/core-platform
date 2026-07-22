@@ -58,9 +58,6 @@ function renderDashboardContent() {
             <p class="panel-subtitle" style="margin: 0; margin-top: 3px; font-size: 0.7rem;">Morning briefing compiled for Board Members, CXO and Audit oversight - Ready for One-click export.</p>
           </div>
           <div style="display: flex; gap: 6px; align-items: center;">
-            <button class="btn btn-primary btn-xs" onclick="switchTab('manager-resilience'); setTimeout(() => { const btn = document.getElementById('btn-res-tab-twin'); if(btn) btn.click(); }, 100);" style="font-size: 0.65rem; padding: 4px 10px; background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: #fff; border: none; font-weight: 700; display: flex; align-items: center; gap: 4px;">
-              ♊ Launch Digital Resilience Twin ➔
-            </button>
             <button class="btn btn-secondary btn-xs" onclick="window.triggerDynamicExport('pdf', 'board-pack')" style="font-size: 0.65rem; padding: 4px 8px;">🖨️ Board Pack - PDF</button>
             <button class="btn btn-secondary btn-xs" onclick="window.triggerDynamicExport('pptx', 'board-pack')" style="font-size: 0.65rem; padding: 4px 8px;">📊 Board Pack - PPTX</button>
           </div>
