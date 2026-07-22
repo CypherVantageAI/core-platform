@@ -1330,6 +1330,7 @@ const DEFAULT_STATE = {
         }
       }
     }
+  }
   },
   scenarios: [
     {
