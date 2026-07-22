@@ -390,6 +390,15 @@ export function calculateResilienceExposureScore(targetId = 'global') {
 }
 
 /**
+ * 4. Score Explainability Breakdown Generator
+ * Exports explicit factor breakdown trees for any node or target ID.
+ */
+export function getScoreExplainability(targetId) {
+  const result = calculateResilienceExposureScore(targetId);
+  return result.explainability;
+}
+
+/**
  * ==========================================================================
  * 5. EXECUTIVE DIGITAL TWIN ANALYTICS & BOARD COCKPIT ENGINE
  * ==========================================================================
