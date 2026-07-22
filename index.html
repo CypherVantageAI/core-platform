@@ -1214,33 +1214,37 @@
 
         <!-- SLA Risk Ribbon -->
         <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 15px; flex-wrap: wrap; width: 100%;">
-          <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(239, 68, 68, 0.25); background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('9-Hour SLA Target Details', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Urgent Vulnerability Window:</b> DORA Article 19 Emergency Remediation Target (9 Hours).</div><div><b>Criteria:</b> Active zero-day exploits or critical CVSS 9.5+ vulnerabilities directly facing core payment gateways.</div><div style=\'color:#ef4444; font-weight:600;\'>Status: 1 Service Breach Risk</div></div>')" style="cursor: pointer; flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(239, 68, 68, 0.25); background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">9-Hour SLA Target</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span id="kri-sla-9h" style="font-size: 1.2rem; font-weight: 700; color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);">0 Services</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #ef4444;"></div>
+            <span class="tooltip-text"><strong>9-Hour SLA Target</strong>Emergency remediation window for zero-day vulnerabilities affecting critical clearing gateways under DORA Art. 19.</span>
           </div>
-          <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(249, 115, 22, 0.25); background: linear-gradient(135deg, rgba(249, 115, 22, 0.05), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('24-Hour SLA Target Details', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Critical Vulnerability Window:</b> DORA Article 19 Priority Remediation Target (24 Hours).</div><div><b>Criteria:</b> High-severity CVSS 8.0-9.4 vulnerabilities affecting key banking API endpoints.</div><div style=\'color:#f97316; font-weight:600;\'>Status: 1 Service Pending Patching</div></div>')" style="cursor: pointer; flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(249, 115, 22, 0.25); background: linear-gradient(135deg, rgba(249, 115, 22, 0.05), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">24-Hour SLA Target</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span id="kri-sla-24h" style="font-size: 1.2rem; font-weight: 700; color: #f97316; text-shadow: 0 0 10px rgba(249, 115, 22, 0.3);">0 Services</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #f97316;"></div>
+            <span class="tooltip-text"><strong>24-Hour SLA Target</strong>Critical remediation window for high-severity vulnerabilities affecting primary application services.</span>
           </div>
-          <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(234, 179, 8, 0.25); background: linear-gradient(135deg, rgba(234, 179, 8, 0.05), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('48-Hour SLA Target Details', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Elevated Vulnerability Window:</b> DORA Article 19 Remediation Target (48 Hours).</div><div><b>Criteria:</b> Medium-high CVSS vulnerabilities in internal support engines and secondary databases.</div><div style=\'color:#eab308; font-weight:600;\'>Status: 1 Service In Remediation Queue</div></div>')" style="cursor: pointer; flex: 1; min-width: 160px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(234, 179, 8, 0.25); background: linear-gradient(135deg, rgba(234, 179, 8, 0.05), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">48-Hour SLA Target</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span id="kri-sla-48h" style="font-size: 1.2rem; font-weight: 700; color: #eab308; text-shadow: 0 0 10px rgba(234, 179, 8, 0.3);">0 Services</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #eab308;"></div>
+            <span class="tooltip-text"><strong>48-Hour SLA Target</strong>Standard remediation window for elevated vulnerabilities in non-customer-facing internal systems.</span>
           </div>
-          <div class="dashboard-card" style="flex: 1.2; min-width: 220px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(16, 185, 129, 0.25); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('Standard SLA Targets Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Standard Maintenance SLAs:</b> Governed under DORA Article 6 ICT operational procedures.</div><div><b>Breakdown:</b><ul style=\'margin-top:4px; padding-left:18px;\'><li><b>7-Day SLA (High):</b> 0 Services</li><li><b>30-Day SLA (Medium):</b> 0 Services</li><li><b>90-Day SLA (Low):</b> 0 Services</li></ul></div><div style=\'color:#10b981; font-weight:600;\'>Status: All Standard SLAs Compliant</div></div>')" style="cursor: pointer; flex: 1.2; min-width: 220px; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(16, 185, 129, 0.25); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Standard SLA (High / Med / Low)</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span id="kri-sla-nominal" style="font-size: 0.95rem; font-weight: 700; color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.2);">High: 0 | Med: 0 | Low: 0</span>
             </div>
             <div style="width: 4px; height: 100%; position: absolute; left: 0; top: 0; background: #10b981;"></div>
+            <span class="tooltip-text"><strong>Standard SLA Targets</strong>Routine maintenance patching schedules (7-day, 30-day, and 90-day SLAs) for lower-risk components.</span>
           </div>
         </div>
 

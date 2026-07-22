@@ -543,7 +543,9 @@ function renderConcentrationTab(container) {
           const cy1 = y1;
           const cx2 = x1 + (x2 - x1) / 2;
           const cy2 = y2;
-          svgPaths += `<path d="M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" fill="none" />`;
+          const isLight = document.body.classList.contains('light-mode');
+          const leftLineColor = isLight ? '#0284c7' : 'rgba(56, 189, 248, 0.7)';
+          svgPaths += `<path d="M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}" stroke="${leftLineColor}" stroke-width="2.2" stroke-opacity="0.85" fill="none" />`;
         }
       });
     });

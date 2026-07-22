@@ -8,14 +8,15 @@ import { buildResilienceGraph } from '../modules/knowledgegraph.js';
 /**
  * 1. BLAST RADIUS ANALYSIS
  * Calculates direct/indirect impact, affected business services, customers affected,
- * revenue impact (£/hr), and regulatory impact for ANY selected object.
+ * revenue impact (£/hr), and regulatory impact for ANY selected object and disruption scenario.
  *
  * Supported Types: Service, Application, Supplier, Cloud Provider, Asset, Control
  *
  * @param {string} nodeId - Target node ID (e.g., 'srv-001', 'app-001', 'sup-aws', 'ast-001', 'ctl-001')
+ * @param {string} [scenarioType='region-loss'] - Disruption Scenario type
  * @param {Object} [customGraph] - Optional pre-built graph
  */
-export function analyzeBlastRadius(nodeId, customGraph = null) {
+export function analyzeBlastRadius(nodeId, scenarioType = 'region-loss', customGraph = null) {
   const state = getState();
   const graph = customGraph || buildResilienceGraph();
 
@@ -117,14 +118,49 @@ export function analyzeBlastRadius(nodeId, customGraph = null) {
     }
   });
 
-  if (totalRevenueLossPerHour === 0) {
-    totalRevenueLossPerHour = 65000;
+  // Adjust Revenue & Customer Multipliers based on Disruption Scenario
+  let scenarioMultiplier = 1.0;
+  let scenarioName = 'Cloud Region Outage';
+  if (scenarioType === 'ransomware') {
+    scenarioMultiplier = 1.85; // High data recovery & extortion cost
+    scenarioName = 'Ransomware Data Integrity Hijack';
+  } else if (scenarioType === 'ddos') {
+    scenarioMultiplier = 1.35; // High traffic volume & bandwidth throttling
+    scenarioName = 'Distributed DDoS Flood Attack';
+  } else if (scenarioType === 'power') {
+    scenarioMultiplier = 1.5; // Complete hardware grid shutdown
+    scenarioName = 'Physical Facility Power Failure';
   }
+
+  totalRevenueLossPerHour = Math.round(totalRevenueLossPerHour * scenarioMultiplier);
+  totalCustomersCount = Math.round(totalCustomersCount * scenarioMultiplier);
 
   // Calculate Regulatory Impact
   const regulatoryImpacts = [];
+  if (scenarioType === 'ransomware') {
+    regulatoryImpacts.push({
+      article: 'DORA Article 18 & GDPR Art. 33',
+      title: 'Major Incident Classification & Data Breach Notification',
+      severity: 'Critical Sanction Risk',
+      penalty: 'Mandatory 72-hr supervisory notification to EDPB and ESA Joint Committee fines up to 2% global turnover.'
+    });
+  } else if (scenarioType === 'ddos') {
+    regulatoryImpacts.push({
+      article: 'DORA Article 26',
+      title: 'Advanced Threat-Led Penetration Testing (TLPT)',
+      severity: 'Major Non-Compliance',
+      penalty: 'Required immediate activation of DDoS mitigation scrubbers under DORA Art. 26 requirements.'
+    });
+  } else if (scenarioType === 'power') {
+    regulatoryImpacts.push({
+      article: 'DORA Article 11 & 12',
+      title: 'ICT Business Continuity & Backup Capability',
+      severity: 'High Operational Breach',
+      penalty: 'Unmet secondary datacenter failover SLA triggers FCA operational resilience penalty.'
+    });
+  }
+
   state.obligations.forEach(ob => {
-    // Check if obligation governs any affected control or risk
     const isRelated = graph.edges.some(e => e.from === ob.id && allAffected.some(a => a.id === e.to));
     if (isRelated) {
       regulatoryImpacts.push({
@@ -173,9 +209,10 @@ export function analyzeBlastRadius(nodeId, customGraph = null) {
  * Pattern: Root Object -> Applications -> Business Services -> Customers -> DORA Obligations
  *
  * @param {string} rootNodeId - Root failure object ID
+ * @param {string} [scenarioType='region-loss'] - Scenario type
  * @param {Object} [graph] - Graph object
  */
-export function getImpactPropagationChain(rootNodeId, graph = null) {
+export function getImpactPropagationChain(rootNodeId, scenarioType = 'region-loss', graph = null) {
   const state = getState();
   const g = graph || buildResilienceGraph();
 
@@ -183,11 +220,24 @@ export function getImpactPropagationChain(rootNodeId, graph = null) {
     g.nodes.find(n => n.name.toLowerCase().includes(rootNodeId.toLowerCase())) ||
     { id: rootNodeId, name: rootNodeId, type: 'supplier' };
 
+  let scenarioTitle = 'Root Infrastructure / Provider Failure';
+  let scenarioIcon = '⚡';
+  if (scenarioType === 'ransomware') {
+    scenarioTitle = 'Ransomware Data Encryption Hijack';
+    scenarioIcon = '🔒';
+  } else if (scenarioType === 'ddos') {
+    scenarioTitle = 'DDoS Volumetric Traffic Spike';
+    scenarioIcon = '🌊';
+  } else if (scenarioType === 'power') {
+    scenarioTitle = 'Facility Substation Power Blackout';
+    scenarioIcon = '🔌';
+  }
+
   // Step 1: Root Failure
   const step1 = {
     level: 1,
-    title: 'Root Infrastructure / Provider Failure',
-    icon: '⚡',
+    title: scenarioTitle,
+    icon: scenarioIcon,
     nodes: [{ id: rootNode.id, name: rootNode.name, type: rootNode.type }]
   };
 

@@ -22,6 +22,7 @@ import {
 let activeResilienceTab = 'services'; // 'services' | 'dependencies' | 'twin' | 'incidents' | 'readiness' | 'monitoring' | 'simulation'
 let selectedServiceId = 'srv-001';
 let selectedTwinPoint = 'sup-aws'; // default failure point for DORT
+let selectedTwinScenario = 'region-loss'; // default disruption scenario for DORT
 let isEditing = false;
 let isAdding = false;
 
@@ -917,10 +918,10 @@ function renderSimulateSubPane(container, state, suppliers, assets) {
     <div style="display:flex; flex-direction:column; gap:6px;">
       <label style="font-size:0.7rem; color:var(--text-secondary); font-weight:600;">Disruption Scenario:</label>
       <select id="twin-scenario-select" class="dropdown-control" style="width:100%; font-size:0.72rem; padding: 6px;">
-        <option value="region-loss">Complete Cloud Region Outage</option>
-        <option value="ransomware">Ransomware Data Integrity Hijack</option>
-        <option value="ddos">Distributed DDoS Flood Attack</option>
-        <option value="power">Physical Facility Power Failure</option>
+        <option value="region-loss" ${selectedTwinScenario === 'region-loss' ? 'selected' : ''}>Complete Cloud Region Outage</option>
+        <option value="ransomware" ${selectedTwinScenario === 'ransomware' ? 'selected' : ''}>Ransomware Data Integrity Hijack</option>
+        <option value="ddos" ${selectedTwinScenario === 'ddos' ? 'selected' : ''}>Distributed DDoS Flood Attack</option>
+        <option value="power" ${selectedTwinScenario === 'power' ? 'selected' : ''}>Physical Facility Power Failure</option>
       </select>
     </div>
 
@@ -939,6 +940,13 @@ function renderSimulateSubPane(container, state, suppliers, assets) {
     }
     selectNode.onchange = (e) => {
       selectedTwinPoint = e.target.value;
+    };
+  }
+
+  const selectScenario = document.getElementById('twin-scenario-select');
+  if (selectScenario) {
+    selectScenario.onchange = (e) => {
+      selectedTwinScenario = e.target.value;
     };
   }
 
@@ -1160,11 +1168,18 @@ function executeTwinSimulation() {
   if (!summaryBox || !mapBox) return;
 
   // Use Operational Resilience Intelligence Engine for multi-dimensional calculation
-  const blast = analyzeBlastRadius(selectedTwinPoint);
-  const chain = getImpactPropagationChain(selectedTwinPoint);
+  const blast = analyzeBlastRadius(selectedTwinPoint, selectedTwinScenario);
+  const chain = getImpactPropagationChain(selectedTwinPoint, selectedTwinScenario);
   const exposure = calculateResilienceExposureScore(selectedTwinPoint);
 
-  const failPointLabel = `${blast.target.type.toUpperCase()}: ${blast.target.name}`;
+  const scenarioNames = {
+    'region-loss': 'Complete Cloud Region Outage',
+    'ransomware': 'Ransomware Data Integrity Hijack',
+    'ddos': 'Distributed DDoS Flood Attack',
+    'power': 'Physical Facility Power Failure'
+  };
+
+  const failPointLabel = `${blast.target.type.toUpperCase()}: ${blast.target.name} (${scenarioNames[selectedTwinScenario] || selectedTwinScenario})`;
 
   // Populate Blast Radius details summary
   summaryBox.style.display = 'flex';
