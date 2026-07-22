@@ -15,7 +15,8 @@ export function renderThirdPartyModule() {
   const container = document.getElementById('view-manager-thirdparty');
   if (!container) return;
 
-  const suppliersList = Object.values(state.suppliers || {});
+  const rawSuppliers = state.suppliers || [];
+  const suppliersList = Array.isArray(rawSuppliers) ? rawSuppliers : Object.values(rawSuppliers);
   const totalSuppliers = suppliersList.length;
   const criticalSuppliers = suppliersList.filter(s => s.riskTier === 'Critical').length;
   const avgCompliance = totalSuppliers ? Math.round(suppliersList.reduce((sum, s) => sum + s.complianceScore, 0) / totalSuppliers) : 100;
@@ -231,7 +232,8 @@ function renderSuppliersTable() {
     }
   ];
 
-  const suppliersList = Object.values(state.suppliers || {});
+  const rawSuppliers = state.suppliers || [];
+  const suppliersList = Array.isArray(rawSuppliers) ? rawSuppliers : Object.values(rawSuppliers);
   createTable('suppliers-table-container', suppliersList, columns, {
     searchPlaceholder: 'Search suppliers directory...',
     pageSize: 6,
@@ -394,7 +396,8 @@ function getServicesForSupplier(state, supplierId) {
 // --------------------------------------------------------------------------
 function renderConcentrationTab(container) {
   const state = getState();
-  const suppliersList = Object.values(state.suppliers || {});
+  const rawSuppliers = state.suppliers || [];
+  const suppliersList = Array.isArray(rawSuppliers) ? rawSuppliers : Object.values(rawSuppliers);
 
   // Identify subcontractor concentration hotspots
   const subcontractorMap = {};
