@@ -266,8 +266,12 @@
 
       <!-- Help Guide Trigger -->
       <div class="help-guide-container" style="display: flex; align-items: center; margin-right: 10px;">
-        <button id="btn-help-guide" class="btn btn-secondary btn-xs" style="padding: 6px; font-size: 0.85rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; height: 32px; width: 32px;" title="User Help Guide" onclick="showHelpGuide()">
-          <span>❓</span>
+        <button id="btn-help-guide" class="btn btn-secondary btn-xs" style="padding: 6px; font-size: 0.85rem; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; height: 32px; width: 32px; transition: all 0.2s ease;" title="User Help Guide" onclick="showHelpGuide()">
+          <svg viewBox="0 0 24 24" style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
         </button>
       </div>
 
