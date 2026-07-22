@@ -681,9 +681,12 @@ export function renderResilienceGraph(containerId, options = {}) {
           </div>
         </div>
 
-        <!-- SVG Container -->
-        <div id="svg-graph-viewport-container" style="flex: 1; position: relative; overflow: hidden; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px solid rgba(255,255,255,0.02); cursor: grab; width: 100%; height: 350px;">
-          <svg id="resilience-graph-svg" style="width: 100%; height: 100%; min-height: 350px; transform-origin: 0 0;">
+        <!-- SVG Container with horizontal & vertical scroll bar support + pan/zoom hint -->
+        <div id="svg-graph-viewport-container" style="flex: 1; position: relative; overflow: auto; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px solid rgba(255,255,255,0.02); cursor: grab; width: 100%; height: 350px;">
+          <div style="position: absolute; top: 6px; right: 10px; z-index: 5; pointer-events: none; display: flex; align-items: center; gap: 4px; font-size: 0.58rem; color: var(--color-cyan); background: rgba(15, 23, 42, 0.85); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.2);">
+            <span>↔️ Drag / Scroll Horizontally to Explore Full Enterprise Graph</span>
+          </div>
+          <svg id="resilience-graph-svg" style="width: 960px; height: 440px; min-width: 960px; min-height: 440px; transform-origin: 0 0;">
             <g id="svg-zoomable-group" style="transform: translate(${graphPanX}px, ${graphPanY}px) scale(${graphZoom});">
               <!-- Grid Background lines for cyber look -->
               <defs>
