@@ -40,12 +40,16 @@ export function renderResilienceModule() {
   window.activeResilienceTab = activeResilienceTab;
   window.executeTwinSimulation = executeTwinSimulation;
   window.toggleDortFullscreen = function() {
-    const banner = document.querySelector('.dort-executive-banner');
-    if (banner) {
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
+    const pane = document.getElementById('view-manager-resilience');
+    if (pane) {
+      if (pane.classList.contains('view-fullscreen-mode')) {
+        pane.classList.remove('view-fullscreen-mode');
+        if (document.fullscreenElement) document.exitFullscreen();
       } else {
-        banner.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+        pane.classList.add('view-fullscreen-mode');
+        if (pane.requestFullscreen) {
+          pane.requestFullscreen().catch(err => console.log('Fullscreen native fallback:', err));
+        }
       }
     }
   };

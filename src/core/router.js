@@ -48,6 +48,12 @@ export function switchTab(tabId) {
     activeNav.classList.add('active');
   }
 
+  // Auto-collapse sidebar after user selects a menu item
+  const sidebar = document.querySelector('.app-sidebar');
+  if (sidebar) {
+    sidebar.classList.add('collapsed');
+  }
+
   // Trigger module-specific rendering pipelines
   switch (tabId) {
     case 'manager-dashboard':

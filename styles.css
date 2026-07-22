@@ -273,12 +273,21 @@ body.dark-mode {
   justify-content: space-between;
   padding: 24px 0;
   overflow-y: auto;
+  overflow-x: hidden;
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  z-index: 100;
 }
 
+/* Auto-collapsed state when item selected */
 .app-sidebar.collapsed {
   width: 68px;
+}
+
+/* Expand sidebar on hover when collapsed */
+.app-sidebar.collapsed:hover {
+  width: var(--sidebar-width);
+  box-shadow: 10px 0 25px rgba(0, 0, 0, 0.35);
 }
 
 .app-sidebar.collapsed .nav-item span,
@@ -289,14 +298,50 @@ body.dark-mode {
   display: none !important;
 }
 
+.app-sidebar.collapsed:hover .nav-item span,
+.app-sidebar.collapsed:hover .nav-sub-item span,
+.app-sidebar.collapsed:hover .badge,
+.app-sidebar.collapsed:hover .nav-section,
+.app-sidebar.collapsed:hover .nav-sub-list {
+  display: inline-block !important;
+}
+
+.app-sidebar.collapsed:hover .nav-sub-list {
+  display: block !important;
+}
+
 .app-sidebar.collapsed .nav-item,
 .app-sidebar.collapsed .nav-sub-item {
   justify-content: center;
   padding: 10px 0;
 }
 
+.app-sidebar.collapsed:hover .nav-item,
+.app-sidebar.collapsed:hover .nav-sub-item {
+  justify-content: flex-start;
+  padding: 10px 16px;
+}
+
 .app-sidebar.collapsed .nav-icon {
   margin-right: 0 !important;
+}
+
+.app-sidebar.collapsed:hover .nav-icon {
+  margin-right: 12px !important;
+}
+
+/* Fullscreen Mode Styling for Whole Page View */
+.view-fullscreen-mode {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 999999 !important;
+  background: var(--bg-primary) !important;
+  padding: 24px !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
 }
 
 .sidebar-nav {
