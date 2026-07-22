@@ -661,70 +661,93 @@ export function renderResilienceGraph(containerId, options = {}) {
 
   // Draw the full DOM content
   container.innerHTML = `
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-      <!-- Left Column: Interactive Graph Canvas + Floating Impact Toolbar (flex 2.2) -->
-      <div class="dashboard-card" style="flex: 2.2; min-width: 480px; padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 10px; height: 580px; position: relative;">
-        
-        <!-- Canvas Header Bar with Zoom & Failure Path Pill -->
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px; flex-shrink: 0;">
-          <div style="font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
-            <span>${focalNodeId ? `Neighborhood: ${focalNodeId}` : '🕸️ Enterprise Knowledge Graph'}</span>
-            ${selectedNodeId ? `<span class="badge badge-accent" style="font-size: 0.55rem; padding: 2px 6px;">Active Object: ${selectedNodeId}</span>` : ''}
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%; min-height: 480px;">
+      <!-- Left: Interactive SVG Canvas -->
+      <div class="dashboard-card" style="flex: 2; min-width: 480px; padding: 10px; margin: 0; min-height: 450px; display: flex; flex-direction: column; position: relative;">
+        <!-- Canvas Header / Controls -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
+          <div style="font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">
+            ${focalNodeId ? `Neighborhood Graph: ${focalNodeId}` : '🕸️ Operational Resilience Enterprise Knowledge Graph'}
           </div>
           <div style="display: flex; gap: 5px; align-items: center;">
             <button id="btn-graph-zoom-in" class="btn btn-secondary btn-xs" style="padding:2px 8px;">+</button>
             <button id="btn-graph-zoom-out" class="btn btn-secondary btn-xs" style="padding:2px 8px;">-</button>
-            <button id="btn-graph-reset" class="btn btn-secondary btn-xs" style="padding:2px 6px;">Reset View</button>
+            <button id="btn-graph-reset" class="btn btn-secondary btn-xs" style="padding:2px 6px;">Reset</button>
           </div>
         </div>
 
-        <!-- Failure Propagation Horizontal Pipeline Overlay (Visible when node selected) -->
-        ${selectedNodeId ? (() => {
-          const blast = analyzeBlastRadius(selectedNodeId, graph);
-          const chain = getImpactPropagationChain(selectedNodeId, graph);
-          return `
-            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.18); border-radius: 6px; padding: 6px 10px; font-size: 0.65rem; flex-shrink: 0; gap: 6px;">
-              <div style="display: flex; align-items: center; gap: 4px; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 8px; flex-shrink: 0;">
-                <span style="color: var(--color-cyan); font-weight: 800; font-size: 0.58rem; text-transform: uppercase;">Propagation Path:</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: 4px; overflow-x: auto; flex: 1;">
-                ${chain.steps.map((step, idx) => `
-                  <span style="font-size: 0.62rem; font-weight: 700; color: ${idx === 0 ? '#ef4444' : 'var(--text-primary)'}; display: flex; align-items: center; gap: 3px; background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 4px; border: 1px solid ${idx === 0 ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.05)'};">
-                    <span>${step.icon}</span>
-                    <span>L${step.level}: ${step.title.split(' ')[0]}</span>
-                  </span>
-                  ${idx < chain.steps.length - 1 ? `<span style="color: #ef4444; font-size: 0.65rem; font-weight: 800;">➔</span>` : ''}
-                `).join('')}
-              </div>
-              <div style="display: flex; gap: 8px; font-size: 0.62rem; border-left: 1px solid rgba(255,255,255,0.08); padding-left: 8px; flex-shrink: 0;">
-                <span>Impact: <b style="color:#ef4444;">${blast.revenueImpact.formattedCost}</b></span>
-                <span>Clients: <b style="color:var(--color-cyan);">~${blast.customersAffected.totalCount.toLocaleString()}</b></span>
-              </div>
-            </div>
-          `;
-        })() : ''}
-
-        <!-- SVG Graph Viewport (Fills exact remaining card height) -->
-        <div id="svg-graph-viewport-container" style="flex: 1; position: relative; overflow: hidden; background: rgba(0,0,0,0.25); border-radius: 6px; border: 1px solid rgba(255,255,255,0.02); cursor: grab; width: 100%;">
-          <svg id="resilience-graph-svg" style="width: 100%; height: 100%; transform-origin: 0 0;">
+        <!-- SVG Container -->
+        <div id="svg-graph-viewport-container" style="flex: 1; position: relative; overflow: hidden; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px solid rgba(255,255,255,0.02); cursor: grab; width: 100%; height: 350px;">
+          <svg id="resilience-graph-svg" style="width: 100%; height: 100%; min-height: 350px; transform-origin: 0 0;">
             <g id="svg-zoomable-group" style="transform: translate(${graphPanX}px, ${graphPanY}px) scale(${graphZoom});">
+              <!-- Grid Background lines for cyber look -->
               <defs>
                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
                   <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.01)" stroke-width="1"/>
                 </pattern>
               </defs>
               <rect width="1200" height="600" fill="url(#grid)" pointer-events="none" />
+              
+              <!-- Draw relationship lines -->
               ${linksHtml}
+
+              <!-- Draw nodes -->
               ${nodesHtml}
             </g>
           </svg>
         </div>
+
+        <!-- Space-efficient Intelligence Engine Panel below Canvas -->
+        ${selectedNodeId ? (() => {
+          const blast = analyzeBlastRadius(selectedNodeId, graph);
+          const chain = getImpactPropagationChain(selectedNodeId, graph);
+          return `
+            <div style="display: flex; flex-direction: column; gap: 6px; background: rgba(6, 182, 212, 0.03); border: 1px solid rgba(6, 182, 212, 0.15); border-radius: 6px; padding: 8px 12px; margin-top: 8px; font-size: 0.68rem;">
+              <!-- Top Row: Metrics -->
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom: 6px;">
+                <div>
+                  <span style="color: var(--text-muted); font-size: 0.55rem; text-transform: uppercase; font-weight: 700; display: block;">Selected Failure Object</span>
+                  <strong style="color: var(--text-primary); font-size: 0.72rem;">${blast.target.name} (${blast.target.type})</strong>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted); font-size: 0.55rem; text-transform: uppercase; font-weight: 700; display: block;">Cascading Nodes</span>
+                  <strong style="color: var(--color-cyan); font-size: 0.72rem;">${blast.directImpact.length} Direct / ${blast.indirectImpact.length} Indirect</strong>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted); font-size: 0.55rem; text-transform: uppercase; font-weight: 700; display: block;">Revenue Impact</span>
+                  <strong style="color: #ef4444; font-size: 0.72rem;">${blast.revenueImpact.formattedCost}</strong>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted); font-size: 0.55rem; text-transform: uppercase; font-weight: 700; display: block;">Customer Exposure</span>
+                  <strong style="color: var(--color-cyan); font-size: 0.72rem;">~${blast.customersAffected.totalCount.toLocaleString()} Users</strong>
+                </div>
+              </div>
+
+              <!-- Bottom Row: Failure Propagation Path Stepper -->
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-weight:700; color:var(--color-cyan); font-size:0.58rem; text-transform:uppercase; letter-spacing:0.04em;">Failure Propagation Path Across Graph:</span>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; overflow-x: auto; padding-bottom: 2px;">
+                  ${chain.steps.map((step, idx) => `
+                    <div style="flex: 1; min-width: 90px; background: rgba(0,0,0,0.2); border: 1px solid ${idx === 0 ? '#ef4444' : 'rgba(255,255,255,0.06)'}; border-radius: 4px; padding: 4px 6px; display: flex; flex-direction: column; gap: 1px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.52rem; font-weight: 800; color: ${idx === 0 ? '#ef4444' : 'var(--color-cyan)'};">L${step.level} ${step.icon}</span>
+                        ${idx === 0 ? `<span style="font-size: 0.48rem; font-weight: 800; color: #ef4444;">ROOT</span>` : ''}
+                      </div>
+                      <span style="font-size: 0.62rem; font-weight: 700; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${step.title.split(' ')[0]} ${step.title.split(' ')[1] || ''}</span>
+                    </div>
+                    ${idx < chain.steps.length - 1 ? `<span style="color: #ef4444; font-weight: 800; font-size: 0.7rem;">➔</span>` : ''}
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          `;
+        })() : ''}
       </div>
 
-      <!-- Right Column: Relationship Inspector Sidebar (flex 1.1) -->
-      <div class="dashboard-card" style="flex: 1.1; min-width: 320px; padding: 12px; margin: 0; height: 580px; display: flex; flex-direction: column; overflow-y: auto;">
-        <h3 style="font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">🛡️ Relationship &amp; Consequence Inspector</h3>
-        <div id="resilience-graph-sidebar-content" style="width: 100%; flex: 1;">
+      <!-- Right: Detailed Neighborhood sidebar -->
+      <div class="dashboard-card" style="flex: 1; min-width: 280px; padding: 15px; margin: 0; min-height: 450px; display: flex; flex-direction: column; overflow-y: auto; max-height: 480px;">
+        <h3 style="font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 10px;">🛡️ Relationship Inspector</h3>
+        <div id="resilience-graph-sidebar-content" style="width: 100%; height: 100%;">
           ${selectedNodeDetailsHtml}
         </div>
       </div>
