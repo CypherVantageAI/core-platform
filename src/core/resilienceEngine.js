@@ -475,7 +475,8 @@ export function calculateRecoveryConfidenceScore() {
  */
 export function calculateSupplierDependencyScore() {
   const state = getState();
-  const suppliers = state.suppliers || [];
+  const rawSuppliers = state.suppliers || [];
+  const suppliers = Array.isArray(rawSuppliers) ? rawSuppliers : Object.values(rawSuppliers);
   if (suppliers.length === 0) return { score: 78, status: 'Moderate Exposure', trend: '-1.2%', badgeColor: '#f59e0b' };
 
   const criticalCount = suppliers.filter(s => s.criticality === 'Critical').length;
