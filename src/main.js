@@ -46,14 +46,14 @@ window.onload = function() {
   // 6. Initialize Theme Selector
   initTheme(state);
 
-  // 7. Global card click fallback delegate
-  document.body.addEventListener('click', function(e) {
-    const card = e.target.closest('[onclick]');
-    if (card && card.getAttribute('onclick')) {
-      const onclickAttr = card.getAttribute('onclick');
-      if (onclickAttr.includes('showModal')) {
-        // Handled natively by inline handler
-      }
+  // 7. Global listener for ESC key or native fullscreen exit
+  document.addEventListener('fullscreenchange', function() {
+    if (!document.fullscreenElement) {
+      document.querySelectorAll('.view-fullscreen-mode').forEach(pane => {
+        pane.classList.remove('view-fullscreen-mode');
+      });
+      const sidebar = document.querySelector('.app-sidebar');
+      if (sidebar) sidebar.style.display = '';
     }
   });
 };

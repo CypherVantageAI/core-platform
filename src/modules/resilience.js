@@ -41,10 +41,14 @@ export function renderResilienceModule() {
   window.executeTwinSimulation = executeTwinSimulation;
   window.toggleDortFullscreen = function() {
     const pane = document.getElementById('view-manager-resilience');
+    const sidebar = document.querySelector('.app-sidebar');
     if (pane) {
       if (pane.classList.contains('view-fullscreen-mode')) {
         pane.classList.remove('view-fullscreen-mode');
-        if (document.fullscreenElement) document.exitFullscreen();
+        if (sidebar) sidebar.style.display = '';
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(err => console.log('Exit fullscreen error:', err));
+        }
       } else {
         pane.classList.add('view-fullscreen-mode');
         if (pane.requestFullscreen) {
