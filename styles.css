@@ -641,13 +641,13 @@ body.light-mode .btn-reset-db:hover {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  font-size: 0.76rem;
+  padding: 5px 10px;
+  font-size: 0.72rem;
   font-weight: 600;
   border-radius: var(--border-radius-sm);
-  background: rgba(6, 182, 212, 0.08);
-  border: 1px solid rgba(6, 182, 212, 0.25);
-  color: var(--color-cyan);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s ease;
@@ -655,19 +655,29 @@ body.light-mode .btn-reset-db:hover {
 }
 
 .pane-help-btn:hover {
-  background: rgba(6, 182, 212, 0.16);
+  background: rgba(6, 182, 212, 0.12);
   border-color: var(--color-cyan);
-  box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+  color: var(--color-cyan);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.15);
+}
+
+.pane-help-btn svg {
+  width: 14px;
+  height: 14px;
+  color: var(--color-cyan);
+  flex-shrink: 0;
 }
 
 body.light-mode .pane-help-btn {
-  background: rgba(2, 132, 199, 0.08);
-  border: 1px solid rgba(2, 132, 199, 0.25);
-  color: #0284c7;
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  color: var(--text-secondary);
 }
 
 body.light-mode .pane-help-btn:hover {
-  background: rgba(2, 132, 199, 0.16);
+  background: rgba(2, 132, 199, 0.1);
+  border-color: #0284c7;
+  color: #0284c7;
 }
 
 .dashboard-card {
