@@ -132,6 +132,46 @@ const PANE_HELP_GUIDES = {
         </div>
       </div>
     `
+  },
+
+  reports: {
+    title: '📊 Simulation Compliance Reports - Contextual Guide',
+    content: `
+      <div style="display: flex; flex-direction: column; gap: 14px; font-family: var(--font-body); line-height: 1.5; color: var(--text-primary);">
+        <div style="background: rgba(6, 182, 212, 0.06); border-left: 3px solid var(--color-cyan); padding: 10px 14px; border-radius: 4px;">
+          <strong style="color: var(--color-cyan); display: block; margin-bottom: 2px;">Core Objective:</strong>
+          Audit trail of all TIBER-EU Threat-Led Penetration Tests (TLPT), Breach and Attack Simulations (BAS), and DORA Article 11 drills.
+        </div>
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 6px; font-size: 0.88rem;">💡 Key Features & Options</h4>
+          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-secondary);">
+            <li><strong>Simulation Log:</strong> Filter completed tests by status, execution date, and impact radius.</li>
+            <li><strong>Report Viewer:</strong> Generate one-click DORA Incident Notifications and export print-ready PDFs.</li>
+            <li><strong>Compliance Proof:</strong> Export verified audit evidence for financial regulators and auditors.</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+
+  obligations: {
+    title: '📋 Supplier Control Obligations - Contextual Guide',
+    content: `
+      <div style="display: flex; flex-direction: column; gap: 14px; font-family: var(--font-body); line-height: 1.5; color: var(--text-primary);">
+        <div style="background: rgba(6, 182, 212, 0.06); border-left: 3px solid var(--color-cyan); padding: 10px 14px; border-radius: 4px;">
+          <strong style="color: var(--color-cyan); display: block; margin-bottom: 2px;">Core Objective:</strong>
+          Browse the 15 Reference Control Modules derived from global compliance standards and supplier regulatory duties.
+        </div>
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 6px; font-size: 0.88rem;">💡 Key Features & Options</h4>
+          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-secondary);">
+            <li><strong>Control Accordion:</strong> Expand domain sections (Cyber, Data Management, Physical Security, EUDA, PCIDSS).</li>
+            <li><strong>Contractual Mapping:</strong> Inspect mandatory evidence expectations for Tier 1 and Tier 2 suppliers.</li>
+            <li><strong>Gap Auditing:</strong> Identify missing vendor attestations and trigger automated remediation requests.</li>
+          </ul>
+        </div>
+      </div>
+    `
   }
 };
 
