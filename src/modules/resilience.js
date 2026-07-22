@@ -1198,20 +1198,18 @@ function executeTwinSimulation() {
       </div>
     `).join('');
 
-    import('../components/ui.js').then(({ showModal }) => {
-      showModal('Resilience Exposure Score Explainability Breakdown', `
-        <div style="display:flex; flex-direction:column; gap:12px; font-size:0.75rem;">
-          <div style="background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.2); padding:10px; border-radius:6px;">
-            <div style="font-size:0.62rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700;">Mathematical Weighting Formula:</div>
-            <code style="display:block; margin-top:4px; font-size:0.65rem; color:var(--color-cyan); font-family:monospace;">${exp.formula}</code>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <span style="font-weight:700; color:var(--text-secondary); text-transform:uppercase; font-size:0.62rem;">Score Breakdown Factors:</span>
-            ${breakdownHtml}
-          </div>
+    showModal('Resilience Exposure Score Explainability Breakdown', `
+      <div style="display:flex; flex-direction:column; gap:12px; font-size:0.75rem;">
+        <div style="background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.2); padding:10px; border-radius:6px;">
+          <div style="font-size:0.62rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700;">Mathematical Weighting Formula:</div>
+          <code style="display:block; margin-top:4px; font-size:0.65rem; color:var(--color-cyan); font-family:monospace;">${exp.formula}</code>
         </div>
-      `);
-    });
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <span style="font-weight:700; color:var(--text-secondary); text-transform:uppercase; font-size:0.62rem;">Score Breakdown Factors:</span>
+          ${breakdownHtml}
+        </div>
+      </div>
+    `);
   };
 
   // Bind incident creation from DORT
