@@ -607,17 +607,19 @@ export function renderResilienceGraph(containerId, options = {}) {
             `;
           })() : ''}
 
-          <!-- Neighborhood Relationships Lists -->
+          <!-- Neighborhood Relationships Lists (Horizontal Grid Distribution) -->
           <div style="display: flex; flex-direction: column; gap: 8px;">
             <div style="font-weight: 700; color: var(--text-secondary); text-transform: uppercase; font-size: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 2px;">Adjacent Relationships</div>
             
-            ${renderRelationSection('Upstream Dependencies', rels.upstream, 'var(--color-cyan)')}
-            ${renderRelationSection('Downstream Dependencies', rels.downstream, 'var(--color-purple)')}
-            ${renderRelationSection('Related Compliance Risks', rels.relatedRisks, '#ef4444')}
-            ${renderRelationSection('Governing Security Controls', rels.relatedControls, '#14b8a6')}
-            ${renderRelationSection('Linked Incident History', rels.relatedIncidents, '#d946ef')}
-            ${renderRelationSection('Associated Recovery Plans', rels.relatedRecoveryPlans, '#06b6d4')}
-            ${renderRelationSection('Third-Party Suppliers Mapped', rels.relatedSuppliers, '#f97316')}
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${renderRelationSection('Upstream Dependencies', rels.upstream, 'var(--color-cyan)')}
+              ${renderRelationSection('Downstream Dependencies', rels.downstream, 'var(--color-purple)')}
+              ${renderRelationSection('Related Compliance Risks', rels.relatedRisks, '#ef4444')}
+              ${renderRelationSection('Governing Security Controls', rels.relatedControls, '#14b8a6')}
+              ${renderRelationSection('Linked Incident History', rels.relatedIncidents, '#d946ef')}
+              ${renderRelationSection('Associated Recovery Plans', rels.relatedRecoveryPlans, '#06b6d4')}
+              ${renderRelationSection('Third-Party Suppliers Mapped', rels.relatedSuppliers, '#f97316')}
+            </div>
           </div>
         </div>
       `;
@@ -628,12 +630,12 @@ export function renderResilienceGraph(containerId, options = {}) {
     if (!list || list.length === 0) return '';
     return `
       <div style="margin-bottom: 4px;">
-        <span style="font-weight: 600; color: ${color}; font-size: 0.58rem; text-transform: uppercase; display: block; margin-bottom: 2px;">${title} (${list.length})</span>
-        <div style="display: flex; flex-direction: column; gap: 2px; padding-left: 6px;">
+        <span style="font-weight: 600; color: ${color}; font-size: 0.58rem; text-transform: uppercase; display: block; margin-bottom: 4px;">${title} (${list.length})</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 4px; padding-left: 2px;">
           ${list.map(node => `
-            <a href="#" class="graph-link-rel" data-id="${node.id}" style="color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 4px; padding: 2px 4px; border-radius: 3px; background: rgba(255,255,255,0.01);">
+            <a href="#" class="graph-link-rel" data-id="${node.id}" style="color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); font-size: 0.62rem; white-space: nowrap;">
               <span>${getNodeIcon(node.type)}</span>
-              <span style="font-weight: 500;">${node.name}</span>
+              <span style="font-weight: 600;">${node.name}</span>
             </a>
           `).join('')}
         </div>
