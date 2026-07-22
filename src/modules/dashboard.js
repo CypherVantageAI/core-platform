@@ -427,7 +427,7 @@ function renderDashboardContent() {
               </svg>
 
               <!-- Visual Connection SVG -->
-              <svg class="map-connections" viewBox="0 0 800 400" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+              <svg class="map-connections" viewBox="0 0 800 400" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;">
                 <path d="M 220 180 Q 380 150 510 180" class="connection-line" id="line-na-eu" />
                 <path d="M 510 180 Q 580 240 650 250" class="connection-line" id="line-eu-apac" />
                 <path d="M 220 180 Q 430 270 650 250" class="connection-line dashed" id="line-na-apac" />

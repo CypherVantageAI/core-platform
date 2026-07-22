@@ -136,7 +136,7 @@
     }
 
     .node-content {
-      background-color: rgba(22, 26, 43, 0.65);
+      background-color: var(--dep-node-bg, rgba(22, 26, 43, 0.95));
       border: 1px solid var(--border-color);
       border-radius: var(--border-radius-sm);
       padding: 10px 14px;
@@ -908,7 +908,7 @@
 
         <!-- Executive KPI Metrics Ribbon -->
         <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; width: 100%;">
-          <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('Overall Resilience Index Details', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Metric Definition:</b> Overall Resilience Index is a weighted health score aggregating all 35 Important Business Services (IBS) and Critical Internal Services (CIS).</div><div><b>Calculation Method:</b> Base 100% minus deductions for active incidents, unverified recovery points, and open vendor control gaps.</div><div><b>Current Score Breakdown:</b><ul style=\'margin-top:4px; padding-left:18px;\'><li>IBS Core Payments: 100%</li><li>IBS Securities Trading: 96%</li><li>CIS Cloud IAM: 92%</li></ul></div><div style=\'color:var(--color-cyan); font-weight:600;\'>Status: 94.8% (Nominal)</div></div>')" style="cursor: pointer; flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">Overall Resilience Index</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span style="font-size: 1.05rem; font-weight: 700; color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.2);">94.8%</span>
@@ -920,7 +920,7 @@
               Weighted health index of all mapped critical services. Disrupted or unverified recovery targets reduce this score.
             </span>
           </div>
-          <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('Mapped Critical Services Details', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Scope Definition:</b> Critical services governed under DORA Article 5 & Article 6.</div><div><b>Breakdown of 35 Services:</b><ul style=\'margin-top:4px; padding-left:18px;\'><li><b>14 IBS:</b> Important Business Services (e.g. Retail BACS Payments, SEPA Clearing, Clearing & Settlement).</li><li><b>14 CIS:</b> Critical Internal Services (e.g. Active Directory, Core Banking Ledger, Cloud KMS).</li><li><b>7 Support Functions:</b> Nth-party vendor dependencies.</li></ul></div><div style=\'color:var(--color-cyan); font-weight:600;\'>Total Active Scope: 35 Services</div></div>')" style="cursor: pointer; flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">Mapped Critical Services</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span id="kpi-services-count" style="font-size: 1.05rem; font-weight: 700; color: var(--color-cyan); text-shadow: 0 0 10px rgba(6, 182, 212, 0.2);">35 Services</span>
@@ -932,7 +932,7 @@
               Total number of mapped Important Business Services (IBS) and Critical Internal Services (CIS) under active DORA scope.
             </span>
           </div>
-          <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('Mitigated Downtime Loss Details', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Financial Protection Metric:</b> Accumulated financial losses avoided by automated failovers during live drills.</div><div><b>Drill Impact Details:</b><ul style=\'margin-top:4px; padding-left:18px;\'><li>BACS Gateway Failover Drill: £215,000 saved</li><li>AWS East-1 Cloud Region Simulation: £158,000 saved</li><li>Salesforce CRM Failover: £100,000 saved</li></ul></div><div style=\'color:#10b981; font-weight:600;\'>Total Avoided Downtime Loss: £473,000</div></div>')" style="cursor: pointer; flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">Mitigated Downtime Loss</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span id="kpi-loss-prevented" style="font-size: 1.05rem; font-weight: 700; color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.2);">£473,000</span>
@@ -944,7 +944,7 @@
               Accumulated financial losses successfully avoided by completing automated failovers during simulation drills.
             </span>
           </div>
-          <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(239, 68, 68, 0.15); background: linear-gradient(135deg, rgba(239, 68, 68, 0.03), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('Potential Loss Exposure Details', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Financial Risk Exposure:</b> Unmitigated financial risk modeled from open regulatory gaps.</div><div><b>Risk Contributors:</b><ul style=\'margin-top:4px; padding-left:18px;\'><li>Unverified AWS Region Disaster Recovery (Art. 11): £250,000</li><li>Infosys Subcontractor Security Gap (Art. 28): £150,000</li></ul></div><div style=\'color:#ef4444; font-weight:600;\'>Total Active Exposure: £400,000</div></div>')" style="cursor: pointer; flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(239, 68, 68, 0.15); background: linear-gradient(135deg, rgba(239, 68, 68, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">Potential Loss Exposure</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span id="kpi-loss-exposure" style="font-size: 1.05rem; font-weight: 700; color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.2);">£400,000</span>
@@ -956,7 +956,7 @@
               Unmitigated financial risk modeled from open regulatory gaps (e.g. unverified disaster recovery plans).
             </span>
           </div>
-          <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('Active Regulatory Gaps Details', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Open Control Gaps:</b> Requirements lacking validated evidence.</div><div><b>Gaps List:</b><ul style=\'margin-top:4px; padding-left:18px;\'><li><b>Control 4.2:</b> AWS DR Annual Test Summary Overdue.</li><li><b>Control 5.3:</b> Infosys Subcontractor SOC2 Audit Missing.</li></ul></div><div style=\'color:#f59e0b; font-weight:600;\'>Status: 2 Gaps Awaiting Remediation</div></div>')" style="cursor: pointer; flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">Active Regulatory Gaps</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span style="font-size: 1.05rem; font-weight: 700; color: #f59e0b; text-shadow: 0 0 10px rgba(245, 158, 11, 0.2);">2 Gaps</span>
@@ -968,7 +968,7 @@
               Number of regulatory requirements missing active evidence, supporting documentation, or validated drill audits.
             </span>
           </div>
-          <div class="dashboard-card" style="flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
+          <div class="dashboard-card" onclick="showModal('TLPT & BAS Verification Details', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><b>Advanced Testing Standard:</b> Compliance with DORA Article 26 & TIBER-EU framework.</div><div><b>Verified Testing Scenarios:</b><ul style=\'margin-top:4px; padding-left:18px;\'><li>Threat-Led Penetration Testing (TLPT): 100% Verified</li><li>Breach & Attack Simulation (BAS): 100% Verified</li><li>Red Team Adversary Simulation: 100% Verified</li></ul></div><div style=\'color:#10b981; font-weight:600;\'>Status: Fully Verified</div></div>')" style="cursor: pointer; flex: 1; min-width: 140px; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; border: 1px solid rgba(6, 182, 212, 0.15); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">
             <span style="font-size: 0.58rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; white-space: nowrap;">TLPT &amp; BAS Verified</span>
             <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 2px;">
               <span style="font-size: 1.05rem; font-weight: 700; color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.2);">100%</span>
@@ -1141,7 +1141,7 @@
                   </svg>
 
                   <!-- Visual Connection SVG -->
-                  <svg class="map-connections" viewBox="0 0 800 400" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
+                  <svg class="map-connections" viewBox="0 0 800 400" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;">
                     <!-- Line US-East to Europe -->
                     <path d="M 220 180 Q 380 150 510 180" class="connection-line" id="line-na-eu" />
                     <!-- Line Europe to APAC -->

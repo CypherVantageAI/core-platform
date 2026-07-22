@@ -515,15 +515,15 @@ export function showModal(title, contentHtml) {
     modal.style.backdropFilter = 'blur(4px)';
     
     modal.innerHTML = `
-      <div class="modal-box" style="max-width: 500px; width: 90%; background: #0c101b; border: 1px solid rgba(139, 92, 246, 0.3); box-shadow: 0 0 25px rgba(139, 92, 246, 0.2); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden;">
-        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="modal-box" style="max-width: 520px; width: 90%; background: var(--bg-card, #0c101b); border: 1px solid var(--border-color, rgba(139, 92, 246, 0.3)); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="modal-header" style="border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.06)); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
           <h3 id="cv-dynamic-modal-title" style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">Modal Title</h3>
           <button id="cv-dynamic-modal-close" style="background: none; border: none; color: var(--text-secondary); font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
         </div>
-        <div id="cv-dynamic-modal-body" style="padding: 16px; font-size: 0.76rem; color: var(--text-secondary); max-height: 400px; overflow-y: auto; line-height: 1.4;">
+        <div id="cv-dynamic-modal-body" style="padding: 16px; font-size: 0.76rem; color: var(--text-primary); max-height: 400px; overflow-y: auto; line-height: 1.4;">
           <!-- Content -->
         </div>
-        <div class="modal-footer" style="padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: flex-end; background: rgba(0,0,0,0.15);">
+        <div class="modal-footer" style="padding: 10px 16px; border-top: 1px solid var(--border-color, rgba(255,255,255,0.06)); display: flex; justify-content: flex-end; background: rgba(0,0,0,0.05);">
           <button id="cv-dynamic-modal-btn-close" class="btn btn-secondary btn-xs" style="padding: 4px 10px;">Close</button>
         </div>
       </div>
