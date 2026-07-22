@@ -2838,6 +2838,16 @@ body.light-mode .dashboard-card h4 {
   color: var(--text-primary) !important;
 }
 
+.dort-executive-banner {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.98));
+}
+
+body.light-mode .dort-executive-banner {
+  background: linear-gradient(135deg, #ffffff, #f8fafc) !important;
+  border-color: rgba(8, 145, 178, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+}
+
 body.light-mode input,
 body.light-mode select,
 body.light-mode textarea,

@@ -672,8 +672,8 @@ function renderTwinTab(container) {
     <div style="display: flex; flex-direction: column; gap: 18px; width: 100%;">
       
       <!-- 1. Executive Board Cockpit: 30-Second Glance Header Banner -->
-      <div class="dashboard-card" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.98)); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 8px; padding: 16px; width: 100%; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 12px;">
+      <div class="dashboard-card dort-executive-banner" style="border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 8px; padding: 16px; width: 100%; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 12px;">
           <div>
             <h2 style="font-size: 0.95rem; font-weight: 800; color: var(--text-primary); margin: 0; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px;">
               <span>♊ Digital Operational Resilience Twin (DORT) — Executive Cockpit</span>
