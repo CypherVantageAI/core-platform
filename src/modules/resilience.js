@@ -1081,7 +1081,6 @@ function renderRecoverySubPane(container, state) {
 // --------------------------------------------------------------------------
 // TWIN SIMULATOR PROPAGATION CALCULATION
 // --------------------------------------------------------------------------
-import { analyzeBlastRadius, getImpactPropagationChain, calculateResilienceExposureScore } from '../core/resilienceEngine.js';
 
 function executeTwinSimulation() {
   const state = getState();
