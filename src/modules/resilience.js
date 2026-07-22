@@ -41,38 +41,24 @@ export function renderResilienceModule() {
   const container = document.getElementById('view-manager-resilience');
   if (!container) return;
 
-  // Preserve top view-header and metric cards ribbon, render inside sub-tab container
-  let tabContentContainer = document.getElementById('resilience-tab-content');
-  if (!tabContentContainer) {
-    const subTabHtml = `
-      <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; margin-top: 15px;">
-        <!-- Sub-tab Selector -->
-        <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; overflow-x: auto; width: 100%;">
-          <button id="btn-res-tab-services" class="btn btn-secondary btn-xs ${activeResilienceTab === 'services' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🏢 Business Services</button>
-          <button id="btn-res-tab-dependencies" class="btn btn-secondary btn-xs ${activeResilienceTab === 'dependencies' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Dependency Mapping</button>
-          <button id="btn-res-tab-twin" class="btn btn-secondary btn-xs ${activeResilienceTab === 'twin' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">♊ Digital Resilience Twin</button>
-          <button id="btn-res-tab-simulation" class="btn btn-secondary btn-xs ${activeResilienceTab === 'simulation' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🧬 Scenario Simulation</button>
-          <button id="btn-res-tab-incidents" class="btn btn-secondary btn-xs ${activeResilienceTab === 'incidents' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🚨 Incident Management</button>
-          <button id="btn-res-tab-readiness" class="btn btn-secondary btn-xs ${activeResilienceTab === 'readiness' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">⏱️ Recovery Readiness</button>
-          <button id="btn-res-tab-monitoring" class="btn btn-secondary btn-xs ${activeResilienceTab === 'monitoring' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">📊 Control Monitoring</button>
-        </div>
-
-        <!-- Tab Content Pane -->
-        <div id="resilience-tab-content" style="width: 100%;"></div>
+  // Render sub-tabs bar and content pane cleanly
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+      <!-- Sub-tab Selector -->
+      <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; overflow-x: auto; width: 100%;">
+        <button id="btn-res-tab-services" class="btn btn-secondary btn-xs ${activeResilienceTab === 'services' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🏢 Business Services</button>
+        <button id="btn-res-tab-dependencies" class="btn btn-secondary btn-xs ${activeResilienceTab === 'dependencies' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Dependency Mapping</button>
+        <button id="btn-res-tab-twin" class="btn btn-secondary btn-xs ${activeResilienceTab === 'twin' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">♊ Digital Resilience Twin</button>
+        <button id="btn-res-tab-simulation" class="btn btn-secondary btn-xs ${activeResilienceTab === 'simulation' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🧬 Scenario Simulation</button>
+        <button id="btn-res-tab-incidents" class="btn btn-secondary btn-xs ${activeResilienceTab === 'incidents' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🚨 Incident Management</button>
+        <button id="btn-res-tab-readiness" class="btn btn-secondary btn-xs ${activeResilienceTab === 'readiness' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">⏱️ Recovery Readiness</button>
+        <button id="btn-res-tab-monitoring" class="btn btn-secondary btn-xs ${activeResilienceTab === 'monitoring' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">📊 Control Monitoring</button>
       </div>
-    `;
-    container.insertAdjacentHTML('beforeend', subTabHtml);
-  } else {
-    // Update sub-tab button active classes
-    const tabs = ['services', 'dependencies', 'twin', 'simulation', 'incidents', 'readiness', 'monitoring'];
-    tabs.forEach(t => {
-      const btn = document.getElementById(`btn-res-tab-${t}`);
-      if (btn) {
-        if (t === activeResilienceTab) btn.classList.add('active');
-        else btn.classList.remove('active');
-      }
-    });
-  }
+
+      <!-- Tab Content Pane -->
+      <div id="resilience-tab-content" style="width: 100%;"></div>
+    </div>
+  `;
 
   // Bind tab switcher clicks
   const tabs = ['services', 'dependencies', 'twin', 'simulation', 'incidents', 'readiness', 'monitoring'];
