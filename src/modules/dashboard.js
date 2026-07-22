@@ -269,7 +269,34 @@ function renderDashboardContent() {
     const kpiResilience = document.getElementById('cockpit-kpi-resilience');
     if (kpiResilience) {
       kpiResilience.addEventListener('click', () => {
-        showModal('Resilience Score Formula & Explanation', `<div style="font-size:0.75rem; line-height:1.5;"><b>Resilience Score: ${resilienceScore}%</b><br/>Weighted Index = (Average Supplier Compliance * 0.8) + (Internal Controls Index * 0.2)<br/><br/>Evaluates high-tier supplier compliance ratings (averaging ${supplierRiskScore}%) and deductions for open risk register entries (-${openRisks * 5}%) and findings (-${openFindings * 3}%).</div>`);
+        import('../core/resilienceEngine.js').then(({ calculateResilienceExposureScore }) => {
+          const exp = calculateResilienceExposureScore('global').explainability;
+          const breakdownHtml = exp.breakdown.map(b => `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid rgba(255,255,255,0.05); padding:6px 0;">
+              <div>
+                <strong style="color:var(--text-primary); font-size:0.75rem;">${b.factor}</strong>
+                <div style="font-size:0.65rem; color:var(--text-muted);">${b.details}</div>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-weight:700; color:var(--color-cyan); font-size:0.75rem;">${b.score}</span>
+                <div style="font-size:0.6rem; color:#10b981; font-weight:700;">${b.contribution}</div>
+              </div>
+            </div>
+          `).join('');
+
+          showModal('Resilience Exposure Score Explainability Breakdown', `
+            <div style="display:flex; flex-direction:column; gap:12px; font-size:0.75rem;">
+              <div style="background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.2); padding:10px; border-radius:6px;">
+                <div style="font-size:0.62rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700;">Mathematical Weighting Formula:</div>
+                <code style="display:block; margin-top:4px; font-size:0.65rem; color:var(--color-cyan); font-family:monospace;">${exp.formula}</code>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <span style="font-weight:700; color:var(--text-secondary); text-transform:uppercase; font-size:0.62rem;">Score Breakdown Factors:</span>
+                ${breakdownHtml}
+              </div>
+            </div>
+          `);
+        });
       });
     }
 

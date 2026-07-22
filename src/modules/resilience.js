@@ -998,84 +998,44 @@ function renderRecoverySubPane(container, state) {
 // --------------------------------------------------------------------------
 // TWIN SIMULATOR PROPAGATION CALCULATION
 // --------------------------------------------------------------------------
+import { analyzeBlastRadius, getImpactPropagationChain, calculateResilienceExposureScore } from '../core/resilienceEngine.js';
+
 function executeTwinSimulation() {
   const state = getState();
   const summaryBox = document.getElementById('twin-impact-summary');
   const mapBox = document.getElementById('twin-propagation-map');
   if (!summaryBox || !mapBox) return;
 
-  // Resolve impacted elements
-  let failPointLabel = '';
-  let affectedServices = [];
-  let affectedApps = [];
-  let hourlyLoss = 0;
-  let targetSla = '4 Hours';
-  let mtdLimit = '4 Hours';
-  let associatedPlan = 'General BCP Failover Protocol';
-  let confidence = 85;
+  // Use Operational Resilience Intelligence Engine for multi-dimensional calculation
+  const blast = analyzeBlastRadius(selectedTwinPoint);
+  const chain = getImpactPropagationChain(selectedTwinPoint);
+  const exposure = calculateResilienceExposureScore(selectedTwinPoint);
 
-  const type = selectedTwinPoint.split('-')[0];
-  const id = selectedTwinPoint.replace(`${type}-`, '');
-
-  if (type === 'sup') {
-    const sup = state.suppliers[id];
-    failPointLabel = `Supplier: ${sup.name}`;
-    const supAssets = state.assets.filter(a => a.supplierId === id);
-    supAssets.forEach(ast => {
-      hourlyLoss += ast.downtimeCostPerHour || 25000;
-      const matchedApps = state.applications.filter(app => ast.name.includes(app.name.split(' ')[0]));
-      affectedApps.push(...matchedApps);
-    });
-  } else {
-    const ast = state.assets.find(a => a.id === id);
-    failPointLabel = `Asset: ${ast.name}`;
-    hourlyLoss = ast.downtimeCostPerHour || 20000;
-    const matchedApps = state.applications.filter(app => ast.name.includes(app.name.split(' ')[0]));
-    affectedApps.push(...matchedApps);
-  }
-
-  affectedApps = [...new Set(affectedApps)];
-  affectedApps.forEach(app => {
-    const matchedSrv = state.services.filter(s => s.applications && s.applications.includes(app.id));
-    affectedServices.push(...matchedSrv);
-  });
-  affectedServices = [...new Set(affectedServices)];
-
-  affectedServices.forEach(s => {
-    targetSla = s.rto;
-    mtdLimit = s.mtd || s.rto;
-    // Get plan details
-    const plan = state.recoveryPlans.find(rp => rp.associatedServices && rp.associatedServices.includes(s.id));
-    if (plan) {
-      associatedPlan = plan.name;
-      confidence = plan.confidenceScore;
-    }
-  });
-
-  if (affectedServices.length === 0 && state.services.length > 0) {
-    affectedServices = [state.services[0]];
-    targetSla = state.services[0].rto;
-    mtdLimit = state.services[0].mtd || targetSla;
-  }
+  const failPointLabel = `${blast.target.type.toUpperCase()}: ${blast.target.name}`;
 
   // Populate Blast Radius details summary
   summaryBox.style.display = 'flex';
   summaryBox.innerHTML = `
     <div style="background:rgba(239,68,68,0.03); border:1px solid rgba(239,68,68,0.15); padding:10px; border-radius:6px; font-size:0.7rem; display:flex; flex-direction:column; gap:4px; margin-top:10px;">
-      <div style="font-weight:700; color:#ef4444; font-size:0.74rem;">💥 Simulated Blast Radius Summary</div>
-      <div><b>Root Outage:</b> ${failPointLabel}</div>
-      <div><b>Affected Applications:</b> ${affectedApps.length ? affectedApps.map(a => a.name).join(', ') : 'None'}</div>
-      <div><b>Affected Services:</b> ${affectedServices.map(s => s.name).join(', ')}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700; color:#ef4444; font-size:0.74rem;">💥 Intelligence Engine Blast Radius Summary</span>
+        <span class="badge" style="background:${exposure.badgeColor}; color:#fff; font-size:0.55rem; padding:1px 4px;">${exposure.statusTier}</span>
+      </div>
+      <div><b>Root Failure:</b> ${failPointLabel}</div>
+      <div><b>Direct Impact:</b> ${blast.directImpact.map(d => d.name).join(', ') || 'None'}</div>
+      <div><b>Indirect Impact:</b> ${blast.indirectImpact.map(i => i.name).join(', ') || 'None'}</div>
+      <div><b>Affected Services (${blast.servicesAffected.length}):</b> ${blast.servicesAffected.map(s => s.name).join(', ')}</div>
       <div style="border-top:1px dashed rgba(239,68,68,0.1); padding-top:4px; margin-top:2px; display:flex; flex-direction:column; gap:2px;">
-        <div>💰 <b>Financial Loss:</b> £${hourlyLoss.toLocaleString()}/hour</div>
-        <div>⏱️ <b>Service SLA RTO:</b> ${targetSla} | <b>Max Tolerable MTD:</b> ${mtdLimit}</div>
-        <div style="color:var(--color-cyan);">🛡️ <b>Recovery Plan:</b> ${associatedPlan} (${confidence}% confidence)</div>
+        <div>💰 <b>Financial Downtime Impact:</b> ${blast.revenueImpact.formattedCost}</div>
+        <div>👥 <b>Customer Exposure:</b> ~${blast.customersAffected.totalCount.toLocaleString()} active retail & clearing sessions</div>
+        <div style="color:#f43f5e;">⚖️ <b>DORA Regulatory Violations:</b> ${blast.regulatoryImpact.map(r => r.article).join(', ')}</div>
       </div>
     </div>
     
     <div style="display:flex; gap:6px; margin-top:4px;">
-      <button id="btn-dort-failover" class="btn btn-primary btn-sm" style="flex:1; font-size:0.65rem; background:#10b981; color:#000; border:none; font-weight:700;">⚡ Execute Recovery Plan</button>
-      <button id="btn-dort-ticket" class="btn btn-secondary btn-sm" style="flex:1; font-size:0.65rem;">🚨 Log incident Ticket</button>
+      <button id="btn-dort-failover" class="btn btn-primary btn-sm" style="flex:1; font-size:0.65rem; background:#10b981; color:#000; border:none; font-weight:700;">⚡ Execute Failover Protocol</button>
+      <button id="btn-dort-explain" class="btn btn-secondary btn-sm" style="flex:1; font-size:0.65rem;">🔍 Explain Exposure Score</button>
+      <button id="btn-dort-ticket" class="btn btn-secondary btn-sm" style="flex:1; font-size:0.65rem;">🚨 Log Incident Ticket</button>
     </div>
   `;
 
@@ -1084,25 +1044,57 @@ function executeTwinSimulation() {
     summaryBox.innerHTML = `
       <div style="background:rgba(16,185,129,0.03); border:1px solid rgba(16,185,129,0.15); padding:10px; border-radius:6px; font-size:0.7rem; display:flex; flex-direction:column; gap:4px; margin-top:10px;">
         <div style="font-weight:700; color:#10b981; font-size:0.74rem;">✅ Recovery Plan Executed Successfully</div>
-        <div><b>Executed Plan:</b> ${associatedPlan}</div>
+        <div><b>Target Node:</b> ${failPointLabel}</div>
         <div><b>Recovery Speed:</b> 2 Hours (Target RTO Met)</div>
-        <div><b>Loss Prevented:</b> £${(hourlyLoss * 2).toLocaleString()}</div>
+        <div><b>Loss Prevented:</b> ${blast.revenueImpact.formattedCost}</div>
       </div>
     `;
-    drawTwinOutageGraph(false, failPointLabel, affectedApps, affectedServices);
+    drawTwinOutageGraph(false, chain, blast);
+  };
+
+  // Bind explain score modal
+  document.getElementById('btn-dort-explain').onclick = () => {
+    const exp = exposure.explainability;
+    const breakdownHtml = exp.breakdown.map(b => `
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid rgba(255,255,255,0.05); padding:6px 0;">
+        <div>
+          <strong style="color:var(--text-primary); font-size:0.75rem;">${b.factor}</strong>
+          <div style="font-size:0.65rem; color:var(--text-muted);">${b.details}</div>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-weight:700; color:var(--color-cyan); font-size:0.75rem;">${b.score}</span>
+          <div style="font-size:0.6rem; color:#10b981; font-weight:700;">${b.contribution}</div>
+        </div>
+      </div>
+    `).join('');
+
+    import('../components/ui.js').then(({ showModal }) => {
+      showModal('Resilience Exposure Score Explainability Breakdown', `
+        <div style="display:flex; flex-direction:column; gap:12px; font-size:0.75rem;">
+          <div style="background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.2); padding:10px; border-radius:6px;">
+            <div style="font-size:0.62rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700;">Mathematical Weighting Formula:</div>
+            <code style="display:block; margin-top:4px; font-size:0.65rem; color:var(--color-cyan); font-family:monospace;">${exp.formula}</code>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span style="font-weight:700; color:var(--text-secondary); text-transform:uppercase; font-size:0.62rem;">Score Breakdown Factors:</span>
+            ${breakdownHtml}
+          </div>
+        </div>
+      `);
+    });
   };
 
   // Bind incident creation from DORT
   document.getElementById('btn-dort-ticket').onclick = () => {
-    const srvName = affectedServices.length ? affectedServices[0].name : 'IBS Payments';
+    const srvName = blast.servicesAffected.length ? blast.servicesAffected[0].name : 'IBS Payments';
     const newInc = {
       id: `inc-${String(state.incidents.length + 1).padStart(3, '0')}`,
-      title: `Simulated Failure on ${failPointLabel.split(':')[1].trim()}`,
+      title: `Simulated Failure on ${blast.target.name}`,
       severity: 'Major',
       status: 'Active',
       serviceAffected: srvName,
       downtime: 'Pending',
-      financialLoss: hourlyLoss,
+      financialLoss: blast.revenueImpact.costPerHour,
       classification: 'Vendor Outage',
       escalationStatus: 'Escalated to DORT Response Team',
       rootCause: `DORT simulations flagged critical path disruption via ${failPointLabel}.`,
@@ -1113,85 +1105,48 @@ function executeTwinSimulation() {
     alert(`Incident Ticket Logged successfully.\nTicket ID: CV-INC-${Math.floor(1000 + Math.random()*9000)}`);
   };
 
-  // Draw propagation path graph
-  drawTwinOutageGraph(true, failPointLabel, affectedApps, affectedServices);
+  // Draw 5-step visual propagation path graph
+  drawTwinOutageGraph(true, chain, blast);
 }
 
-function drawTwinOutageGraph(isBroken, failPointLabel, affectedApps, affectedServices) {
+function drawTwinOutageGraph(isBroken, chain, blast) {
   const mapBox = document.getElementById('twin-propagation-map');
   if (!mapBox) return;
 
   const isLight = document.body.classList.contains('light-mode');
   const stateColor = isBroken ? '#ef4444' : '#10b981';
-  const nodeStatusText = isBroken ? '💥 BROKEN' : '✅ ACTIVE';
-
-  const nodeBg = isLight ? '#ffffff' : 'rgba(10,12,25,0.9)';
-  const headerBg = isLight ? 'rgba(15,23,42,0.03)' : 'rgba(255,255,255,0.02)';
-  const titleColor = isLight ? '#0f172a' : '#f8fafc';
-  const textColor = isLight ? '#475569' : '#94a3b8';
-  const labelColor = isLight ? '#64748b' : '#64748b';
-  const connectionColor = isBroken ? '#ef4444' : (isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.06)');
-  const glowFilter = isBroken ? 'filter="url(#glow-red)"' : '';
-
-  const label = failPointLabel ? failPointLabel.split(':')[1].trim() : 'AWS-US-EAST';
-  const appName = affectedApps && affectedApps.length > 0 ? affectedApps[0].name : 'Payments API Gateways';
-  const serviceName = affectedServices && affectedServices.length > 0 ? affectedServices[0].name : 'IBS Payments Processing';
 
   mapBox.innerHTML = `
-    <svg viewBox="0 0 700 380" style="width:100%; height:100%;">
-      <defs>
-        <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-around; padding:10px; gap:8px;">
+      <div style="font-size:0.65rem; font-weight:700; color:var(--color-cyan); text-transform:uppercase; letter-spacing:0.05em; text-align:center;">
+        ⚡ Operational Failure Propagation Chain Across Architecture Graph
+      </div>
 
-      <!-- Connecting lines -->
-      <path d="M 120 190 C 200 190, 200 100, 280 100" fill="none" stroke="${connectionColor}" stroke-width="2.5" ${glowFilter} />
-      <path d="M 120 190 C 200 190, 200 280, 280 280" fill="none" stroke="${connectionColor}" stroke-width="2.5" ${glowFilter} />
-      <path d="M 400 100 C 480 100, 480 190, 520 190" fill="none" stroke="${connectionColor}" stroke-width="2.5" ${glowFilter} />
-      <path d="M 400 280 C 480 280, 480 190, 520 190" fill="none" stroke="${connectionColor}" stroke-width="2.5" ${glowFilter} />
+      <div style="display:flex; justify-content:space-between; align-items:center; position:relative; gap:6px;">
+        ${chain.steps.map((step, idx) => `
+          <div style="flex:1; background:${isLight ? '#ffffff' : 'rgba(15,23,42,0.8)'}; border:1px solid ${idx === 0 ? stateColor : (isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.08)')}; border-radius:6px; padding:8px; display:flex; flex-direction:column; gap:3px; position:relative; box-shadow:${idx === 0 ? '0 0 10px rgba(239,68,68,0.2)' : 'none'};">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.55rem; font-weight:800; color:${idx === 0 ? stateColor : 'var(--color-cyan)'}; text-transform:uppercase;">L${step.level} ${step.icon}</span>
+              ${idx === 0 ? `<span style="font-size:0.5rem; font-weight:800; color:#ef4444;">ROOT FAIL</span>` : ''}
+            </div>
+            <div style="font-size:0.65rem; font-weight:700; color:var(--text-primary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${step.title}">
+              ${step.title.split(' ')[0]} ${step.title.split(' ')[1] || ''}
+            </div>
+            <div style="font-size:0.58rem; color:var(--text-muted);">
+              ${step.nodes ? step.nodes.map(n => n.name).slice(0, 2).join(', ') : (step.impactSummary || (step.obligations ? step.obligations.map(o => o.article).join(', ') : 'Exposed'))}
+            </div>
+          </div>
+          ${idx < chain.steps.length - 1 ? `<div style="font-size:0.8rem; color:${stateColor}; font-weight:800;">➔</div>` : ''}
+        `).join('')}
+      </div>
 
-      <!-- Level 1: Fail Point -->
-      <g transform="translate(10, 160)">
-        <rect width="110" height="60" rx="6" fill="${nodeBg}" stroke="${stateColor}" stroke-width="2" />
-        <rect width="110" height="16" fill="${headerBg}" />
-        <text x="6" y="11" font-size="7" font-weight="700" fill="${labelColor}">FAIL-POINT</text>
-        <text x="6" y="30" font-size="7.5" font-weight="700" fill="${titleColor}">${label.substring(0, 18)}</text>
-        <text x="6" y="50" font-size="8.5" font-weight="700" fill="${stateColor}">${nodeStatusText}</text>
-      </g>
-
-      <!-- Level 2a: Application -->
-      <g transform="translate(280, 70)">
-        <rect width="120" height="60" rx="6" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.8" />
-        <rect width="120" height="16" fill="${headerBg}" />
-        <text x="6" y="11" font-size="7" font-weight="700" fill="${labelColor}">APP NODE</text>
-        <text x="6" y="30" font-size="7.5" font-weight="700" fill="${titleColor}">${appName.substring(0, 20)}</text>
-        <text x="6" y="48" font-size="7" fill="${textColor}">Status: ${isBroken ? 'Degraded' : 'Nominal'}</text>
-      </g>
-
-      <!-- Level 2b: Process Path -->
-      <g transform="translate(280, 250)">
-        <rect width="120" height="60" rx="6" fill="${nodeBg}" stroke="${stateColor}" stroke-width="1.8" />
-        <rect width="120" height="16" fill="${headerBg}" />
-        <text x="6" y="11" font-size="7" font-weight="700" fill="${labelColor}">PROCESS PATH</text>
-        <text x="6" y="30" font-size="7.5" font-weight="700" fill="${titleColor}">Settlement Clearing</text>
-        <text x="6" y="48" font-size="7" fill="${textColor}">Status: ${isBroken ? 'Stalled' : 'Nominal'}</text>
-      </g>
-
-      <!-- Level 3: Affected Service -->
-      <g transform="translate(520, 155)">
-        <rect width="160" height="70" rx="6" fill="${nodeBg}" stroke="${stateColor}" stroke-width="2.2" />
-        <rect width="160" height="18" fill="${headerBg}" />
-        <text x="6" y="12" font-size="7" font-weight="700" fill="${labelColor}">AFFECTED SERVICE</text>
-        <text x="6" y="32" font-size="8.5" font-weight="700" fill="${titleColor}">${serviceName.substring(0, 22)}</text>
-        <text x="6" y="50" font-size="7" fill="${textColor}">RTO SLA: 4 Hours</text>
-        <text x="6" y="62" font-size="7.5" font-weight="700" fill="${stateColor}">${isBroken ? '⚠️ RTO OUTAGE RISK' : '✅ SLA SECURED'}</text>
-      </g>
-    </svg>
+      <!-- Financial & Regulatory Impact Bar -->
+      <div style="display:flex; justify-content:space-between; background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.05); padding:8px 12px; border-radius:6px; font-size:0.65rem; margin-top:5px;">
+        <div><span style="color:var(--text-muted);">Downtime Cost Rate:</span> <strong style="color:#ef4444;">${blast.revenueImpact.formattedCost}</strong></div>
+        <div><span style="color:var(--text-muted);">Market Exposure:</span> <strong style="color:var(--color-cyan);">~${blast.customersAffected.totalCount.toLocaleString()} Users</strong></div>
+        <div><span style="color:var(--text-muted);">DORA Compliance Status:</span> <strong style="color:#f43f5e;">CRITICAL EXPOSURE</strong></div>
+      </div>
+    </div>
   `;
 }
 
