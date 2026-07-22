@@ -4,8 +4,8 @@
 
 import { getState, saveState } from '../core/db.js';
 
-let activeScenarioId = 'sim-ransomware';
-let activeReadoutTab = 'board';
+let activeScenarioId = 'sim-cloud-outage';
+let activeReadoutTab = 'executive';
 let isCustomDesigning = false;
 
 // Custom designer form state
@@ -265,10 +265,12 @@ export function renderSimulationTab(container) {
             <p class="panel-subtitle" style="margin: 0; margin-top: 2px;">Generate board slide text, regulatory notifications, and engineering summaries dynamically from simulated performance.</p>
           </div>
           
-          <div style="display: flex; gap: 6px;">
-            <button id="btn-readout-board" class="btn btn-secondary btn-xs ${activeReadoutTab === 'board' ? 'active' : ''}">Board Summary</button>
-            <button id="btn-readout-regulatory" class="btn btn-secondary btn-xs ${activeReadoutTab === 'regulatory' ? 'active' : ''}">Regulatory Briefing</button>
-            <button id="btn-readout-technical" class="btn btn-secondary btn-xs ${activeReadoutTab === 'technical' ? 'active' : ''}">Technical Brief</button>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button id="btn-readout-executive" class="btn btn-secondary btn-xs ${activeReadoutTab === 'executive' ? 'active' : ''}">👔 Executive View</button>
+            <button id="btn-readout-cro" class="btn btn-secondary btn-xs ${activeReadoutTab === 'cro' ? 'active' : ''}">⚖️ CRO View</button>
+            <button id="btn-readout-coo" class="btn btn-secondary btn-xs ${activeReadoutTab === 'coo' ? 'active' : ''}">⚙️ COO View</button>
+            <button id="btn-readout-ciso" class="btn btn-secondary btn-xs ${activeReadoutTab === 'ciso' ? 'active' : ''}">🛡️ CISO View</button>
+            <button id="btn-readout-regulator" class="btn btn-secondary btn-xs ${activeReadoutTab === 'regulator' ? 'active' : ''}">📜 Regulator View</button>
             <button id="btn-copy-readout" class="btn btn-primary btn-xs" style="margin-left: 8px;">📋 Copy Brief</button>
           </div>
         </div>
@@ -308,7 +310,7 @@ export function renderSimulationTab(container) {
   });
 
   // Bind executive brief tab switches
-  const readoutTabs = ['board', 'regulatory', 'technical'];
+  const readoutTabs = ['executive', 'cro', 'coo', 'ciso', 'regulator'];
   readoutTabs.forEach(tab => {
     const btn = document.getElementById(`btn-readout-${tab}`);
     if (btn) {
@@ -679,90 +681,151 @@ function generateExecutiveReadoutText(state, scenario, sim) {
   const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
   const currencySymbol = state.resilience.selectedCurrency === 'USD' ? '$' : (state.resilience.selectedCurrency === 'EUR' ? '€' : '£');
 
-  if (activeReadoutTab === 'regulatory') {
+  if (activeReadoutTab === 'cro') {
     return `================================================================================
-DORA STATUTORY COMPLIANCE NOTIFICATION
+CHIEF RISK OFFICER (CRO) BOARD BRIEFING
+Ref: CRO-${scenario.id.toUpperCase()}-${Math.floor(Date.now()/1000)}
+================================================================================
+Timestamp: ${timestamp} UTC | Risk Profile: ${scenario.severity.toUpperCase()}
+Scenario Triggered: ${scenario.name}
+
+1. MULTI-DIMENSIONAL RISK MATRIX ANALYSIS
+--------------------------------------------------------------------------------
+* Likelihood Rating:         ${scenario.likelihood} / 5 (Enterprise Threat Register)
+* Impact Severity Score:     ${scenario.impactRating} / 5 (Max Disruption Benchmark)
+* Financial Revenue Impact:  ${currencySymbol}${sim.totalRevenueLoss.toLocaleString()} (${currencySymbol}${sim.hourlyLossRate.toLocaleString()}/hr)
+* Risk Appetite Status:      ${sim.rtoCheck === 'SLA Breach' ? '🚨 OUTSIDE BOARD RISK APPETITE (RTO BREACH)' : '✅ WITHIN RISK TOLERANCE'}
+
+2. COMPLIANCE & GOVERNANCE BREACH EVALUATION
+--------------------------------------------------------------------------------
+* Regulatory Fines Risk:     ${sim.rtoCheck === 'SLA Breach' ? 'HIGH EXPOSURE (DORA Art. 50 fines up to 2% global turnover)' : 'LOW / MANAGED'}
+* DORA Article 11 Violation: ${sim.rtoCheck === 'SLA Breach' ? 'NON-COMPLIANT - Failover time exceeds RTO' : 'COMPLIANT - Failover within window'}
+* Recovery Confidence Index: ${sim.recoveryConfidence}% (${sim.recoveryConfidence >= 80 ? 'High' : (sim.recoveryConfidence >= 50 ? 'Moderate' : 'Unacceptable Risk')})
+
+3. CRO MANDATE & MITIGATION DIRECTIVES
+--------------------------------------------------------------------------------
+* Direct Risk Action:        ${sim.rtoCheck === 'SLA Breach' ? 'Mandate immediate capital expenditure for secondary hot-standby nodes.' : 'Maintain current control testing cadence.'}
+* Board Sign-off Required:  Formal acceptance of residual risk for ${sim.servicesList}.
+`;
+  }
+
+  if (activeReadoutTab === 'coo') {
+    return `================================================================================
+CHIEF OPERATING OFFICER (COO) OPERATIONAL READOUT
+Ref: COO-${scenario.id.toUpperCase()}-${Math.floor(Date.now()/1000)}
+================================================================================
+Timestamp: ${timestamp} UTC | Operations Scope: Global Infrastructure
+Scenario Triggered: ${scenario.name}
+
+1. OPERATIONAL & BUSINESS SERVICE IMPACT
+--------------------------------------------------------------------------------
+* Impacted Services (${sim.servicesAffectedCount}): ${sim.servicesList}
+* Customer / Client Outage:   ${sim.customersAffected.toLocaleString()} active account sessions locked
+* Target RTO Window:         ${sim.maxRtoText}
+* Estimated Recovery Time:   ${sim.recoveryHours} hours ${sim.recoveryMinutes} minutes (${sim.totalMinutes} mins total)
+* Operational Status:        ${sim.rtoCheck === 'SLA Breach' ? '🔴 CRITICAL SERVICE DEGRADATION' : '🟢 OPERATIONAL CONTINUITY MAINTAINED'}
+
+2. FAILOVER & RUNBOOK EXECUTION EFFICIENCY
+--------------------------------------------------------------------------------
+* Backup Strategy Active:    ${scenario.backupStrategy}
+* Detection & Isolation:     ${sim.totalMinutes - (scenario.backupStrategy === 'Active-Active' ? 5 : 120)} mins (Controls: SIEM=${controlOverrides.siem ? 'ON' : 'OFF'}, Anomaly=${controlOverrides.anomaly ? 'ON' : 'OFF'})
+* Container Failover:        ${controlOverrides.container ? 'AUTOMATED (Under 5s)' : 'MANUAL REROUTING REQUIRED (+45m delay)'}
+* Database Sync Status:      ${controlOverrides.replication ? 'SYNCHRONIZED (0 RPO data loss)' : 'DESYNCHRONIZED (RPO data loss risk)'}
+
+3. COO ACTIONABLE RUNBOOK DIRECTIVES
+--------------------------------------------------------------------------------
+* Immediate Operational Fix: ${!controlOverrides.replication ? 'Re-establish database journal replication link.' : 'Execute automated traffic rerouting playbook.'}
+* Resource Allocation:      Mobilize L3 Infrastructure Engineers to backup standby datacenters.
+`;
+  }
+
+  if (activeReadoutTab === 'ciso') {
+    return `================================================================================
+CHIEF INFORMATION SECURITY OFFICER (CISO) INCIDENT BRIEFING
+Ref: CISO-${scenario.id.toUpperCase()}-${Math.floor(Date.now()/1000)}
+================================================================================
+Timestamp: ${timestamp} UTC | Threat Category: ${scenario.threatCategory.toUpperCase()}
+Scenario Triggered: ${scenario.name}
+
+1. CYBER THREAT & VECTOR ANALYSIS
+--------------------------------------------------------------------------------
+* Primary Attack Vector:     ${scenario.description}
+* Vulnerability Severity:    ${scenario.severity} (CVSS 9.5+ Exploitation Vector)
+* Identity / Auth Boundary:  ${controlOverrides.mfa ? 'MFA ENFORCED (Lateral movement blocked)' : '⚠️ MFA BYPASSED (Lateral movement undetected)'}
+* Endpoint Intrusion Shield: ${controlOverrides.endpoint ? 'ENDPOINT ISOLATED (Malware payload contained)' : '⚠️ ENDPOINT SHIELD OFF (Spread uncontained)'}
+
+2. DETECTIVE & PREVENTIVE CONTROL PERFORMANCE
+--------------------------------------------------------------------------------
+* SIEM Anomaly Detection:    ${controlOverrides.siem ? 'PASSED (0 min alert delay)' : 'FAILED (+60 min detection latency)'}
+* Disk Anomaly Monitors:     ${controlOverrides.anomaly ? 'PASSED (Auto-isolation triggered)' : 'FAILED (+30 min containment delay)'}
+* Calculated Cyber Containment Duration: ${sim.totalMinutes} minutes
+* Technical Recovery Confidence:        ${sim.recoveryConfidence}%
+
+3. CISO REMEDIATION & DEFENSE ROADMAP
+--------------------------------------------------------------------------------
+* Immediate Security Action: ${!controlOverrides.mfa ? 'Enforce mandatory hardware token MFA across all administrative domains.' : 'Conduct TIBER-EU red-team sweep.'}
+* Threat Hunting Directive:  Scan memory dumps for credential harvesting and persistence mechanisms.
+`;
+  }
+
+  if (activeReadoutTab === 'regulator') {
+    return `================================================================================
+DORA STATUTORY COMPLIANCE & SUPERVISORY NOTIFICATION
 Ref: REG-DORA-${scenario.id.toUpperCase()}-${Math.floor(Date.now()/1000)}
 ================================================================================
 Timestamp: ${timestamp} UTC
-Recipient: European Banking Authority (EBA) / Financial Conduct Authority (FCA)
+Recipients: European Banking Authority (EBA) / Financial Conduct Authority (FCA) / PRA
+Entity: Cypher Vantage Core Platform (DORA Major ICT Service Provider)
 
-1. INCIDENT CLASSIFICATION
+1. MANDATORY INCIDENT CLASSIFICATION (DORA Art. 18)
 --------------------------------------------------------------------------------
-* Threat Category: ${scenario.threatCategory} Outage
-* Impact Level:    Significant / Critical (under DORA Art. 18 Guidelines)
-* Affected Entity: Cypher Vantage Core Platform Network
-* Violated Articles: DORA Chapter II (ICT Risk), DORA Art. 11 (Business Continuity)
+* Trigger Event:           ${scenario.name}
+* Incident Category:       ${scenario.threatCategory} Disruption
+* Statutory Impact Level:   Major ICT Incident (DORA Article 18 Criteria Met)
+* Impacted Business (IBS): ${sim.servicesList}
+* Affected Client Accounts: ${sim.customersAffected.toLocaleString()} accounts
 
-2. OPERATIONAL IMPACT DETAILS
+2. IMPACT TOLERANCE & SLA COMPLIANCE EVALUATION
 --------------------------------------------------------------------------------
-* Impacted Business Services (IBS): ${sim.servicesList}
-* Total active retail/institutional accounts locked: ${sim.customersAffected.toLocaleString()}
-* Estimated simulated recovery duration: ${sim.recoveryHours} hours ${sim.recoveryMinutes} minutes
-* Statutory Maximum Tolerable Disruption: ${sim.maxRtoText}
+* Maximum Tolerable Disruption (RTO Target): ${sim.maxRtoText}
+* Actual Simulated Recovery Duration:        ${sim.recoveryHours} hours ${sim.recoveryMinutes} minutes
+* DORA Article 11 (Continuity) Compliance:  ${sim.rtoCheck === 'SLA Breach' ? 'VIOLATED (Recovery exceeded RTO limit)' : 'COMPLIANT (Failover within window)'}
+* DORA Article 26 (TLPT Testing) Status:    ${sim.rtoCheck === 'SLA Breach' ? 'NON-COMPLIANT (Scenario test failed)' : 'VERIFIED'}
 
-3. REGULATORY BREACH SUMMARY & COMPLIANCE POSTURE
+3. REGULATORY ENFORCEMENT & SUPERVISORY SUMMARY
 --------------------------------------------------------------------------------
-* RTO Target status: ${sim.rtoCheck === 'SLA Breach' ? 'OUT OF TOLERANCE (BREACH)' : 'WITHIN IMPACT TOLERANCE'}
-* DORA Article 11 status: ${sim.rtoCheck === 'SLA Breach' ? 'VIOLATED - Recovery timeline exceeded RTO' : 'COMPLIANT - Automated failovers verified'}
-* Estimated supervisory fines risk: ${sim.rtoCheck === 'SLA Breach' ? 'HIGH RISK (Daily administrative penalty under DORA Art. 50)' : 'NEGLIGIBLE'}
+* Statutory Fines Exposure: ${sim.rtoCheck === 'SLA Breach' ? 'HIGH RISK (Daily penalty under DORA Art. 50)' : 'NEGLIGIBLE'}
+* Supervisory Action Plan: Submit 24-hour formal incident report update to FCA / EBA Joint Committee.
 `;
   }
 
-  if (activeReadoutTab === 'technical') {
-    return `================================================================================
-CYPHER VANTAGE ENGINEERING INCIDENT TIMELINE
-Ref: TECH-${scenario.id.toUpperCase()}-${Math.floor(Date.now()/1000)}
-================================================================================
-Incident: ${scenario.name}
-Backup Strategy Mapped: ${scenario.backupStrategy}
-
-1. ANOMALY DETECTION LATENCY
---------------------------------------------------------------------------------
-* Baseline detection: ${scenario.detectionDelay} mins
-* SIEM Alerts toggle: ${controlOverrides.siem ? 'ACTIVE (0 min delay)' : 'DEACTIVATED (+60 min delay)'}
-* Disk anomaly trigger: ${controlOverrides.anomaly ? 'ACTIVE (0 min delay)' : 'DEACTIVATED (+30 min delay)'}
-* Calculated Alert Delay: ${sim.totalMinutes - (scenario.backupStrategy === 'Active-Active' ? 5 : (scenario.backupStrategy === 'Warm Standby' ? 120 : 720))} minutes
-
-2. FAILOVER & RESTORE RUNBOOK STEPS
---------------------------------------------------------------------------------
-* Active-active container failover: ${controlOverrides.container ? 'COMPLETED (under 5s)' : 'FAILED - Manual routing needed (+45 mins)'}
-* DB Journal Sync verification:  ${controlOverrides.replication ? 'SYNCHRONIZED (0 data loss)' : 'DESYNCHRONIZED - Cold backups restored (+180 mins)'}
-* Identity Propagation MFA:      ${controlOverrides.mfa ? 'ENFORCED (lateral spread contained)' : 'BYPASSED - Lateral spread undetected (+60 mins)'}
-
-3. TECHNICAL POST-MORTEM RECOMMENDATIONS
---------------------------------------------------------------------------------
-* Remediation status: ${sim.rtoCheck === 'SLA Breach' ? 'REQUIRED - DR replication sync controls must be re-architected' : 'NOMINAL - System verified healthy'}
-* Priority action item: ${!controlOverrides.replication ? 'RE-ENABLE DB JOURNAL SYNCHRONIZATION IMMEDIATELY' : 'Enforce zero-trust credential leases.'}
-`;
-  }
-
-  // Default: Board Summary
+  // Default: Executive View (Board View)
   return `================================================================================
-CYPHER VANTAGE BOARD OF DIRECTORS BRIEFING
+CYPHER VANTAGE EXECUTIVE BOARD SIMULATOR BRIEFING
 Ref: EX-BOARD-${scenario.id.toUpperCase()}-${Math.floor(Date.now()/1000)}
 ================================================================================
-Subject: Operational Resilience Impact Simulation: ${scenario.name}
-Date Mapped: ${timestamp}
+Subject: Strategic Disruption Simulation: ${scenario.name}
+Timestamp: ${timestamp} UTC | Target Readiness: ${sim.recoveryConfidence}%
 
-1. EXECUTIVE RISK ASSESSMENT
+1. EXECUTIVE SUMMARY & FINANCIAL EXPOSURE
 --------------------------------------------------------------------------------
-* Simulated Outage: ${scenario.name}
-* Core Vulnerability: ${scenario.description}
-* Financial Exposure Rate: ${currencySymbol}${sim.hourlyLossRate.toLocaleString()}/hour
-* Total Simulated Downtime Cost: ${currencySymbol}${sim.totalRevenueLoss.toLocaleString()}
+* Simulated Outage:             ${scenario.name}
+* Root Threat Description:      ${scenario.description}
+* Financial Downtime Loss Rate: ${currencySymbol}${sim.hourlyLossRate.toLocaleString()}/hour
+* Total Simulated Revenue Loss: ${currencySymbol}${sim.totalRevenueLoss.toLocaleString()}
 
-2. IMPACT TOLERANCE OUTCOME
+2. CUSTOMER & IMPACT TOLERANCE OUTCOME
 --------------------------------------------------------------------------------
-* Customers Locked Out: ${sim.customersAffected.toLocaleString()} accounts
-* Target recovery window (RTO): ${sim.maxRtoText}
-* Simulated Recovery Duration: ${sim.recoveryHours} hours ${sim.recoveryMinutes} minutes
-* SLA Target Compliance: ${sim.rtoCheck === 'SLA Breach' ? '⚠️ CRITICAL SLA BREACH' : '✅ COMPLIANT'}
-* Recovery Confidence Rating: ${sim.recoveryConfidence}% (${sim.recoveryConfidence >= 80 ? 'High' : (sim.recoveryConfidence >= 50 ? 'Moderate' : 'Low')})
+* Impacted Business Services:   ${sim.servicesList} (${sim.servicesAffectedCount} Services)
+* Customer Accounts Offline:    ${sim.customersAffected.toLocaleString()} Accounts
+* Maximum Tolerable Window (RTO): ${sim.maxRtoText}
+* Simulated Recovery Duration:   ${sim.recoveryHours} hours ${sim.recoveryMinutes} minutes
+* RTO Impact Tolerance SLA:      ${sim.rtoCheck === 'SLA Breach' ? '⚠️ CRITICAL IMPACT TOLERANCE BREACH' : '✅ WITHIN IMPACT TOLERANCE'}
+* Recovery Confidence Score:     ${sim.recoveryConfidence}% (${sim.recoveryConfidence >= 80 ? 'High Confidence' : (sim.recoveryConfidence >= 50 ? 'Moderate Risk' : 'Severe Risk')})
 
-3. STRATEGIC RECOMMENDATIONS
+3. EXECUTIVE STRATEGIC DECISION MANDATE
 --------------------------------------------------------------------------------
-* Recommendation: ${sim.rtoCheck === 'SLA Breach' ? 'Invest in redundant database synchronization controls to decrease recover time' : 'Proceed with quarterly penetration test validation drills.'}
-* Board action required: Review and sign off disaster recovery funding for critical nodes.
+* Strategic Recommendation:     ${sim.rtoCheck === 'SLA Breach' ? 'Approve emergency capital budget for automated secondary site failover clusters.' : 'Maintain quarterly resilience testing validation cadence.'}
+* Executive Action Item:        Review and sign off operational resilience posture for upcoming audit cycle.
 `;
 }

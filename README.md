@@ -28,7 +28,23 @@ This repository hosts the **Cypher Vantage Core Platform Interface**, a highly i
 - **Compliance Alignment**: Directly traces platform controls to the **5 Core Pillars** of the EU Digital Operational Resilience Act (DORA).
 - **Incident & Hotspot Simulator**: Real-time alerts for geopolitical stress and natural disasters with live failover verification logs.
 
-### ⚔️ 2. TIBER-EU / Threat-Led Penetration Testing (TLPT)
+### ⚡ 2. Executive Disruption Simulator
+- **Interactive Disruption Scenarios**: Models 6 enterprise outage scenarios natively:
+  1. `Cloud Outage (AWS us-east-1 Region Loss)`
+  2. `Ransomware Data Integrity Hijack`
+  3. `Third Party Supplier & Subprocessor Failure`
+  4. `Identity Compromise & Privileged Access Hijack`
+  5. `Payment Platform & Settlement Engine Failure`
+  6. `Data Corruption & Journal Synchronization Desync`
+- **Dynamic 6-Metric Engine**: Calculates Services Impacted, Customers Affected, Revenue Loss (£/hr & total loss), Statutory Regulatory Exposure (DORA Articles 11, 18, 50 & GDPR), Recovery Time (MTTR vs RTO target), and Recovery Confidence Score (%).
+- **5 C-Suite Persona Readouts**: Generates board-ready outputs for:
+  - 👔 `1. Executive / Board View`
+  - ⚖️ `2. CRO View`
+  - ⚙️ `3. COO View`
+  - 🛡️ `4. CISO View`
+  - 📜 `5. Regulator View`
+
+### ⚔️ 3. TIBER-EU / Threat-Led Penetration Testing (TLPT)
 - **Phase Tracker**: Visualizes red-team progress through TIBER-EU phases (Prep & Scope ➡️ Threat Intel ➡️ Red Team Exec ➡️ Closure & Replay).
 - **Attack Permutation Simulator**: Launches red-teaming scenarios (Ransomware on Identity Gateways, Supply Chain Hijack, DDoS volumetric flooding, rogue administrator privilege escalation) with interactive terminal logs.
 - **Resiliency Defenses**: Visually demonstrates automated container isolation and backup directory failovers in response to active attacks.
