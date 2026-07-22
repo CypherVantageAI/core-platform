@@ -139,11 +139,11 @@ function renderDashboardContent() {
             <div class="dashboard-card" style="padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 8px;">
               <h4 style="font-size: 0.74rem; text-transform: uppercase; color: #f97316; margin: 0; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;">⚠️ Services Exceeding impact tolerance 🔍</h4>
               <div style="display: flex; flex-direction: column; gap: 6px;">
-                <div onclick="window.showModal('IBS Payments Processing - Impact Tolerance Breach Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:#ef4444;\'>Target RTO: 4h 00m | Simulated RTO: 6h 45m (+165m Breach)</strong></div><div>Ransomware & Cloud vendor outage simulation triggers cascading DB replication lag across secondary regions.</div><div style=\'background:rgba(239,68,68,0.1); padding:10px; border-radius:6px; border-left:3px solid #ef4444;\'><b>Remediation Required:</b> Upgrade AWS Multi-AZ database sync certificates under DORA Article 11.</div></div>')" style="display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.02); border:1px solid rgba(239, 68, 68, 0.15); padding:8px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Click for detailed SLA breach analysis modal">
+                <div class="dashboard-sla-breach-item" data-title="IBS Payments Processing - Impact Tolerance Breach Breakdown" data-target="4h 00m" data-sim="6h 45m (+165m Breach)" data-reason="Ransomware &amp; Cloud vendor outage simulation triggers cascading DB replication lag across secondary regions." data-action="Upgrade AWS Multi-AZ database sync certificates under DORA Article 11." style="display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.02); border:1px solid rgba(239, 68, 68, 0.15); padding:8px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Click for detailed SLA breach analysis modal">
                   <span style="font-weight:700; color:var(--text-primary);">IBS Payments Processing 🔍</span>
                   <span style="font-size:0.64rem; color:#ef4444; font-weight:700;">Simulated RTO: 6h 45m (Target: 4h)</span>
                 </div>
-                <div onclick="window.showModal('IBS Clearing Portal - Impact Tolerance Breach Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:#ef4444;\'>Target RTO: 6h 00m | Simulated RTO: 8h 15m (+135m Breach)</strong></div><div>Third-party developer TLS certificate configuration gaps in staging environments stall automated DR failover playbooks.</div><div style=\'background:rgba(239,68,68,0.1); padding:10px; border-radius:6px; border-left:3px solid #ef4444;\'><b>Remediation Required:</b> Execute Infosys staging TLS audit under DORA Article 14.</div></div>')" style="display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.02); border:1px solid rgba(239, 68, 68, 0.15); padding:8px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Click for detailed SLA breach analysis modal">
+                <div class="dashboard-sla-breach-item" data-title="IBS Clearing Portal - Impact Tolerance Breach Breakdown" data-target="6h 00m" data-sim="8h 15m (+135m Breach)" data-reason="Third-party developer TLS certificate configuration gaps in staging environments stall automated DR failover playbooks." data-action="Execute Infosys staging TLS audit under DORA Article 14." style="display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.02); border:1px solid rgba(239, 68, 68, 0.15); padding:8px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Click for detailed SLA breach analysis modal">
                   <span style="font-weight:700; color:var(--text-primary);">IBS Clearing Portal 🔍</span>
                   <span style="font-size:0.64rem; color:#ef4444; font-weight:700;">Simulated RTO: 8h 15m (Target: 6h)</span>
                 </div>
@@ -331,6 +331,27 @@ function renderDashboardContent() {
         showModal('Supplier Risk Score Breakdown', `<div style="font-size:0.75rem; line-height:1.5;"><b>Supplier Risk Score: ${supplierRiskScore}%</b><br/>Average compliance rating across all catalogued Nth-party suppliers (AWS: 80%, Salesforce: 100%, ServiceNow: 90%, Infosys: 60%, Workday: 80%).</div>`);
       });
     }
+
+    // Bind Services Exceeding Impact Tolerance modals
+    contentArea.querySelectorAll('.dashboard-sla-breach-item').forEach(item => {
+      item.onclick = () => {
+        const title = item.getAttribute('data-title');
+        const target = item.getAttribute('data-target');
+        const sim = item.getAttribute('data-sim');
+        const reason = item.getAttribute('data-reason');
+        const action = item.getAttribute('data-action');
+
+        showModal(title, `
+          <div style="display:flex; flex-direction:column; gap:10px; font-size:0.78rem; line-height:1.5;">
+            <div><strong style="color:#ef4444;">Target RTO: ${target} | Simulated RTO: ${sim}</strong></div>
+            <div>${reason}</div>
+            <div style="background:rgba(239,68,68,0.1); padding:10px; border-radius:6px; border-left:3px solid #ef4444;">
+              <b>Remediation Required:</b> ${action}
+            </div>
+          </div>
+        `);
+      };
+    });
   } else if (activeDashboardSubTab === 'graph') {
     contentArea.innerHTML = `
       <div id="resilience-global-graph-container" style="width: 100%;"></div>
