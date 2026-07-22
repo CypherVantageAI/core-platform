@@ -35,10 +35,24 @@ export function renderAiGovernanceModule() {
       </div>
 
       <!-- Sub-Tab Navigation -->
-      <div class="sub-tab-nav" style="display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 0; flex-wrap: wrap; margin-bottom: 15px;">
-        <button id="tab-ai-audit" class="horizontal-sub-tab-btn ${activeAiSubTab === 'audit' ? 'active' : ''}">Adversarial Audit &amp; DLP</button>
-        <button id="tab-ai-campaigns" class="horizontal-sub-tab-btn ${activeAiSubTab === 'campaigns' ? 'active' : ''}">TLPT Campaigns</button>
-        <button id="tab-ai-governance" class="horizontal-sub-tab-btn ${activeAiSubTab === 'governance' ? 'active' : ''}">AI Governance Registry</button>
+      <div class="sub-tab-nav" style="display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 0; flex-wrap: wrap; margin-bottom: 15px; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button id="tab-ai-audit" class="horizontal-sub-tab-btn ${activeAiSubTab === 'audit' ? 'active' : ''}">Adversarial Audit &amp; DLP</button>
+          <button id="tab-ai-campaigns" class="horizontal-sub-tab-btn ${activeAiSubTab === 'campaigns' ? 'active' : ''}">TLPT Campaigns</button>
+          <button id="tab-ai-governance" class="horizontal-sub-tab-btn ${activeAiSubTab === 'governance' ? 'active' : ''}">AI Governance Registry</button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-ai-risk')" title="Toggle Fullscreen View">
+            <span>⛶ Fullscreen</span>
+          </button>
+          <button class="pane-help-btn" onclick="showPaneHelp('ai-risk')" title="Module Guide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Dynamic Content Area -->
