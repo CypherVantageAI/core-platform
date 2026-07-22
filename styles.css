@@ -613,6 +613,15 @@ body.light-mode .btn-reset-db:hover {
 
 .view-header {
   margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.view-header-title-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .view-header h2 {
@@ -628,12 +637,37 @@ body.light-mode .btn-reset-db:hover {
   margin-top: 4px;
 }
 
-.view-header.flex-header {
-  display: flex;
-  justify-content: space-between;
+.pane-help-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border-radius: var(--border-radius-sm);
+  background: rgba(6, 182, 212, 0.08);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  color: var(--color-cyan);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.pane-help-btn:hover {
+  background: rgba(6, 182, 212, 0.16);
+  border-color: var(--color-cyan);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+}
+
+body.light-mode .pane-help-btn {
+  background: rgba(2, 132, 199, 0.08);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  color: #0284c7;
+}
+
+body.light-mode .pane-help-btn:hover {
+  background: rgba(2, 132, 199, 0.16);
 }
 
 .dashboard-card {

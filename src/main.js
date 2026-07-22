@@ -9,11 +9,13 @@ import { switchTab, setPersona } from './core/router.js';
 import '../app.js';
 
 import { showModal } from './components/ui.js';
+import { showPaneHelp } from './modules/panehelp.js';
 
 // Bind routing controls to window for inline HTML onclick triggers
 window.switchTab = switchTab;
 window.setPersona = setPersona;
 window.showModal = showModal;
+window.showPaneHelp = showPaneHelp;
 
 window.onload = function() {
   console.log("🚀 Cypher Vantage Core Platform Bootstrap Initiated");
