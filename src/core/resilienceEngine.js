@@ -389,8 +389,6 @@ export function calculateResilienceExposureScore(targetId = 'global') {
   };
 }
 
-}
-
 /**
  * ==========================================================================
  * 5. EXECUTIVE DIGITAL TWIN ANALYTICS & BOARD COCKPIT ENGINE
