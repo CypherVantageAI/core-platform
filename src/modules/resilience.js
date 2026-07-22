@@ -593,6 +593,7 @@ function drawDependencyGraph(srv) {
 // 3. DIGITAL OPERATIONAL RESILIENCE TWIN (DORT)
 // ==========================================================================
 let activeTwinSubTab = 'simulate';
+let selectedTwinPoint = 'sup-aws';
 let selectedAuditTarget = 'aws';
 let selectedAuditRegion = 'us-east-1';
 

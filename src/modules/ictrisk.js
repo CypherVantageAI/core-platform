@@ -151,7 +151,12 @@ function renderHeatmapAndTable() {
   // Render Table
   const columns = [
     { key: 'id', label: 'ID', width: '50px' },
-    { key: 'title', label: 'Risk Vector', width: '160px', render: (row) => `<b style="white-space: normal; word-break: break-word; display: block;">${row.title}</b>` },
+    { 
+      key: 'title', 
+      label: 'Risk Vector 🔍', 
+      width: '160px', 
+      render: (row) => `<b class="ictrisk-vector-cell" data-id="${row.id}" style="white-space: normal; word-break: break-word; display: block; cursor: pointer; color: var(--color-cyan);" title="Click to view detailed risk vector analysis modal">${row.title}</b>` 
+    },
     { key: 'category', label: 'Category', width: '90px' },
     { 
       key: 'score', 
@@ -178,5 +183,44 @@ function renderHeatmapAndTable() {
   createTable('risk-register-table-container', filteredRisks, columns, {
     searchPlaceholder: 'Search risk registry...',
     pageSize: 5
+  });
+
+  // Bind click event listeners for risk vector modals
+  document.querySelectorAll('.ictrisk-vector-cell').forEach(cell => {
+    cell.onclick = () => {
+      const riskId = cell.getAttribute('data-id');
+      const r = state.risks.find(item => item.id === riskId);
+      if (!r) return;
+      const score = r.likelihood * r.impact;
+      let severityText = 'Low';
+      let badgeColor = '#10b981';
+      if (score >= thresholdCritical) { severityText = 'Critical'; badgeColor = '#ef4444'; }
+      else if (score >= thresholdHigh) { severityText = 'High'; badgeColor = '#f97316'; }
+      else if (score >= thresholdMedium) { severityText = 'Medium'; badgeColor = '#eab308'; }
+
+      import('../components/ui.js').then(({ showModal }) => {
+        showModal(`ICT Risk Vector Details: ${r.id}`, `
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:0.78rem; line-height:1.5;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+              <h4 style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin:0;">${r.title}</h4>
+              <span class="badge" style="background:${badgeColor}; color:#fff; font-weight:800; padding:2px 8px; font-size:0.65rem;">${severityText} (Score ${score})</span>
+            </div>
+            <div><b>Category:</b> ${r.category} | <b>Risk Owner:</b> ${r.owner} | <b>Status:</b> ${r.status}</div>
+            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:6px; border-left:3px solid ${badgeColor};">
+              <b>Risk Vector Description:</b><br/>
+              ${r.description || 'Identified ICT infrastructure vulnerability requiring automated monitoring and mitigation controls.'}
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; background:rgba(0,0,0,0.2); padding:10px; border-radius:6px;">
+              <div><b>Likelihood Rating:</b> ${r.likelihood} / 5</div>
+              <div><b>Impact Severity:</b> ${r.impact} / 5</div>
+            </div>
+            <div style="background:rgba(6, 182, 212, 0.05); border:1px solid rgba(6, 182, 212, 0.2); padding:10px; border-radius:6px;">
+              <strong style="color:var(--color-cyan);">🛡️ Active Mitigation Strategy:</strong>
+              <div style="margin-top:4px;">${r.mitigation}</div>
+            </div>
+          </div>
+        `);
+      });
+    };
   });
 }

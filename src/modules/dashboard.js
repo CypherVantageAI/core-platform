@@ -137,14 +137,14 @@ function renderDashboardContent() {
 
             <!-- Services at Risk card -->
             <div class="dashboard-card" style="padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 8px;">
-              <h4 style="font-size: 0.74rem; text-transform: uppercase; color: #f97316; margin: 0; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;">⚠️ Services Exceeding impact tolerance</h4>
+              <h4 style="font-size: 0.74rem; text-transform: uppercase; color: #f97316; margin: 0; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;">⚠️ Services Exceeding impact tolerance 🔍</h4>
               <div style="display: flex; flex-direction: column; gap: 6px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.02); border:1px solid rgba(239, 68, 68, 0.1); padding:6px 10px; border-radius:4px; font-size:0.7rem;">
-                  <span style="font-weight:700; color:var(--text-primary);">IBS Payments Processing</span>
+                <div onclick="window.showModal('IBS Payments Processing - Impact Tolerance Breach Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:#ef4444;\'>Target RTO: 4h 00m | Simulated RTO: 6h 45m (+165m Breach)</strong></div><div>Ransomware & Cloud vendor outage simulation triggers cascading DB replication lag across secondary regions.</div><div style=\'background:rgba(239,68,68,0.1); padding:10px; border-radius:6px; border-left:3px solid #ef4444;\'><b>Remediation Required:</b> Upgrade AWS Multi-AZ database sync certificates under DORA Article 11.</div></div>')" style="display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.02); border:1px solid rgba(239, 68, 68, 0.15); padding:8px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Click for detailed SLA breach analysis modal">
+                  <span style="font-weight:700; color:var(--text-primary);">IBS Payments Processing 🔍</span>
                   <span style="font-size:0.64rem; color:#ef4444; font-weight:700;">Simulated RTO: 6h 45m (Target: 4h)</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.02); border:1px solid rgba(239, 68, 68, 0.1); padding:6px 10px; border-radius:4px; font-size:0.7rem;">
-                  <span style="font-weight:700; color:var(--text-primary);">IBS Clearing Portal</span>
+                <div onclick="window.showModal('IBS Clearing Portal - Impact Tolerance Breach Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:#ef4444;\'>Target RTO: 6h 00m | Simulated RTO: 8h 15m (+135m Breach)</strong></div><div>Third-party developer TLS certificate configuration gaps in staging environments stall automated DR failover playbooks.</div><div style=\'background:rgba(239,68,68,0.1); padding:10px; border-radius:6px; border-left:3px solid #ef4444;\'><b>Remediation Required:</b> Execute Infosys staging TLS audit under DORA Article 14.</div></div>')" style="display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.02); border:1px solid rgba(239, 68, 68, 0.15); padding:8px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Click for detailed SLA breach analysis modal">
+                  <span style="font-weight:700; color:var(--text-primary);">IBS Clearing Portal 🔍</span>
                   <span style="font-size:0.64rem; color:#ef4444; font-weight:700;">Simulated RTO: 8h 15m (Target: 6h)</span>
                 </div>
               </div>
