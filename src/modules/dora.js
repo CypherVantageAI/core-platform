@@ -77,6 +77,8 @@ export function renderDoraModule() {
           </div>
         </div>
       </div>
+    `;
+
     // Append after view-header
     const header = container.querySelector('.view-header');
     if (header) {
