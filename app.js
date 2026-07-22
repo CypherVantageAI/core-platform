@@ -5889,14 +5889,6 @@ window.showHelpGuide = function(targetSection) {
   // Launch modal
   window.showModal('Cypher Vantage Platform User Guide', guideHtml);
 
-  // Initialize active tab view
-  setTimeout(() => {
-    if (typeof window.switchGuideTab === 'function') {
-      window.switchGuideTab(activeTabId);
-    }
-  }, 50);
-};
-
   // Expand modal container width dynamically for guide sidebar layout
   const modalBox = document.querySelector('#cv-dynamic-modal .modal-box');
   if (modalBox) {
