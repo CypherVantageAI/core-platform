@@ -620,9 +620,9 @@ export function renderResilienceGraph(containerId, options = {}) {
 
                 <!-- Visual Propagation Chain Step List -->
                 <div style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 4px;">
-                  <span style="font-weight:700; color:var(--color-cyan); font-size:0.56rem; text-transform:uppercase; display:block; margin-bottom:4px;">Failure Propagation Path:</span>
-                  <div style="display:flex; flex-direction:column; gap:4px; font-size:0.6rem; color:var(--text-secondary);">
-                    ${chain.steps.map(s => `<div style="display:flex; align-items:center; gap:4px;"><span>${s.icon}</span><span style="font-weight:600; color:#fff;">L${s.level}: ${s.title}</span></div>`).join('')}
+                  <span style="font-weight:700; color:var(--color-cyan); font-size:0.58rem; text-transform:uppercase; display:block; margin-bottom:4px;">Failure Propagation Path:</span>
+                  <div style="display:flex; flex-direction:column; gap:4px; font-size:0.64rem;">
+                    ${chain.steps.map(s => `<div style="display:flex; align-items:center; gap:6px; background:rgba(0,0,0,0.15); padding:3px 6px; border-radius:4px;"><span style="font-size:0.75rem;">${s.icon}</span><span style="font-weight:700; color:var(--text-primary);">L${s.level}: ${s.title}</span></div>`).join('')}
                   </div>
                 </div>
               </div>
@@ -699,8 +699,8 @@ export function renderResilienceGraph(containerId, options = {}) {
         </div>
 
         <!-- SVG Container -->
-        <div id="svg-graph-viewport-container" style="flex: 1; position: relative; overflow: hidden; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px solid rgba(255,255,255,0.02); cursor: grab; width: 100%; height: 400px;">
-          <svg id="resilience-graph-svg" style="width: 100%; height: 100%; min-height: 400px; transform-origin: 0 0;">
+        <div id="svg-graph-viewport-container" style="flex: 1; position: relative; overflow: hidden; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px solid rgba(255,255,255,0.02); cursor: grab; width: 100%; height: 350px;">
+          <svg id="resilience-graph-svg" style="width: 100%; height: 100%; min-height: 350px; transform-origin: 0 0;">
             <g id="svg-zoomable-group" style="transform: translate(${graphPanX}px, ${graphPanY}px) scale(${graphZoom});">
               <!-- Grid Background lines for cyber look -->
               <defs>
@@ -718,6 +718,31 @@ export function renderResilienceGraph(containerId, options = {}) {
             </g>
           </svg>
         </div>
+
+        <!-- Space-efficient Intelligence Engine Summary Strip below Canvas -->
+        ${selectedNodeId ? (() => {
+          const blast = analyzeBlastRadius(selectedNodeId, graph);
+          return `
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.15); border-radius: 6px; padding: 6px 12px; margin-top: 8px; font-size: 0.68rem; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <span style="color: var(--text-muted); font-size: 0.58rem; text-transform: uppercase; font-weight: 700; display: block;">Active Node</span>
+                <strong style="color: var(--text-primary);">${blast.target.name} (${blast.target.type})</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); font-size: 0.58rem; text-transform: uppercase; font-weight: 700; display: block;">Cascading Impact</span>
+                <strong style="color: var(--color-cyan);">${blast.directImpact.length} Direct / ${blast.indirectImpact.length} Indirect</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); font-size: 0.58rem; text-transform: uppercase; font-weight: 700; display: block;">Financial Exposure</span>
+                <strong style="color: #ef4444;">${blast.revenueImpact.formattedCost}</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); font-size: 0.58rem; text-transform: uppercase; font-weight: 700; display: block;">Customer Impact</span>
+                <strong style="color: var(--color-cyan);">~${blast.customersAffected.totalCount.toLocaleString()} Users</strong>
+              </div>
+            </div>
+          `;
+        })() : ''}
       </div>
 
       <!-- Right: Detailed Neighborhood sidebar -->
