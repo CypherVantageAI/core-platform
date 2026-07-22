@@ -593,7 +593,6 @@ function drawDependencyGraph(srv) {
 // 3. DIGITAL OPERATIONAL RESILIENCE TWIN (DORT)
 // ==========================================================================
 let activeTwinSubTab = 'simulate';
-let selectedTwinPoint = 'sup-aws';
 let selectedAuditTarget = 'aws';
 let selectedAuditRegion = 'us-east-1';
 
@@ -1268,31 +1267,31 @@ function drawTwinOutageGraph(isBroken, chain, blast) {
   const stateColor = isBroken ? '#ef4444' : '#10b981';
 
   mapBox.innerHTML = `
-    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-around; padding:10px; gap:8px;">
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-around; padding:10px; gap:8px; box-sizing:border-box; overflow:hidden;">
       <div style="font-size:0.65rem; font-weight:700; color:var(--color-cyan); text-transform:uppercase; letter-spacing:0.05em; text-align:center;">
         ⚡ Operational Failure Propagation Chain Across Architecture Graph
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; position:relative; gap:6px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; position:relative; gap:6px; width:100%; overflow:hidden;">
         ${chain.steps.map((step, idx) => `
-          <div style="flex:1; background:${isLight ? '#ffffff' : 'rgba(15,23,42,0.8)'}; border:1px solid ${idx === 0 ? stateColor : (isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.08)')}; border-radius:6px; padding:8px; display:flex; flex-direction:column; gap:3px; position:relative; box-shadow:${idx === 0 ? '0 0 10px rgba(239,68,68,0.2)' : 'none'};">
+          <div style="flex:1; min-width:0; background:${isLight ? '#ffffff' : 'rgba(15,23,42,0.8)'}; border:1px solid ${idx === 0 ? stateColor : (isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.08)')}; border-radius:6px; padding:6px; display:flex; flex-direction:column; gap:2px; position:relative; box-shadow:${idx === 0 ? '0 0 10px rgba(239,68,68,0.2)' : 'none'}; overflow:hidden;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:0.55rem; font-weight:800; color:${idx === 0 ? stateColor : 'var(--color-cyan)'}; text-transform:uppercase;">L${step.level} ${step.icon}</span>
-              ${idx === 0 ? `<span style="font-size:0.5rem; font-weight:800; color:#ef4444;">ROOT FAIL</span>` : ''}
+              <span style="font-size:0.55rem; font-weight:800; color:${idx === 0 ? stateColor : 'var(--color-cyan)'}; text-transform:uppercase; white-space:nowrap;">L${step.level} ${step.icon}</span>
+              ${idx === 0 ? `<span style="font-size:0.5rem; font-weight:800; color:#ef4444; white-space:nowrap;">FAIL</span>` : ''}
             </div>
-            <div style="font-size:0.65rem; font-weight:700; color:var(--text-primary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${step.title}">
+            <div style="font-size:0.62rem; font-weight:700; color:var(--text-primary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${step.title}">
               ${step.title.split(' ')[0]} ${step.title.split(' ')[1] || ''}
             </div>
-            <div style="font-size:0.58rem; color:var(--text-muted);">
+            <div style="font-size:0.56rem; color:var(--text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${step.nodes ? step.nodes.map(n => n.name).join(', ') : (step.impactSummary || '')}">
               ${step.nodes ? step.nodes.map(n => n.name).slice(0, 2).join(', ') : (step.impactSummary || (step.obligations ? step.obligations.map(o => o.article).join(', ') : 'Exposed'))}
             </div>
           </div>
-          ${idx < chain.steps.length - 1 ? `<div style="font-size:0.8rem; color:${stateColor}; font-weight:800;">➔</div>` : ''}
+          ${idx < chain.steps.length - 1 ? `<div style="font-size:0.75rem; color:${stateColor}; font-weight:800; flex-shrink:0;">➔</div>` : ''}
         `).join('')}
       </div>
 
       <!-- Financial & Regulatory Impact Bar -->
-      <div style="display:flex; justify-content:space-between; background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.05); padding:8px 12px; border-radius:6px; font-size:0.65rem; margin-top:5px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.05); padding:8px 12px; border-radius:6px; font-size:0.65rem; margin-top:5px; width:100%; box-sizing:border-box;">
         <div><span style="color:var(--text-muted);">Downtime Cost Rate:</span> <strong style="color:#ef4444;">${blast.revenueImpact.formattedCost}</strong></div>
         <div><span style="color:var(--text-muted);">Market Exposure:</span> <strong style="color:var(--color-cyan);">~${blast.customersAffected.totalCount.toLocaleString()} Users</strong></div>
         <div><span style="color:var(--text-muted);">DORA Compliance Status:</span> <strong style="color:#f43f5e;">CRITICAL EXPOSURE</strong></div>

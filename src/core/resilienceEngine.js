@@ -600,3 +600,32 @@ export function getExecutiveBoardAnswers() {
     ]
   };
 }
+
+/**
+ * Fallback Blast Radius Helper
+ */
+function getFallbackBlastRadius(nodeId, state) {
+  const isAws = nodeId.includes('aws');
+  const targetName = isAws ? 'AWS Cloud Infrastructure' : 'Core Infrastructure Provider';
+  
+  return {
+    target: { id: nodeId, name: targetName, type: 'supplier' },
+    directImpact: [
+      { id: 'app-001', name: 'IBS Payments Engine', type: 'application' },
+      { id: 'app-002', name: 'CIS Clearing Portal', type: 'application' }
+    ],
+    indirectImpact: [
+      { id: 'ast-001', name: 'AWS us-east-1 DB Cluster', type: 'asset' }
+    ],
+    servicesAffected: [
+      { id: 'srv-001', name: 'IBS Payments Processing', RTO: '4 Hours' },
+      { id: 'srv-002', name: 'IBS Clearing Portal', RTO: '6 Hours' }
+    ],
+    customersAffected: { totalCount: 145000, description: 'Active retail & clearing sessions' },
+    revenueImpact: { costPerHour: 65000, formattedCost: '£65,000 / hr' },
+    regulatoryImpact: [
+      { article: 'DORA Article 11 (Business Continuity)', severity: 'High' },
+      { article: 'DORA Article 28 (Third-Party Risk)', severity: 'Critical' }
+    ]
+  };
+}
