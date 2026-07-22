@@ -22,9 +22,10 @@ This repository hosts the **Cypher Vantage Core Platform Interface**, a highly i
 
 ## ✨ Core Features
 
-### 🌐 1. Operational Resilience & DORA Dashboard
+### 🌐 1. Op Resilience & DORA Dashboard
 - **Nested Geographic Hotspot Drill-Down**: Clickable breadcrumb path (`Global > Region > Country > State > City`) mapping data centers, availability zones, and key personnel locations.
 - **IBS & CIS Dependency Mapping**: Groups technical systems by external-facing **Important Business Services (IBS)** and internal-facing **Critical Internal Services (CIS)**.
+- **Contextual Help Guides**: `[ ? ]` contextual micro-guides integrated on every module pane (powered by `contextualhelp.js`).
 - **Compliance Alignment**: Directly traces platform controls to the **5 Core Pillars** of the EU Digital Operational Resilience Act (DORA).
 - **Incident & Hotspot Simulator**: Real-time alerts for geopolitical stress and natural disasters with live failover verification logs.
 

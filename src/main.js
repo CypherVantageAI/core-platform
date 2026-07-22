@@ -9,7 +9,7 @@ import { switchTab, setPersona } from './core/router.js';
 import '../app.js';
 
 import { showModal } from './components/ui.js';
-import { showPaneHelp } from './modules/panehelp.js';
+import { showPaneHelp } from './modules/contextualhelp.js';
 
 // Bind routing controls to window for inline HTML onclick triggers
 window.switchTab = switchTab;
