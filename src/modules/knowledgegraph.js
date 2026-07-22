@@ -725,7 +725,7 @@ export function renderResilienceGraph(containerId, options = {}) {
                 </div>
               </div>
 
-              <!-- Bottom Row: Failure Propagation Path Stepper -->
+              <!-- Middle Row: Failure Propagation Path Stepper -->
               <div style="display: flex; flex-direction: column; gap: 4px;">
                 <span style="font-weight:700; color:var(--color-cyan); font-size:0.58rem; text-transform:uppercase; letter-spacing:0.04em;">Failure Propagation Path Across Graph:</span>
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; overflow-x: auto; padding-bottom: 2px;">
@@ -738,6 +738,28 @@ export function renderResilienceGraph(containerId, options = {}) {
                       <span style="font-size: 0.62rem; font-weight: 700; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${step.title.split(' ')[0]} ${step.title.split(' ')[1] || ''}</span>
                     </div>
                     ${idx < chain.steps.length - 1 ? `<span style="color: #ef4444; font-weight: 800; font-size: 0.7rem;">➔</span>` : ''}
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Bottom Row: Adjacent Relationships Flex Pills -->
+              <div style="display: flex; flex-direction: column; gap: 4px; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px; margin-top: 2px;">
+                <span style="font-weight:700; color:var(--text-secondary); font-size:0.58rem; text-transform:uppercase; letter-spacing:0.04em;">Mapped Adjacent Relationship Objects:</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                  ${[
+                    ...rels.upstream.map(n => ({ ...n, label: 'Upstream', color: 'var(--color-cyan)' })),
+                    ...rels.downstream.map(n => ({ ...n, label: 'Downstream', color: 'var(--color-purple)' })),
+                    ...rels.relatedRisks.map(n => ({ ...n, label: 'Risk', color: '#ef4444' })),
+                    ...rels.relatedControls.map(n => ({ ...n, label: 'Control', color: '#14b8a6' })),
+                    ...rels.relatedIncidents.map(n => ({ ...n, label: 'Incident', color: '#d946ef' })),
+                    ...rels.relatedRecoveryPlans.map(n => ({ ...n, label: 'DR Plan', color: '#06b6d4' })),
+                    ...rels.relatedSuppliers.map(n => ({ ...n, label: 'Supplier', color: '#f97316' }))
+                  ].map(node => `
+                    <a href="#" class="graph-link-rel" data-id="${node.id}" style="color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; background: rgba(0,0,0,0.25); border: 1px solid ${node.color}; font-size: 0.6rem; white-space: nowrap;">
+                      <span>${getNodeIcon(node.type)}</span>
+                      <span style="font-weight: 600; color: ${node.color}; font-size: 0.52rem;">[${node.label}]</span>
+                      <span style="font-weight: 600;">${node.name}</span>
+                    </a>
                   `).join('')}
                 </div>
               </div>
