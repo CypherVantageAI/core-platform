@@ -735,7 +735,7 @@ function renderTwinTab(container) {
       <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%;">
         
         <!-- Gauge 1: Critical Service Health Score -->
-        <div class="dashboard-card" onclick="window.showModal('Critical Service Health Score Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:var(--color-cyan);\'>Current Score: ${serviceHealth.score}% (${serviceHealth.status})</strong></div><div>${serviceHealth.detail || 'Percentage of critical services operating within target RTO.'}</div><div style=\'background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; border-left:3px solid ${serviceHealth.badgeColor};\'><b>Executive Summary:</b> Evaluates all Tier-1 operational services to ensure recovery speed complies with maximum tolerable downtime (MTD) limits.</div></div>')" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${serviceHealth.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
+        <div class="dashboard-card dort-metric-card" data-title="Critical Service Health Score Breakdown" data-score="${serviceHealth.score}%" data-status="${serviceHealth.status}" data-detail="${serviceHealth.detail || 'Percentage of critical services operating within target RTO.'}" data-summary="Evaluates all Tier-1 operational services to ensure recovery speed complies with maximum tolerable downtime (MTD) limits." data-color="${serviceHealth.badgeColor}" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${serviceHealth.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Critical Service Health</span>
             <span style="font-size: 0.6rem; color: var(--color-cyan);">🔍</span>
@@ -748,7 +748,7 @@ function renderTwinTab(container) {
         </div>
 
         <!-- Gauge 2: Recovery Confidence Score -->
-        <div class="dashboard-card" onclick="window.showModal('Recovery Confidence Score Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:var(--color-cyan);\'>Current Score: ${recoveryConf.score}% (${recoveryConf.status})</strong></div><div>${recoveryConf.detail || 'Evaluates DR readiness drills, recovery plan pass rates, and RTO/MTD margins.'}</div><div style=\'background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; border-left:3px solid ${recoveryConf.badgeColor};\'><b>Executive Summary:</b> Aggregates pass/fail confidence metrics across all active disaster recovery playbooks and data backup integrity checks.</div></div>')" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${recoveryConf.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
+        <div class="dashboard-card dort-metric-card" data-title="Recovery Confidence Score Breakdown" data-score="${recoveryConf.score}%" data-status="${recoveryConf.status}" data-detail="${recoveryConf.detail || 'Evaluates DR readiness drills, recovery plan pass rates, and RTO/MTD margins.'}" data-summary="Aggregates pass/fail confidence metrics across all active disaster recovery playbooks and data backup integrity checks." data-color="${recoveryConf.badgeColor}" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${recoveryConf.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Recovery Confidence</span>
             <span style="font-size: 0.6rem; color: var(--color-cyan);">🔍</span>
@@ -761,7 +761,7 @@ function renderTwinTab(container) {
         </div>
 
         <!-- Gauge 3: Supplier Dependency Score -->
-        <div class="dashboard-card" onclick="window.showModal('Supplier Dependency Score Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:var(--color-cyan);\'>Current Score: ${supplierDep.score}% (${supplierDep.status})</strong></div><div>${supplierDep.detail || 'Calculates concentration risks across critical cloud vendors and key suppliers.'}</div><div style=\'background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; border-left:3px solid ${supplierDep.badgeColor};\'><b>Executive Summary:</b> Measures multi-cloud single-point-of-failure exposure and 4th-party vendor dependencies under DORA Article 28.</div></div>')" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${supplierDep.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
+        <div class="dashboard-card dort-metric-card" data-title="Supplier Dependency Score Breakdown" data-score="${supplierDep.score}%" data-status="${supplierDep.status}" data-detail="${supplierDep.detail || 'Calculates concentration risks across critical cloud vendors and key suppliers.'}" data-summary="Measures multi-cloud single-point-of-failure exposure and 4th-party vendor dependencies under DORA Article 28." data-color="${supplierDep.badgeColor}" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${supplierDep.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Supplier Dependency</span>
             <span style="font-size: 0.6rem; color: var(--color-cyan);">🔍</span>
@@ -774,7 +774,7 @@ function renderTwinTab(container) {
         </div>
 
         <!-- Gauge 4: Operational Risk Velocity -->
-        <div class="dashboard-card" onclick="window.showModal('Operational Risk Velocity Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:var(--color-cyan);\'>Velocity Rate: ${riskVel.velocityPct} (${riskVel.status})</strong></div><div>${riskVel.detail || 'Measures the rate of unmitigated operational risk accumulation per week.'}</div><div style=\'background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; border-left:3px solid ${riskVel.badgeColor};\'><b>Executive Summary:</b> Indicates whether platform risk ingestion is outpacing risk remediation throughput.</div></div>')" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${riskVel.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
+        <div class="dashboard-card dort-metric-card" data-title="Operational Risk Velocity Breakdown" data-score="${riskVel.velocityPct}" data-status="${riskVel.status}" data-detail="${riskVel.detail || 'Measures the rate of unmitigated operational risk accumulation per week.'}" data-summary="Indicates whether platform risk ingestion is outpacing risk remediation throughput." data-color="${riskVel.badgeColor}" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${riskVel.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Risk Velocity</span>
             <span style="font-size: 0.6rem; color: var(--color-cyan);">🔍</span>
@@ -787,7 +787,7 @@ function renderTwinTab(container) {
         </div>
 
         <!-- Gauge 5: Testing Coverage Index -->
-        <div class="dashboard-card" onclick="window.showModal('Testing Coverage Index Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:var(--color-cyan);\'>Testing Index: ${testingCov.index}% (${testingCov.status})</strong></div><div>${testingCov.detail || 'Tracks the percentage of critical business services validated through scenario playbooks.'}</div><div style=\'background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; border-left:3px solid ${testingCov.badgeColor};\'><b>Executive Summary:</b> Validates that playbooks are routinely executed and updated for all Tier-1 and Tier-2 registered services.</div></div>')" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${testingCov.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
+        <div class="dashboard-card dort-metric-card" data-title="Testing Coverage Index Breakdown" data-score="${testingCov.index}%" data-status="${testingCov.status}" data-detail="${testingCov.detail || 'Tracks the percentage of critical business services validated through scenario playbooks.'}" data-summary="Validates that playbooks are routinely executed and updated for all Tier-1 and Tier-2 registered services." data-color="${testingCov.badgeColor}" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${testingCov.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Testing Coverage</span>
             <span style="font-size: 0.6rem; color: var(--color-cyan);">🔍</span>
@@ -800,7 +800,7 @@ function renderTwinTab(container) {
         </div>
 
         <!-- Gauge 6: DORA Readiness Index -->
-        <div class="dashboard-card" onclick="window.showModal('DORA Readiness Index Breakdown', '<div style=\'display:flex; flex-direction:column; gap:10px;\'><div><strong style=\'color:var(--color-cyan);\'>Readiness Score: ${doraIndex.score}% (${doraIndex.status})</strong></div><div>${doraIndex.detail || 'Calculates compliance posture across Articles 5, 17, 24, and 28 of DORA.'}</div><div style=\'background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; border-left:3px solid ${doraIndex.badgeColor};\'><b>Executive Summary:</b> Weighted compliance alignment across all 5 DORA Pillars required for regulatory submission.</div></div>')" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${doraIndex.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
+        <div class="dashboard-card dort-metric-card" data-title="DORA Readiness Index Breakdown" data-score="${doraIndex.score}%" data-status="${doraIndex.status}" data-detail="${doraIndex.detail || 'Calculates compliance posture across Articles 5, 17, 24, and 28 of DORA.'}" data-summary="Weighted compliance alignment across all 5 DORA Pillars required for regulatory submission." data-color="${doraIndex.badgeColor}" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${doraIndex.badgeColor}; position: relative; cursor: pointer;" title="Click to view detailed score breakdown modal">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">DORA Readiness</span>
             <span style="font-size: 0.6rem; color: var(--color-cyan);">🔍</span>
@@ -861,6 +861,28 @@ function renderTwinTab(container) {
     activeTwinSubTab = 'recovery';
     renderTwinTab(container);
   };
+
+  // Bind DORT Metric Cards Modal Popups
+  container.querySelectorAll('.dort-metric-card').forEach(card => {
+    card.onclick = () => {
+      const title = card.getAttribute('data-title');
+      const score = card.getAttribute('data-score');
+      const status = card.getAttribute('data-status');
+      const detail = card.getAttribute('data-detail');
+      const summary = card.getAttribute('data-summary');
+      const color = card.getAttribute('data-color');
+
+      showModal(title, `
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div><strong style="color:var(--color-cyan); font-size:0.9rem;">Current Rating: ${score} (${status})</strong></div>
+          <div style="font-size:0.78rem;">${detail}</div>
+          <div style="background:rgba(0,0,0,0.25); padding:10px; border-radius:6px; border-left:3px solid ${color}; font-size:0.74rem;">
+            <b>Executive Summary:</b> ${summary}
+          </div>
+        </div>
+      `);
+    };
+  });
 
   // Render Sub-Pane Content
   const subContent = document.getElementById('twin-sub-pane-content');
