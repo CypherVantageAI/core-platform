@@ -4,6 +4,7 @@
 
 import { getState } from '../core/db.js';
 import { showModal } from '../components/ui.js';
+import { analyzeBlastRadius, getImpactPropagationChain, calculateResilienceExposureScore } from '../core/resilienceEngine.js';
 
 // Graph engine state
 let selectedNodeId = null;
@@ -560,44 +561,73 @@ export function renderResilienceGraph(containerId, options = {}) {
           </div>
 
           <!-- Propagation Blast Radius Dashboard -->
-          ${propagationResult && isOutageActive ? `
-            <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
-              <div style="font-weight: 700; color: #ef4444; text-transform: uppercase; font-size: 0.6rem;">🚨 IMPACT CALCULATOR ACTIVE</div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div style="background: rgba(0,0,0,0.2); padding: 6px; border-radius: 4px; border-left: 3px solid #ef4444;">
-                  <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Financial Loss / Hr</span>
-                  <span style="font-size:0.85rem; font-weight:700; color:#fff;">£${propagationResult.financialDowntimeCost.toLocaleString()}</span>
+          ${selectedNodeId ? (() => {
+            const blast = analyzeBlastRadius(selectedNodeId, graph);
+            const exposure = calculateResilienceExposureScore(selectedNodeId);
+            const chain = getImpactPropagationChain(selectedNodeId, graph);
+
+            return `
+              <!-- Resilience Exposure Score Card -->
+              <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.6rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Resilience Exposure Score</span>
+                  <span class="badge" style="background: ${exposure.badgeColor}; color: #fff; font-weight: 800; font-size: 0.6rem;">${exposure.statusTier}</span>
                 </div>
-                <div style="background: rgba(0,0,0,0.2); padding: 6px; border-radius: 4px; border-left: 3px solid var(--color-cyan);">
-                  <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Impacted Services</span>
-                  <span style="font-size:0.85rem; font-weight:700; color:#fff;">${propagationResult.servicesImpacted.length}</span>
+                <div style="display: flex; align-items: baseline; justify-content: space-between;">
+                  <span style="font-size: 1.4rem; font-weight: 800; color: ${exposure.badgeColor};">${exposure.score}%</span>
+                  <button id="btn-explain-graph-score" class="btn btn-secondary btn-xs" style="font-size: 0.6rem; padding: 2px 6px;">🔍 Explain Score</button>
                 </div>
               </div>
-              
-              <div>
-                <span style="font-weight:600; color:var(--text-secondary); display:block; margin-bottom:2px; font-size:0.55rem;">Impacted Applications:</span>
-                <span style="font-size:0.64rem; color:var(--text-muted);">${propagationResult.applicationsImpacted.join(', ') || 'None'}</span>
+
+              <!-- Blast Radius Intelligence Section -->
+              <div style="background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.18); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="font-weight: 700; color: var(--color-cyan); text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px;">
+                  <span>💥 Blast Radius Analysis</span>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                  <div style="background: rgba(0,0,0,0.25); padding: 6px; border-radius: 4px;">
+                    <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Direct Impact</span>
+                    <span style="font-size:0.8rem; font-weight:700; color:var(--text-primary);">${blast.directImpact.length} Nodes</span>
+                  </div>
+                  <div style="background: rgba(0,0,0,0.25); padding: 6px; border-radius: 4px;">
+                    <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Indirect Impact</span>
+                    <span style="font-size:0.8rem; font-weight:700; color:var(--text-primary);">${blast.indirectImpact.length} Nodes</span>
+                  </div>
+                  <div style="background: rgba(0,0,0,0.25); padding: 6px; border-radius: 4px; border-left: 2px solid #ef4444;">
+                    <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Revenue Impact</span>
+                    <span style="font-size:0.75rem; font-weight:700; color:#ef4444;">${blast.revenueImpact.formattedCost}</span>
+                  </div>
+                  <div style="background: rgba(0,0,0,0.25); padding: 6px; border-radius: 4px; border-left: 2px solid var(--color-cyan);">
+                    <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Customers Affected</span>
+                    <span style="font-size:0.75rem; font-weight:700; color:var(--color-cyan);">~${blast.customersAffected.totalCount.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <span style="font-weight:600; color:var(--text-secondary); display:block; margin-bottom:2px; font-size:0.56rem;">Business Services Affected (${blast.servicesAffected.length}):</span>
+                  <div style="display: flex; flex-direction: column; gap: 2px; max-height: 80px; overflow-y: auto;">
+                    ${blast.servicesAffected.map(s => `<div style="font-size:0.62rem; color:var(--text-primary); display:flex; justify-space-between;"><span>🏢 ${s.name}</span><span style="color:#ef4444; font-weight:600; font-size:0.55rem;">(MTD ${s.mtd})</span></div>`).join('')}
+                  </div>
+                </div>
+
+                <div>
+                  <span style="font-weight:600; color:var(--text-secondary); display:block; margin-bottom:2px; font-size:0.56rem;">Regulatory Compliance Impact:</span>
+                  <div style="display: flex; flex-direction: column; gap: 2px; max-height: 75px; overflow-y: auto;">
+                    ${blast.regulatoryImpact.map(r => `<div style="font-size:0.6rem; color:#f43f5e;">• <b>${r.article}:</b> ${r.title}</div>`).join('')}
+                  </div>
+                </div>
+
+                <!-- Visual Propagation Chain Step List -->
+                <div style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 4px;">
+                  <span style="font-weight:700; color:var(--color-cyan); font-size:0.56rem; text-transform:uppercase; display:block; margin-bottom:4px;">Failure Propagation Path:</span>
+                  <div style="display:flex; flex-direction:column; gap:4px; font-size:0.6rem; color:var(--text-secondary);">
+                    ${chain.steps.map(s => `<div style="display:flex; align-items:center; gap:4px;"><span>${s.icon}</span><span style="font-weight:600; color:#fff;">L${s.level}: ${s.title}</span></div>`).join('')}
+                  </div>
+                </div>
               </div>
-
-              ${propagationResult.customersAffected.length ? `
-                <div>
-                  <span style="font-weight:600; color:var(--text-secondary); display:block; margin-bottom:2px; font-size:0.55rem;">Active Customer Impact:</span>
-                  <div style="font-size:0.64rem; color:#f97316; display:flex; flex-direction:column; gap:2px;">
-                    ${propagationResult.customersAffected.map(c => `• ${c}`).join('')}
-                  </div>
-                </div>
-              ` : ''}
-
-              ${propagationResult.regulatoryObligationsBreached.length ? `
-                <div>
-                  <span style="font-weight:600; color:var(--text-secondary); display:block; margin-bottom:2px; font-size:0.55rem;">Regulatory Compliance Exposures:</span>
-                  <div style="font-size:0.64rem; color:#f43f5e; display:flex; flex-direction:column; gap:2px;">
-                    ${propagationResult.regulatoryObligationsBreached.map(r => `• ${r}`).join('')}
-                  </div>
-                </div>
-              ` : ''}
-            </div>
-          ` : ''}
+            `;
+          })() : ''}
 
           <!-- Neighborhood Relationships Lists -->
           <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -709,6 +739,39 @@ export function renderResilienceGraph(containerId, options = {}) {
       renderResilienceGraph(containerId, { focalNodeId });
     };
   });
+
+  // Bind Explain Score Button
+  const btnExplainScore = document.getElementById('btn-explain-graph-score');
+  if (btnExplainScore && selectedNodeId) {
+    btnExplainScore.onclick = () => {
+      const exp = calculateResilienceExposureScore(selectedNodeId).explainability;
+      const breakdownHtml = exp.breakdown.map(b => `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid rgba(255,255,255,0.05); padding:6px 0;">
+          <div>
+            <strong style="color:var(--text-primary); font-size:0.75rem;">${b.factor}</strong>
+            <div style="font-size:0.65rem; color:var(--text-muted);">${b.details}</div>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-weight:700; color:var(--color-cyan); font-size:0.75rem;">${b.score}</span>
+            <div style="font-size:0.6rem; color:#10b981; font-weight:700;">${b.contribution}</div>
+          </div>
+        </div>
+      `).join('');
+
+      showModal('Resilience Exposure Score Explainability Breakdown', `
+        <div style="display:flex; flex-direction:column; gap:12px; font-size:0.75rem;">
+          <div style="background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.2); padding:10px; border-radius:6px;">
+            <div style="font-size:0.62rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700;">Mathematical Weighting Formula:</div>
+            <code style="display:block; margin-top:4px; font-size:0.65rem; color:var(--color-cyan); font-family:monospace;">${exp.formula}</code>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span style="font-weight:700; color:var(--text-secondary); text-transform:uppercase; font-size:0.62rem;">Score Breakdown Factors:</span>
+            ${breakdownHtml}
+          </div>
+        </div>
+      `);
+    };
+  }
 
   // Bind Sidebar neighborhood list links clicks
   container.querySelectorAll('.graph-link-rel').forEach(elem => {

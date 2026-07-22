@@ -2874,6 +2874,50 @@ body.light-mode .nav-sub-item {
   color: #94a3b8; /* keep dark sidebar readable */
 }
 
+/* Light mode modal popup contrast fix */
+body.light-mode #cv-dynamic-modal .modal-box {
+  background: #ffffff !important;
+  border: 1px solid rgba(139, 92, 246, 0.4) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode #cv-dynamic-modal-title {
+  color: #0f172a !important;
+}
+
+body.light-mode #cv-dynamic-modal-body {
+  color: #334155 !important;
+}
+
+body.light-mode #cv-dynamic-modal-close {
+  color: #64748b !important;
+}
+
+/* Dependency Mapping & Knowledge Graph connectors high contrast */
+body.light-mode .dependency-tree-node {
+  border-left-color: rgba(14, 165, 233, 0.6) !important;
+}
+
+body.light-mode .dependency-tree-node::before {
+  border-top-color: rgba(14, 165, 233, 0.6) !important;
+}
+
+body.light-mode .node-content {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .connection-line {
+  stroke: #0284c7 !important;
+  stroke-width: 2.5px !important;
+}
+
+body.light-mode .connection-line.dashed {
+  stroke: #7c3aed !important;
+}
+
 body.light-mode .theme-toggle-container button {
   border: 1px solid rgba(15, 23, 42, 0.15) !important;
   background: rgba(15, 23, 42, 0.05) !important;

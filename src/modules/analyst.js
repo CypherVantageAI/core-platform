@@ -18,7 +18,7 @@ export function renderAnalystModule() {
   container.innerHTML = `
     <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
       <!-- Left Panel: Interactive Analyst Workbench (65% width) -->
-      <div style="flex: 2; min-width: 480px; display: flex; flex-direction: column; gap: 15px;">
+      <div style="flex: 2; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
         
         <!-- Header -->
         <div class="dashboard-card" style="padding: 15px; margin: 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(6, 182, 212, 0.2); background: linear-gradient(135deg, rgba(6, 182, 212, 0.03), rgba(0,0,0,0));">

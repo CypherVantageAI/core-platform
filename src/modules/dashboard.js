@@ -54,11 +54,11 @@ function renderDashboardContent() {
             <h3 style="font-size: 0.95rem; font-family: var(--font-headings); font-weight: 800; margin: 0; color: var(--text-primary);">
               Welcome Back, Sarah Jenkins <span style="font-weight: 400; font-size: 0.76rem; color: var(--text-secondary);">(Head of Operational Resilience)</span>
             </h3>
-            <p class="panel-subtitle" style="margin: 0; margin-top: 3px; font-size: 0.7rem;">Morning briefing data compiled for Board Members, CRO, COO, and CISO audit oversight.</p>
+            <p class="panel-subtitle" style="margin: 0; margin-top: 3px; font-size: 0.7rem;">Morning briefing compiled for Board Members, CXO and Audit oversight - Ready for One-click export.</p>
           </div>
           <div style="display: flex; gap: 6px;">
-            <button class="btn btn-secondary btn-xs" onclick="window.triggerDynamicExport('pdf', 'board-pack')" style="font-size: 0.65rem; padding: 4px 8px;">🖨️ Board Pack PDF</button>
-            <button class="btn btn-secondary btn-xs" onclick="window.triggerDynamicExport('pptx', 'board-pack')" style="font-size: 0.65rem; padding: 4px 8px;">📊 PPTX Slide Deck</button>
+            <button class="btn btn-secondary btn-xs" onclick="window.triggerDynamicExport('pdf', 'board-pack')" style="font-size: 0.65rem; padding: 4px 8px;">🖨️ Board Pack - PDF</button>
+            <button class="btn btn-secondary btn-xs" onclick="window.triggerDynamicExport('pptx', 'board-pack')" style="font-size: 0.65rem; padding: 4px 8px;">📊 Board Pack - PPTX</button>
           </div>
         </div>
 
@@ -648,11 +648,11 @@ window.triggerDynamicExport = function(format, reportType) {
         <div class="toolbar">
           <div>
             <strong style="color:#0f172a; font-size:14px;">${format.toUpperCase()} Document Preview Mode</strong>
-            <span style="font-size:12px; color:#64748b; display:block;">Click "Save as PDF / Print" to export clean PDF or slides.</span>
+            <span style="font-size:12px; color:#64748b; display:block;">Click "${format === 'pptx' ? 'Save as PPTX / Print' : 'Save as PDF / Print'}" to export clean document slides.</span>
           </div>
           <div>
             <button class="btn btn-secondary" onclick="window.close()">Close</button>
-            <button class="btn" onclick="window.print()">🖨️ Save as PDF / Print</button>
+            <button class="btn" onclick="window.print()">🖨️ ${format === 'pptx' ? 'Save as PPTX / Print' : 'Save as PDF / Print'}</button>
           </div>
         </div>
         <div id="print-area">
@@ -674,35 +674,35 @@ window.previewReportSummary = function(reportType) {
     summaryHtml = `
       <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
         <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: BOARD BRIEFING SUMMARY</strong>
-        * **Resilience Index:** 92% (Target: >90%)
-        <br/>* **Current Posture:** Adequate risk margins. Primary concern is Cloudflare edge infrastructure concentration.
-        <br/>* **Action Required:** Board approval for Q3 multi-cloud DNS routing enhancements.
+        • <b>Resilience Index:</b> 92% (Target: >90%)
+        <br/>• <b>Current Posture:</b> Adequate risk margins. Primary concern is Cloudflare edge infrastructure concentration.
+        <br/>• <b>Action Required:</b> Board approval for Q3 multi-cloud DNS routing enhancements.
       </div>
     `;
   } else if (reportType === 'audit-pack') {
     summaryHtml = `
       <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
         <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: AUDIT PACK EVIDENCE SUMMARY</strong>
-        * **Controls Checked:** 15 core frameworks modules.
-        <br/>* **Active Gaps:** AWS recovery planning outdated logs; Infosys security policy mismatch.
-        <br/>* **Evidence Checked:** SOC 2 Type II valid; ISO certificate verified.
+        • <b>Controls Checked:</b> 15 core frameworks modules.
+        <br/>• <b>Active Gaps:</b> AWS recovery planning outdated logs; Infosys security policy mismatch.
+        <br/>• <b>Evidence Checked:</b> SOC 2 Type II valid; ISO certificate verified.
       </div>
     `;
   } else if (reportType === 'regulator-pack') {
     summaryHtml = `
       <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
         <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: REGULATOR ASSESSMENT SUMMARY</strong>
-        * **Pillars Scored:** Pillar I (85%), Pillar II (100%), Pillar III (75%), Pillar IV (60%), Pillar V (100%).
-        <br/>* **Regulatory Alignment:** Under FCA/EBA regulatory audit frameworks.
-        <br/>* **Action Plan:** Complete validation drills for critical suppliers by next quarter.
+        • <b>Pillars Scored:</b> Pillar I (85%), Pillar II (100%), Pillar III (75%), Pillar IV (60%), Pillar V (100%).
+        <br/>• <b>Regulatory Alignment:</b> Under FCA/EBA regulatory audit frameworks.
+        <br/>• <b>Action Plan:</b> Complete validation drills for critical suppliers by next quarter.
       </div>
     `;
   } else {
     summaryHtml = `
       <div style="font-size:0.72rem; line-height:1.45; color:var(--text-secondary);">
         <strong style="color:var(--color-cyan); display:block; margin-bottom:5px;">📋 PREVIEW: DORA ARTICLE ASSESSMENT SUMMARY</strong>
-        * **Scanned Articles:** DORA Articles 5, 11, 12, 14, 26.
-        <br/>* **Compliance Score:** 82% Compliant. Gaps identified in Article 11 (BCP) and Article 14 (Subcontracting).
+        • <b>Scanned Articles:</b> DORA Articles 5, 11, 12, 14, 26.
+        <br/>• <b>Compliance Score:</b> 82% Compliant. Gaps identified in Article 11 (BCP) and Article 14 (Subcontracting).
       </div>
     `;
   }
