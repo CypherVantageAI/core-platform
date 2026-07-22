@@ -61,11 +61,16 @@ export function renderResilienceModule() {
   const container = document.getElementById('view-manager-resilience');
   if (!container) return;
 
-  // Render sub-tabs bar and content pane cleanly
-  container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+  // Find or create sub-tab-switcher-container to preserve view-header
+  let subTabContainer = container.querySelector('#resilience-subtab-container');
+  if (!subTabContainer) {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'resilience-wrapper';
+    wrapper.style.cssText = 'display: flex; flex-direction: column; gap: 15px; width: 100%;';
+    
+    wrapper.innerHTML = `
       <!-- Sub-tab Selector -->
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%; gap: 12px; flex-wrap: wrap;">
+      <div id="resilience-subtab-container" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%; gap: 12px; flex-wrap: wrap;">
         <div style="display: flex; gap: 8px; overflow-x: auto; flex: 1;">
           <button id="btn-res-tab-services" class="btn btn-secondary btn-xs ${activeResilienceTab === 'services' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🏢 Business Services</button>
           <button id="btn-res-tab-dependencies" class="btn btn-secondary btn-xs ${activeResilienceTab === 'dependencies' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Dependency Mapping</button>
@@ -75,15 +80,20 @@ export function renderResilienceModule() {
           <button id="btn-res-tab-readiness" class="btn btn-secondary btn-xs ${activeResilienceTab === 'readiness' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">⏱️ Recovery Readiness</button>
           <button id="btn-res-tab-monitoring" class="btn btn-secondary btn-xs ${activeResilienceTab === 'monitoring' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">📊 Control Monitoring</button>
         </div>
-        <button id="btn-resilience-fullscreen" class="btn btn-secondary btn-xs" onclick="window.togglePaneFullscreen('view-manager-resilience')" style="padding: 6px 12px; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 4px; border-color: rgba(6,182,212,0.3); color: var(--color-cyan); background: rgba(6,182,212,0.06); flex-shrink: 0;" title="Toggle Fullscreen View">
-          <span>⛶ Fullscreen</span>
-        </button>
       </div>
 
       <!-- Tab Content Pane -->
       <div id="resilience-tab-content" style="width: 100%;"></div>
-    </div>
-  `;
+    `;
+
+    // Append after view-header
+    const header = container.querySelector('.view-header');
+    if (header) {
+      header.after(wrapper);
+    } else {
+      container.appendChild(wrapper);
+    }
+  }
 
   // Bind tab switcher clicks
   const tabs = ['services', 'dependencies', 'twin', 'simulation', 'incidents', 'readiness', 'monitoring'];

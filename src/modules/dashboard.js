@@ -487,10 +487,16 @@ export function renderExecutiveDashboard() {
   const container = document.getElementById('view-manager-dashboard');
   if (!container) return;
 
-  container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+  // Find or create sub-tab-switcher-container to preserve view-header
+  let subTabContainer = container.querySelector('#dashboard-subtab-container');
+  if (!subTabContainer) {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'dashboard-wrapper';
+    wrapper.style.cssText = 'display: flex; flex-direction: column; gap: 20px; width: 100%;';
+    
+    wrapper.innerHTML = `
       <!-- Sub-tab switcher -->
-      <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+      <div id="dashboard-subtab-container" style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%; align-items: center; justify-content: space-between; flex-wrap: wrap;">
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
           <button id="btn-db-tab-overview" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'overview' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">Executive Overview</button>
           <button id="btn-db-tab-threatmap" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'threatmap' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🗺️ Global Threat Map &amp; Feed</button>
@@ -503,8 +509,16 @@ export function renderExecutiveDashboard() {
 
       <!-- Tab Content Area -->
       <div id="dashboard-tab-content" style="width: 100%;"></div>
-    </div>
-  `;
+    `;
+    
+    // Append after view-header
+    const header = container.querySelector('.view-header');
+    if (header) {
+      header.after(wrapper);
+    } else {
+      container.appendChild(wrapper);
+    }
+  }
 
   // Bind tab buttons
   const btnOverview = document.getElementById('btn-db-tab-overview');

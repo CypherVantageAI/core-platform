@@ -420,20 +420,23 @@
         <ul id="nav-group-supplier" class="nav-list hidden">
           <li class="nav-section">PORTAL CONSOLE</li>
           <li>
-            <a href="#" id="nav-supplier-vulns" class="nav-item active" onclick="switchTab('supplier-vulns')" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; font-size: 0.76rem;">
-              <span style="display: flex; align-items: center; gap: 8px;">
-                <span>⚠️</span>
-                <span>Urgent Vuln SLA Directives</span>
-              </span>
+            <a href="#" id="nav-supplier-vulns" class="nav-item nav-item-main active" onclick="switchTab('supplier-vulns')">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span>Urgent Vuln Directives</span>
               <span id="badge-supplier-vulns" class="badge badge-danger">0</span>
             </a>
           </li>
           <li>
-            <a href="#" id="nav-supplier-compliance" class="nav-item" onclick="switchTab('supplier-compliance')" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; font-size: 0.76rem;">
-              <span style="display: flex; align-items: center; gap: 8px;">
-                <span>📋</span>
-                <span>Compliance Gaps</span>
-              </span>
+            <a href="#" id="nav-supplier-compliance" class="nav-item nav-item-sub" onclick="switchTab('supplier-compliance')">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+              </svg>
+              <span>Compliance Gaps</span>
               <span id="badge-supplier-compliance" class="badge badge-warning">0</span>
             </a>
           </li>
@@ -488,13 +491,12 @@
             <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-dashboard')" title="Toggle Fullscreen View">
               <span>⛶ Fullscreen</span>
             </button>
-            <button class="pane-help-btn" onclick="showPaneHelp('dashboard')" title="Pane Context Guide">
+            <button class="pane-help-btn" onclick="showPaneHelp('dashboard')" title="Module Guide">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
               </svg>
-              <span>Module Guide</span>
             </button>
           </div>
         </div>
@@ -514,13 +516,12 @@
             <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-resilience')" title="Toggle Fullscreen View">
               <span>⛶ Fullscreen</span>
             </button>
-            <button class="pane-help-btn" onclick="showPaneHelp('resilience')" title="Pane Context Guide">
+            <button class="pane-help-btn" onclick="showPaneHelp('resilience')" title="Module Guide">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
               </svg>
-              <span>Module Guide</span>
             </button>
           </div>
         </div>
@@ -536,14 +537,18 @@
             <h2>DORA Regulatory Compliance</h2>
             <p>Trace operational safeguards to the 5 pillars of the Digital Operational Resilience Act.</p>
           </div>
-          <button class="pane-help-btn" onclick="showPaneHelp('dora')" title="Pane Context Guide">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <span>Module Guide</span>
-          </button>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-dora')" title="Toggle Fullscreen View">
+              <span>⛶ Fullscreen</span>
+            </button>
+            <button class="pane-help-btn" onclick="showPaneHelp('dora')" title="Module Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </button>
+          </div>
         </div>
         <!-- Populated dynamically by dora.js -->
       </section>
@@ -557,14 +562,18 @@
             <h2>ICT Operational Risk Management</h2>
             <p>Risk register, mitigation maps, and live threat likelihood matrices.</p>
           </div>
-          <button class="pane-help-btn" onclick="showPaneHelp('risk')" title="Pane Context Guide">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <span>Module Guide</span>
-          </button>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-risk')" title="Toggle Fullscreen View">
+              <span>⛶ Fullscreen</span>
+            </button>
+            <button class="pane-help-btn" onclick="showPaneHelp('risk')" title="Module Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </button>
+          </div>
         </div>
         <!-- Populated dynamically by ictrisk.js -->
       </section>
@@ -578,14 +587,18 @@
             <h2>Nth Party Concentration &amp; Risk</h2>
             <p>Monitor critical supplier risk tiers, compliance scores, and subcontractor chains.</p>
           </div>
-          <button class="pane-help-btn" onclick="showPaneHelp('thirdparty')" title="Pane Context Guide">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <span>Module Guide</span>
-          </button>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-thirdparty')" title="Toggle Fullscreen View">
+              <span>⛶ Fullscreen</span>
+            </button>
+            <button class="pane-help-btn" onclick="showPaneHelp('thirdparty')" title="Module Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </button>
+          </div>
         </div>
         <!-- Populated dynamically by thirdparty.js -->
       </section>
@@ -599,14 +612,18 @@
             <h2>Compliance Dashboard</h2>
             <p>Real-time analytics and global compliance overview across vendor domains</p>
           </div>
-          <button class="pane-help-btn" onclick="showPaneHelp('compliance')" title="Pane Context Guide">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <span>Module Guide</span>
-          </button>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-compliance')" title="Toggle Fullscreen View">
+              <span>⛶ Fullscreen</span>
+            </button>
+            <button class="pane-help-btn" onclick="showPaneHelp('compliance')" title="Module Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <!-- Metrics Grid -->
@@ -1486,8 +1503,22 @@
       <!-- ============================================== -->
       <section id="view-manager-reports" class="content-pane">
         <div class="view-header">
-          <h2>Simulation Compliance Reports</h2>
-          <p>Audit trail of all TIBER-EU Threat-Led Penetration Tests (TLPT), Breach and Attack Simulations (BAS), and DORA Article 11 drills</p>
+          <div class="view-header-title-group">
+            <h2>Simulation Compliance Reports</h2>
+            <p>Audit trail of all TIBER-EU Threat-Led Penetration Tests (TLPT), Breach and Attack Simulations (BAS), and DORA Article 11 drills</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-reports')" title="Toggle Fullscreen View">
+              <span>⛶ Fullscreen</span>
+            </button>
+            <button class="pane-help-btn" onclick="showPaneHelp('reports')" title="Module Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="dashboard-panels">
@@ -1530,8 +1561,22 @@
       <!-- ============================================== -->
       <section id="view-manager-obligations" class="content-pane">
         <div class="view-header">
-          <h2>Supplier Control Obligations</h2>
-          <p>Browse the 15 Reference Control Modules (Criteria derived from global compliance standards and supplier regulatory duties)</p>
+          <div class="view-header-title-group">
+            <h2>Supplier Control Obligations</h2>
+            <p>Browse the 15 Reference Control Modules (Criteria derived from global compliance standards and supplier regulatory duties)</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-obligations')" title="Toggle Fullscreen View">
+              <span>⛶ Fullscreen</span>
+            </button>
+            <button class="pane-help-btn" onclick="showPaneHelp('obligations')" title="Module Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="sco-references-layout">
