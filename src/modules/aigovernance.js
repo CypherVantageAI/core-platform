@@ -19,13 +19,13 @@ export function renderAiGovernanceModule() {
   const activeCampaigns = state.tlptCampaigns ? state.tlptCampaigns.filter(c => c.status === 'Active').length : 0;
   const blockedPayloads = state.promptRiskRegister ? state.promptRiskRegister.filter(p => p.status === 'Blocked').length : 0;
 
-  container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
-      <div class="view-header" style="margin-bottom: 0;">
-        <h2>AI Audit &amp; BAS Operational Resilience Suite</h2>
-        <p>Manage adversarial penetration campaigns, audit LLM integrations, and maintain the institutional AI Model Registry.</p>
-      </div>
-
+  let wrapper = container.querySelector('#ai-wrapper');
+  if (!wrapper) {
+    wrapper = document.createElement('div');
+    wrapper.id = 'ai-wrapper';
+    wrapper.style.cssText = 'display: flex; flex-direction: column; gap: 20px; width: 100%;';
+    
+    wrapper.innerHTML = `
       <!-- KPI stats row -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; width: 100%;">
         <div id="ai-kpi-total"></div>
@@ -43,8 +43,15 @@ export function renderAiGovernanceModule() {
 
       <!-- Dynamic Content Area -->
       <div id="ai-tab-content" style="width: 100%; min-height: 480px;"></div>
-    </div>
-  `;
+    `;
+
+    const header = container.querySelector('.view-header');
+    if (header) {
+      header.after(wrapper);
+    } else {
+      container.appendChild(wrapper);
+    }
+  }
 
   // Render KPI cards
   createCard('ai-kpi-total', {

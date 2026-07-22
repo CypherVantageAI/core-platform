@@ -28,9 +28,21 @@ export function renderAnalystModule() {
             </h2>
             <p class="panel-subtitle" style="margin: 0; margin-top: 3px; font-size: 0.7rem;">Automated DORA audit ledger parsing, risk diagnostics, and explainable recommendations engine.</p>
           </div>
-          <div style="display: flex; gap: 6px; align-items: center;">
-            <span class="pulse-indicator" style="background: #10b981; width: 6px; height: 6px; border-radius: 50%;"></span>
-            <span style="font-size: 0.58rem; color: #10b981; font-family: monospace; font-weight: 700; text-transform: uppercase;">Analyst Engine: Active</span>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <div style="display: flex; gap: 6px; align-items: center; margin-right: 6px;">
+              <span class="pulse-indicator" style="background: #10b981; width: 6px; height: 6px; border-radius: 50%;"></span>
+              <span style="font-size: 0.58rem; color: #10b981; font-family: monospace; font-weight: 700; text-transform: uppercase;">Analyst Engine: Active</span>
+            </div>
+            <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-advisor')" title="Toggle Fullscreen View">
+              <span>⛶ Fullscreen</span>
+            </button>
+            <button class="pane-help-btn" onclick="showPaneHelp('advisor')" title="Module Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </button>
           </div>
         </div>
 

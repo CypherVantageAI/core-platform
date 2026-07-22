@@ -172,6 +172,126 @@ const PANE_HELP_GUIDES = {
         </div>
       </div>
     `
+  },
+
+  navigator: {
+    title: '🌐 IBS & CIS SLA Monitor - Contextual Guide',
+    content: `
+      <div style="display: flex; flex-direction: column; gap: 14px; font-family: var(--font-body); line-height: 1.5; color: var(--text-primary);">
+        <div style="background: rgba(6, 182, 212, 0.06); border-left: 3px solid var(--color-cyan); padding: 10px 14px; border-radius: 4px;">
+          <strong style="color: var(--color-cyan); display: block; margin-bottom: 2px;">Core Objective:</strong>
+          Monitor vulnerability SLA windows (9h emergency, 24h critical, 48h elevated) across Important Business Services (IBS) and Critical Internal Services (CIS).
+        </div>
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 6px; font-size: 0.88rem;">💡 Key Features & Options</h4>
+          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-secondary);">
+            <li><strong>SLA Risk Ribbon:</strong> Live counts for 9h emergency zero-days, 24h critical patches, and nominal SLA targets.</li>
+            <li><strong>Services Registry & Filters:</strong> Filter IBS/CIS services by geographic region and SLA compliance status.</li>
+            <li><strong>Dependency Blast Radius:</strong> Inspect tech stack vulnerability registers and Nth-party subcontractor chains.</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+
+  collector: {
+    title: '🤖 AI Evidence Collector - Contextual Guide',
+    content: `
+      <div style="display: flex; flex-direction: column; gap: 14px; font-family: var(--font-body); line-height: 1.5; color: var(--text-primary);">
+        <div style="background: rgba(6, 182, 212, 0.06); border-left: 3px solid var(--color-cyan); padding: 10px 14px; border-radius: 4px;">
+          <strong style="color: var(--color-cyan); display: block; margin-bottom: 2px;">Core Objective:</strong>
+          Upload vendor SOC 2 and ISO 27001 documents to automatically parse control attestations and detect compliance gaps.
+        </div>
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 6px; font-size: 0.88rem;">💡 Key Features & Options</h4>
+          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-secondary);">
+            <li><strong>Document Parser:</strong> Drag-and-drop compliance PDFs for AI extraction of security controls.</li>
+            <li><strong>Dynamic Questionnaire Dispatch:</strong> Dispatch targeted questionnaires to vendors based on missing evidence.</li>
+            <li><strong>Evidence Hashing:</strong> Register parsed document hashes on the SHA-256 cryptographic ledger.</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+
+  advisor: {
+    title: '💬 AI Resilience Analyst - Contextual Guide',
+    content: `
+      <div style="display: flex; flex-direction: column; gap: 14px; font-family: var(--font-body); line-height: 1.5; color: var(--text-primary);">
+        <div style="background: rgba(6, 182, 212, 0.06); border-left: 3px solid var(--color-cyan); padding: 10px 14px; border-radius: 4px;">
+          <strong style="color: var(--color-cyan); display: block; margin-bottom: 2px;">Core Objective:</strong>
+          Interact with the AI Copilot to query DORA regulatory requirements, query supplier risk postures, and draft remediation guidance.
+        </div>
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 6px; font-size: 0.88rem;">💡 Key Features & Options</h4>
+          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-secondary);">
+            <li><strong>Regulatory Assistant:</strong> Ask natural language questions regarding DORA Articles 6, 11, 19, and 26.</li>
+            <li><strong>Vendor Risk Analysis:</strong> Request real-time compliance summaries and breach impact estimates for any vendor.</li>
+            <li><strong>Quick Prompts:</strong> Use pre-configured shortcut buttons for instant audit briefings.</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+
+  "ai-risk": {
+    title: '🛡️ AI Security & Audit Suite - Contextual Guide',
+    content: `
+      <div style="display: flex; flex-direction: column; gap: 14px; font-family: var(--font-body); line-height: 1.5; color: var(--text-primary);">
+        <div style="background: rgba(6, 182, 212, 0.06); border-left: 3px solid var(--color-cyan); padding: 10px 14px; border-radius: 4px;">
+          <strong style="color: var(--color-cyan); display: block; margin-bottom: 2px;">Core Objective:</strong>
+          Audit internal and third-party AI models for DLP leaks, prompt injection vulnerabilities, and EU AI Act compliance.
+        </div>
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 6px; font-size: 0.88rem;">💡 Key Features & Options</h4>
+          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-secondary);">
+            <li><strong>LLM DLP Gateway:</strong> Real-time outbound prompt proxy sanitization for credentials and PII.</li>
+            <li><strong>Adversarial Pentester:</strong> Run DAN jailbreak and prompt extraction simulations against LLM endpoints.</li>
+            <li><strong>EU AI Act Classifier:</strong> Categorize vendor AI tools into legal risk tiers (Minimal, High, Prohibited).</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+
+  actions: {
+    title: '📋 Follow-up Action Center - Contextual Guide',
+    content: `
+      <div style="display: flex; flex-direction: column; gap: 14px; font-family: var(--font-body); line-height: 1.5; color: var(--text-primary);">
+        <div style="background: rgba(6, 182, 212, 0.06); border-left: 3px solid var(--color-cyan); padding: 10px 14px; border-radius: 4px;">
+          <strong style="color: var(--color-cyan); display: block; margin-bottom: 2px;">Core Objective:</strong>
+          Track, draft, and issue official remediation notices to suppliers with outstanding control gaps.
+        </div>
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 6px; font-size: 0.88rem;">💡 Key Features & Options</h4>
+          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-secondary);">
+            <li><strong>Status Filters:</strong> Filter action items by Control Gaps, Awaiting Response, and Pending Review.</li>
+            <li><strong>Communication Dispatch:</strong> Send automated email alerts and remediation tickets directly to vendor contacts.</li>
+            <li><strong>Audit Log:</strong> Track historical response turnarounds and escalate unaddressed gaps.</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+
+  inbox: {
+    title: '⚠️ Urgent Actions Inbox - Contextual Guide',
+    content: `
+      <div style="display: flex; flex-direction: column; gap: 14px; font-family: var(--font-body); line-height: 1.5; color: var(--text-primary);">
+        <div style="background: rgba(6, 182, 212, 0.06); border-left: 3px solid var(--color-cyan); padding: 10px 14px; border-radius: 4px;">
+          <strong style="color: var(--color-cyan); display: block; margin-bottom: 2px;">Core Objective:</strong>
+          Review urgent supplier submissions for critical SLA vulnerability remediation plans and DORA Article 19 Root Cause Analyses (RCA).
+        </div>
+        <div>
+          <h4 style="color: var(--text-primary); margin-bottom: 6px; font-size: 0.88rem;">💡 Key Features & Options</h4>
+          <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-secondary);">
+            <li><strong>Incoming Submissions:</strong> Inspect supplier RCA uploads, patch verifications, and mitigation requests.</li>
+            <li><strong>SLA Countdown Tracking:</strong> Monitor active regulatory countdowns (9h, 24h, 48h) for emergency fixes.</li>
+            <li><strong>Approval Workflow:</strong> Accept, reject, or request further evidence for incoming vendor remediations.</li>
+          </ul>
+        </div>
+      </div>
+    `
   }
 };
 
