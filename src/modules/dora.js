@@ -222,7 +222,7 @@ export function renderDoraModule() {
  */
 function renderCatalogue() {
   const state = getState();
-  const listContainer = document.getElementById('dora-articles-list');
+  const listContainer = document.getElementById('dora-catalog-list') || document.getElementById('dora-articles-list');
   if (!listContainer) return;
 
   listContainer.innerHTML = '';
