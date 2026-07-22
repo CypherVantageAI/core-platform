@@ -493,17 +493,17 @@ function drawDependencyGraph(srv) {
     });
   });
 
-  // Construct SVG Elements
   const isLight = document.body.classList.contains('light-mode');
   let pathsHtml = '';
   connections.forEach(c => {
     const dx = c.to.x - c.from.x;
     const dy = c.to.y - c.from.y;
     const pathD = `M ${c.from.x + 130} ${c.from.y + 25} C ${c.from.x + 130 + dx/2} ${c.from.y + 25}, ${c.from.x + 130 + dx/2} ${c.to.y + 25}, ${c.to.x} ${c.to.y + 25}`;
-    const strokeColor = c.critical ? '#ef4444' : (isLight ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.06)');
-    const strokeWidth = c.critical ? '2.5' : '1.5';
+    const strokeColor = c.critical ? '#ef4444' : (isLight ? '#0284c7' : '#38bdf8');
+    const strokeWidth = c.critical ? '2.5' : '1.8';
+    const strokeOpacity = c.critical ? '1.0' : (isLight ? '0.85' : '0.8');
     const filterGlow = c.critical ? 'filter="url(#glow-red)"' : '';
-    pathsHtml += `<path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" ${filterGlow} />`;
+    pathsHtml += `<path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" stroke-opacity="${strokeOpacity}" ${filterGlow} />`;
   });
 
   // Render Nodes
