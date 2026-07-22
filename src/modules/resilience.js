@@ -730,67 +730,85 @@ function renderTwinTab(container) {
         </div>
       </div>
 
-      <!-- 2. Dynamic Executive Analytics Gauges (6 Core Metrics) -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; width: 100%;">
+      <!-- 2. Dynamic Executive Analytics Gauges (6 Core Metrics - 1 Row Grid with Explanation Popups) -->
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%;">
         
         <!-- Gauge 1: Critical Service Health Score -->
-        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${serviceHealth.badgeColor};">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Critical Service Health</span>
+        <div class="dashboard-card" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${serviceHealth.badgeColor}; position: relative; cursor: help;" title="${serviceHealth.detail || 'Percentage of critical services operating within RTO targets.'}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Critical Service Health</span>
+            <span style="font-size: 0.55rem; color: var(--color-cyan); cursor: pointer;" onclick="alert('Critical Service Health Score Explanation:\\n\\n${serviceHealth.detail || 'Measures tier-1 services currently operating within target RTO thresholds.'}')">ℹ️</span>
+          </div>
           <div style="display: flex; align-items: baseline; justify-content: space-between;">
-            <span style="font-size: 1.4rem; font-weight: 800; color: ${serviceHealth.badgeColor};">${serviceHealth.score}%</span>
+            <span style="font-size: 1.3rem; font-weight: 800; color: ${serviceHealth.badgeColor};">${serviceHealth.score}%</span>
             <span style="font-size: 0.58rem; font-weight: 700; color: #10b981;">${serviceHealth.trend}</span>
           </div>
-          <span style="font-size: 0.56rem; color: var(--text-secondary);">${serviceHealth.status}</span>
+          <span style="font-size: 0.56rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${serviceHealth.status}</span>
         </div>
 
         <!-- Gauge 2: Recovery Confidence Score -->
-        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${recoveryConf.badgeColor};">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Recovery Confidence</span>
+        <div class="dashboard-card" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${recoveryConf.badgeColor}; position: relative; cursor: help;" title="${recoveryConf.detail || 'Dynamic score based on DR plan test pass rates, backup freshness, and RTO vs MTD margins.'}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Recovery Confidence</span>
+            <span style="font-size: 0.55rem; color: var(--color-cyan); cursor: pointer;" onclick="alert('Recovery Confidence Score Explanation:\\n\\n${recoveryConf.detail || 'Evaluates DR readiness drills, recovery plan pass rates, and RTO/MTD margins.'}')">ℹ️</span>
+          </div>
           <div style="display: flex; align-items: baseline; justify-content: space-between;">
-            <span style="font-size: 1.4rem; font-weight: 800; color: ${recoveryConf.badgeColor};">${recoveryConf.score}%</span>
+            <span style="font-size: 1.3rem; font-weight: 800; color: ${recoveryConf.badgeColor};">${recoveryConf.score}%</span>
             <span style="font-size: 0.58rem; font-weight: 700; color: #10b981;">${recoveryConf.trend}</span>
           </div>
-          <span style="font-size: 0.56rem; color: var(--text-secondary);">${recoveryConf.status}</span>
+          <span style="font-size: 0.56rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${recoveryConf.status}</span>
         </div>
 
         <!-- Gauge 3: Supplier Dependency Score -->
-        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${supplierDep.badgeColor};">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Supplier Dependency</span>
+        <div class="dashboard-card" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${supplierDep.badgeColor}; position: relative; cursor: help;" title="${supplierDep.detail || 'Multi-cloud concentration, 4th-party subprocessor risks, and critical vendor SLA scores.'}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Supplier Dependency</span>
+            <span style="font-size: 0.55rem; color: var(--color-cyan); cursor: pointer;" onclick="alert('Supplier Dependency Score Explanation:\\n\\n${supplierDep.detail || 'Calculates concentration risks across critical cloud vendors and key suppliers.'}')">ℹ️</span>
+          </div>
           <div style="display: flex; align-items: baseline; justify-content: space-between;">
-            <span style="font-size: 1.4rem; font-weight: 800; color: ${supplierDep.badgeColor};">${supplierDep.score}%</span>
+            <span style="font-size: 1.3rem; font-weight: 800; color: ${supplierDep.badgeColor};">${supplierDep.score}%</span>
             <span style="font-size: 0.58rem; font-weight: 700; color: #f59e0b;">${supplierDep.trend}</span>
           </div>
-          <span style="font-size: 0.56rem; color: var(--text-secondary);">${supplierDep.status}</span>
+          <span style="font-size: 0.56rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${supplierDep.status}</span>
         </div>
 
         <!-- Gauge 4: Operational Risk Velocity -->
-        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${riskVel.badgeColor};">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Operational Risk Velocity</span>
+        <div class="dashboard-card" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${riskVel.badgeColor}; position: relative; cursor: help;" title="${riskVel.detail || 'Speed indicator measuring rate of risk accumulation vs resolution velocity.'}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Risk Velocity</span>
+            <span style="font-size: 0.55rem; color: var(--color-cyan); cursor: pointer;" onclick="alert('Operational Risk Velocity Explanation:\\n\\n${riskVel.detail || 'Measures the rate of unmitigated operational risk accumulation per week.'}')">ℹ️</span>
+          </div>
           <div style="display: flex; align-items: baseline; justify-content: space-between;">
-            <span style="font-size: 1.4rem; font-weight: 800; color: ${riskVel.badgeColor};">${riskVel.velocityPct}</span>
+            <span style="font-size: 1.3rem; font-weight: 800; color: ${riskVel.badgeColor};">${riskVel.velocityPct}</span>
             <span style="font-size: 0.58rem; font-weight: 700; color: #ef4444;">⚠️ High</span>
           </div>
-          <span style="font-size: 0.56rem; color: var(--text-secondary);">${riskVel.status}</span>
+          <span style="font-size: 0.56rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${riskVel.status}</span>
         </div>
 
         <!-- Gauge 5: Testing Coverage Index -->
-        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${testingCov.badgeColor};">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Testing Coverage Index</span>
+        <div class="dashboard-card" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${testingCov.badgeColor}; position: relative; cursor: help;" title="${testingCov.detail || 'Ratio of tested & approved scenario playbooks vs total registered operational services.'}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Testing Coverage</span>
+            <span style="font-size: 0.55rem; color: var(--color-cyan); cursor: pointer;" onclick="alert('Testing Coverage Index Explanation:\\n\\n${testingCov.detail || 'Tracks the percentage of critical business services validated through scenario playbooks.'}')">ℹ️</span>
+          </div>
           <div style="display: flex; align-items: baseline; justify-content: space-between;">
-            <span style="font-size: 1.4rem; font-weight: 800; color: ${testingCov.badgeColor};">${testingCov.index}%</span>
+            <span style="font-size: 1.3rem; font-weight: 800; color: ${testingCov.badgeColor};">${testingCov.index}%</span>
             <span style="font-size: 0.58rem; font-weight: 700; color: #10b981;">${testingCov.trend}</span>
           </div>
-          <span style="font-size: 0.56rem; color: var(--text-secondary);">${testingCov.status}</span>
+          <span style="font-size: 0.56rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${testingCov.status}</span>
         </div>
 
         <!-- Gauge 6: DORA Readiness Index -->
-        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${doraIndex.badgeColor};">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">DORA Readiness Index</span>
+        <div class="dashboard-card" style="padding: 10px 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${doraIndex.badgeColor}; position: relative; cursor: help;" title="${doraIndex.detail || 'Weighted compliance alignment across all 5 DORA Pillars.'}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">DORA Readiness</span>
+            <span style="font-size: 0.55rem; color: var(--color-cyan); cursor: pointer;" onclick="alert('DORA Readiness Index Explanation:\\n\\n${doraIndex.detail || 'Calculates compliance posture across Articles 5, 17, 24, and 28 of DORA.'}')">ℹ️</span>
+          </div>
           <div style="display: flex; align-items: baseline; justify-content: space-between;">
-            <span style="font-size: 1.4rem; font-weight: 800; color: ${doraIndex.badgeColor};">${doraIndex.score}%</span>
+            <span style="font-size: 1.3rem; font-weight: 800; color: ${doraIndex.badgeColor};">${doraIndex.score}%</span>
             <span style="font-size: 0.58rem; font-weight: 700; color: #10b981;">${doraIndex.trend}</span>
           </div>
-          <span style="font-size: 0.56rem; color: var(--text-secondary);">${doraIndex.status}</span>
+          <span style="font-size: 0.56rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doraIndex.status}</span>
         </div>
 
       </div>
@@ -893,6 +911,9 @@ function renderSimulateSubPane(container, state, suppliers, assets) {
   // Hooks
   const selectNode = document.getElementById('twin-target-select');
   if (selectNode) {
+    if (!selectedTwinPoint && suppliers.length > 0) {
+      selectedTwinPoint = `sup-${suppliers[0].id}`;
+    }
     selectNode.onchange = (e) => {
       selectedTwinPoint = e.target.value;
     };
@@ -910,13 +931,18 @@ function renderSimulateSubPane(container, state, suppliers, assets) {
 // SUB-TAB 2: IMPACT & AUDIT QUERIES
 // --------------------------------------------------------------------------
 function renderAuditSubPane(container, state, suppliers) {
-  const untestedServices = state.services.filter(s => {
-    const hasDrill = state.incidents.some(inc => inc.serviceAffected === s.name && inc.classification === 'Recovery Drill');
+  const untestedServices = (state.services || []).filter(s => {
+    const hasDrill = (state.incidents || []).some(inc => inc.serviceAffected === s.name && inc.classification === 'Recovery Drill');
     return !hasDrill;
   });
 
+  if (!selectedAuditTarget && suppliers.length > 0) {
+    selectedAuditTarget = suppliers[0].id;
+  }
+
   // Default supplier calculation
-  const defaultSup = (state.suppliers && state.suppliers[selectedAuditTarget]) || (suppliers && suppliers[0]) || {};
+  const rawSuppliers = state.suppliers || {};
+  const defaultSup = (Array.isArray(rawSuppliers) ? rawSuppliers.find(s => s.id === selectedAuditTarget) : rawSuppliers[selectedAuditTarget]) || (suppliers && suppliers[0]) || {};
   const defaultSupName = defaultSup.name || 'AWS';
   const supSearchTerm = defaultSupName.split(' ')[0].toLowerCase();
   const affectedAppsSup = state.applications ? state.applications.filter(app => 
@@ -990,7 +1016,7 @@ function renderAuditSubPane(container, state, suppliers) {
         <div style="display: flex; flex-direction: column; gap: 4px; max-height: 120px; overflow-y: auto;">
           ${untestedServices.length > 0 ? untestedServices.map(s => `
             <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 4px; font-size: 0.65rem;">
-              <span>🏢 <b>${s.name}</b> (${s.serviceType.toUpperCase()})</span>
+              <span>🏢 <b>${s.name}</b> (${(s.serviceType || 'Core').toUpperCase()})</span>
               <span style="color: #ef4444; font-weight: 700; animation: blink 1s infinite;">❌ 0 Drills Logged</span>
             </div>
           `).join('') : '<div style="font-size:0.65rem; color:#10b981; font-style:italic;">All critical services have active recovery test logs.</div>'}
@@ -1000,56 +1026,73 @@ function renderAuditSubPane(container, state, suppliers) {
   `;
 
   // Bind Query 1
-  document.getElementById('audit-supplier-select').onchange = (e) => { selectedAuditTarget = e.target.value; };
-  document.getElementById('btn-audit-supplier').onclick = () => {
-    const resBox = document.getElementById('audit-supplier-result');
-    const supObj = state.suppliers[selectedAuditTarget];
-    const affectedApps = state.applications.filter(app => app.hostingProvider && app.hostingProvider.toLowerCase().includes(supObj.name.split(' ')[0].toLowerCase()));
-    const affectedServices = [];
-    affectedApps.forEach(app => {
-      const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
-      affectedServices.push(...srvs);
-    });
-    const uniqSrvNames = [...new Set(affectedServices.map(s => s.name))];
+  const selSup = document.getElementById('audit-supplier-select');
+  if (selSup) selSup.onchange = (e) => { selectedAuditTarget = e.target.value; };
 
-    resBox.innerHTML = `
-      <div style="margin-top:5px; border-left: 2px solid #ef4444; padding-left: 6px; display: flex; flex-direction: column; gap: 2px;">
-        <div><b>Downstream Apps Affected:</b> ${affectedApps.map(a => a.name).join(', ') || 'None'}</div>
-        <div><b>Impacted Critical Services:</b> ${uniqSrvNames.join(', ') || 'None'}</div>
-        <div><b>Financial Impact:</b> £${(affectedApps.length * 20000).toLocaleString()}/hour</div>
-      </div>
-    `;
-    selectedTwinPoint = `sup-${selectedAuditTarget}`;
-    executeTwinSimulation();
-  };
+  const btnSup = document.getElementById('btn-audit-supplier');
+  if (btnSup) {
+    btnSup.onclick = () => {
+      const resBox = document.getElementById('audit-supplier-result');
+      const allSups = Array.isArray(state.suppliers) ? state.suppliers : Object.values(state.suppliers || {});
+      const supObj = allSups.find(s => s.id === selectedAuditTarget) || suppliers[0] || {};
+      const supNameStr = (supObj.name || 'AWS').split(' ')[0].toLowerCase();
 
-  // Bind Query 2
-  document.getElementById('audit-region-select').onchange = (e) => { selectedAuditRegion = e.target.value; };
-  document.getElementById('btn-audit-region').onclick = () => {
-    const resBox = document.getElementById('audit-region-result');
-    const affectedAssets = state.assets.filter(ast => ast.region && ast.region.toLowerCase().includes(selectedAuditRegion.toLowerCase()));
-    const affectedServices = [];
-    affectedAssets.forEach(ast => {
-      const matchedApps = state.applications.filter(app => ast.name.includes(app.name.split(' ')[0]));
-      matchedApps.forEach(app => {
-        const srvs = state.services.filter(s => s.applications && s.applications.includes(app.id));
+      const affectedApps = (state.applications || []).filter(app => app.hostingProvider && app.hostingProvider.toLowerCase().includes(supNameStr));
+      const affectedServices = [];
+      affectedApps.forEach(app => {
+        const srvs = (state.services || []).filter(s => s.applications && s.applications.includes(app.id));
         affectedServices.push(...srvs);
       });
-    });
-    const uniqSrvNames = [...new Set(affectedServices.map(s => s.name))];
+      const uniqSrvNames = [...new Set(affectedServices.map(s => s.name))];
 
-    resBox.innerHTML = `
-      <div style="margin-top:5px; border-left: 2px solid #ef4444; padding-left: 6px; display: flex; flex-direction: column; gap: 2px;">
-        <div><b>Hosting Assets Affected:</b> ${affectedAssets.map(a => a.name).join(', ') || 'None'}</div>
-        <div><b>Impacted Critical Services:</b> ${uniqSrvNames.join(', ') || 'None'}</div>
-        <div><b>Availability Disruption:</b> Complete regional failover required.</div>
-      </div>
-    `;
-    if (affectedAssets.length > 0) {
-      selectedTwinPoint = `ast-${affectedAssets[0].id}`;
+      if (resBox) {
+        resBox.innerHTML = `
+          <div style="margin-top:5px; border-left: 2px solid #ef4444; padding-left: 6px; display: flex; flex-direction: column; gap: 2px;">
+            <div><b>Downstream Apps Affected:</b> ${affectedApps.map(a => a.name).join(', ') || 'None'}</div>
+            <div><b>Impacted Critical Services:</b> ${uniqSrvNames.join(', ') || 'None'}</div>
+            <div><b>Financial Impact:</b> £${(affectedApps.length * 20000).toLocaleString()}/hour</div>
+          </div>
+        `;
+      }
+      selectedTwinPoint = `sup-${supObj.id || selectedAuditTarget}`;
       executeTwinSimulation();
-    }
-  };
+    };
+  }
+
+  // Bind Query 2
+  const selReg = document.getElementById('audit-region-select');
+  if (selReg) selReg.onchange = (e) => { selectedAuditRegion = e.target.value; };
+
+  const btnReg = document.getElementById('btn-audit-region');
+  if (btnReg) {
+    btnReg.onclick = () => {
+      const resBox = document.getElementById('audit-region-result');
+      const affectedAssets = (state.assets || []).filter(ast => ast.region && ast.region.toLowerCase().includes((selectedAuditRegion || 'us-east-1').toLowerCase()));
+      const affectedServices = [];
+      affectedAssets.forEach(ast => {
+        const matchedApps = (state.applications || []).filter(app => ast.name.includes(app.name.split(' ')[0]));
+        matchedApps.forEach(app => {
+          const srvs = (state.services || []).filter(s => s.applications && s.applications.includes(app.id));
+          affectedServices.push(...srvs);
+        });
+      });
+      const uniqSrvNames = [...new Set(affectedServices.map(s => s.name))];
+
+      if (resBox) {
+        resBox.innerHTML = `
+          <div style="margin-top:5px; border-left: 2px solid #ef4444; padding-left: 6px; display: flex; flex-direction: column; gap: 2px;">
+            <div><b>Hosting Assets Affected:</b> ${affectedAssets.map(a => a.name).join(', ') || 'None'}</div>
+            <div><b>Impacted Critical Services:</b> ${uniqSrvNames.join(', ') || 'None'}</div>
+            <div><b>Availability Disruption:</b> Complete regional failover required.</div>
+          </div>
+        `;
+      }
+      if (affectedAssets.length > 0) {
+        selectedTwinPoint = `ast-${affectedAssets[0].id}`;
+        executeTwinSimulation();
+      }
+    };
+  }
 }
 
 // --------------------------------------------------------------------------
