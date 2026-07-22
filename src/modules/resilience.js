@@ -39,8 +39,8 @@ let highlightCriticalPath = false;
 export function renderResilienceModule() {
   window.activeResilienceTab = activeResilienceTab;
   window.executeTwinSimulation = executeTwinSimulation;
-  window.toggleDortFullscreen = function() {
-    const pane = document.getElementById('view-manager-resilience');
+  window.togglePaneFullscreen = function(paneId = 'view-manager-resilience') {
+    const pane = document.getElementById(paneId);
     const sidebar = document.querySelector('.app-sidebar');
     if (pane) {
       if (pane.classList.contains('view-fullscreen-mode')) {
@@ -57,6 +57,7 @@ export function renderResilienceModule() {
       }
     }
   };
+  window.toggleDortFullscreen = function() { window.togglePaneFullscreen('view-manager-resilience'); };
   const container = document.getElementById('view-manager-resilience');
   if (!container) return;
 
@@ -64,14 +65,19 @@ export function renderResilienceModule() {
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
       <!-- Sub-tab Selector -->
-      <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; overflow-x: auto; width: 100%;">
-        <button id="btn-res-tab-services" class="btn btn-secondary btn-xs ${activeResilienceTab === 'services' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🏢 Business Services</button>
-        <button id="btn-res-tab-dependencies" class="btn btn-secondary btn-xs ${activeResilienceTab === 'dependencies' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Dependency Mapping</button>
-        <button id="btn-res-tab-twin" class="btn btn-secondary btn-xs ${activeResilienceTab === 'twin' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">♊ Digital Resilience Twin</button>
-        <button id="btn-res-tab-simulation" class="btn btn-secondary btn-xs ${activeResilienceTab === 'simulation' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🧬 Scenario Simulation</button>
-        <button id="btn-res-tab-incidents" class="btn btn-secondary btn-xs ${activeResilienceTab === 'incidents' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🚨 Incident Management</button>
-        <button id="btn-res-tab-readiness" class="btn btn-secondary btn-xs ${activeResilienceTab === 'readiness' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">⏱️ Recovery Readiness</button>
-        <button id="btn-res-tab-monitoring" class="btn btn-secondary btn-xs ${activeResilienceTab === 'monitoring' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">📊 Control Monitoring</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; width: 100%; gap: 12px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 8px; overflow-x: auto; flex: 1;">
+          <button id="btn-res-tab-services" class="btn btn-secondary btn-xs ${activeResilienceTab === 'services' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🏢 Business Services</button>
+          <button id="btn-res-tab-dependencies" class="btn btn-secondary btn-xs ${activeResilienceTab === 'dependencies' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Dependency Mapping</button>
+          <button id="btn-res-tab-twin" class="btn btn-secondary btn-xs ${activeResilienceTab === 'twin' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">♊ Digital Resilience Twin</button>
+          <button id="btn-res-tab-simulation" class="btn btn-secondary btn-xs ${activeResilienceTab === 'simulation' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🧬 Scenario Simulation</button>
+          <button id="btn-res-tab-incidents" class="btn btn-secondary btn-xs ${activeResilienceTab === 'incidents' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🚨 Incident Management</button>
+          <button id="btn-res-tab-readiness" class="btn btn-secondary btn-xs ${activeResilienceTab === 'readiness' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">⏱️ Recovery Readiness</button>
+          <button id="btn-res-tab-monitoring" class="btn btn-secondary btn-xs ${activeResilienceTab === 'monitoring' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">📊 Control Monitoring</button>
+        </div>
+        <button id="btn-resilience-fullscreen" class="btn btn-secondary btn-xs" onclick="window.togglePaneFullscreen('view-manager-resilience')" style="padding: 6px 12px; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 4px; border-color: rgba(6,182,212,0.3); color: var(--color-cyan); background: rgba(6,182,212,0.06); flex-shrink: 0;" title="Toggle Fullscreen View">
+          <span>⛶ Fullscreen</span>
+        </button>
       </div>
 
       <!-- Tab Content Pane -->

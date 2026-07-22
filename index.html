@@ -484,14 +484,19 @@
             <h2>Executive Resilience Dashboard</h2>
             <p>Real-time regulatory compliance mapping and corporate operational health indexing.</p>
           </div>
-          <button class="pane-help-btn" onclick="showPaneHelp('dashboard')" title="Pane Context Guide">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <span>Module Guide</span>
-          </button>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-dashboard')" title="Toggle Fullscreen View">
+              <span>⛶ Fullscreen</span>
+            </button>
+            <button class="pane-help-btn" onclick="showPaneHelp('dashboard')" title="Pane Context Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span>Module Guide</span>
+            </button>
+          </div>
         </div>
         <!-- Populated dynamically by dashboard.js -->
       </section>
@@ -505,14 +510,19 @@
             <h2>Operational Resilience Management</h2>
             <p>Map Important Business Services (IBS), Digital Twins, and Scenario Simulations under DORA Guidelines.</p>
           </div>
-          <button class="pane-help-btn" onclick="showPaneHelp('resilience')" title="Pane Context Guide">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <span>Module Guide</span>
-          </button>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="pane-help-btn" onclick="window.togglePaneFullscreen('view-manager-resilience')" title="Toggle Fullscreen View">
+              <span>⛶ Fullscreen</span>
+            </button>
+            <button class="pane-help-btn" onclick="showPaneHelp('resilience')" title="Pane Context Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span>Module Guide</span>
+            </button>
+          </div>
         </div>
         <!-- Populated dynamically by resilience.js -->
       </section>
