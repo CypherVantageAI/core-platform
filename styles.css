@@ -271,7 +271,7 @@ body.dark-mode {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 24px 0;
+  padding: 10px 0;
   overflow-y: auto;
   overflow-x: hidden;
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -313,13 +313,13 @@ body.dark-mode {
 .app-sidebar.collapsed .nav-item,
 .app-sidebar.collapsed .nav-sub-item {
   justify-content: center;
-  padding: 10px 0;
+  padding: 6px 0;
 }
 
 .app-sidebar.collapsed:hover .nav-item,
 .app-sidebar.collapsed:hover .nav-sub-item {
   justify-content: flex-start;
-  padding: 10px 16px;
+  padding: 5px 12px;
 }
 
 .app-sidebar.collapsed .nav-icon {
@@ -347,27 +347,27 @@ body.dark-mode {
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 8px;
 }
 
 .nav-list {
   list-style: none;
-  padding: 0 16px;
+  padding: 0 12px;
 }
 
 .nav-section {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--text-muted);
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin-top: 24px;
-  margin-bottom: 10px;
-  padding-left: 10px;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  padding-left: 8px;
 }
 
 .nav-section:first-child {
-  margin-top: 8px;
+  margin-top: 2px;
 }
 
 .nav-item {
@@ -379,22 +379,27 @@ body.dark-mode {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
+  padding: 5px 10px;
   border-radius: var(--border-radius-md);
-  margin-bottom: 3px;
+  margin-bottom: 1px;
   white-space: nowrap;
   transition: all var(--transition-speed);
 }
 
 /* Primary Main Navigation Sections */
 .nav-item-main {
-  font-size: 0.84rem !important;
+  font-size: 0.82rem !important;
   font-weight: 700 !important;
   color: var(--text-primary) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  padding-bottom: 9px;
-  margin-top: 8px;
-  margin-bottom: 4px;
+  padding-bottom: 5px;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.nav-item-main:first-child,
+li:first-child .nav-item-main {
+  margin-top: 0 !important;
 }
 
 body.light-mode .nav-item-main {
