@@ -697,7 +697,7 @@ function renderTwinTab(container) {
             </span>
             <strong style="font-size: 0.76rem; color: var(--text-primary); font-weight: 700;">${boardAnswers.mostAtRisk.title}</strong>
             <p style="font-size: 0.64rem; color: var(--text-secondary); margin: 0;">${boardAnswers.mostAtRisk.description}</p>
-            <div style="margin-top: 4px; font-size: 0.58rem; color: #ef4444; font-weight: 700; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 3px;">
+            <div class="dort-action-tag" style="margin-top: 4px; font-size: 0.58rem; color: #ef4444; font-weight: 700; background: rgba(239, 68, 68, 0.12); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.25);">
               🎯 Immediate Action: ${boardAnswers.mostAtRisk.action}
             </div>
           </div>
@@ -709,7 +709,7 @@ function renderTwinTab(container) {
             </span>
             <strong style="font-size: 0.76rem; color: var(--text-primary); font-weight: 700;">${boardAnswers.deteriorating.title}</strong>
             <p style="font-size: 0.64rem; color: var(--text-secondary); margin: 0;">${boardAnswers.deteriorating.description}</p>
-            <div style="margin-top: 4px; font-size: 0.58rem; color: #f59e0b; font-weight: 700; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 3px;">
+            <div class="dort-action-tag" style="margin-top: 4px; font-size: 0.58rem; color: #d97706; font-weight: 700; background: rgba(245, 158, 11, 0.12); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(245, 158, 11, 0.25);">
               🎯 Immediate Action: ${boardAnswers.deteriorating.action}
             </div>
           </div>

@@ -5692,28 +5692,30 @@ window.startSupplierSlaCountdown = function() {
 window.showHelpGuide = function(targetSection) {
   const sections = {
     quickstart: `
-      <div style="background: rgba(6, 182, 212, 0.06); border: 1px solid rgba(6, 182, 212, 0.2); padding: 12px; border-radius: 6px; margin-bottom: 12px;">
-        <h4 style="color: var(--color-cyan); font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">🚀 60-Second Enterprise Fast Track (Zero Training Required)</h4>
-        <p style="font-size: 0.72rem; margin: 0;">Welcome to Cypher Vantage! Whether you are a Board Director, Regional Risk Manager in London or Singapore, IT Ops Specialist, or Vendor Specialist, here is how to navigate the platform in 3 easy steps:</p>
+      <div style="background: rgba(6, 182, 212, 0.06); border: 1px solid rgba(6, 182, 212, 0.2); padding: 8px 10px; border-radius: 6px; margin-bottom: 8px;">
+        <h4 style="color: var(--color-cyan); font-size: 0.78rem; font-weight: 700; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.04em;">🚀 60-Second Fast Track (Zero Training Required)</h4>
+        <p style="font-size: 0.68rem; margin: 0;">Welcome to Cypher Vantage! Navigate the enterprise platform in 3 easy steps:</p>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px;">
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px;">
-          <strong style="color: var(--color-cyan); font-size: 0.74rem;">1. Pick Your Persona</strong>
-          <p style="font-size: 0.68rem; margin-top: 4px; color: var(--text-secondary);">Use the top header toggle to switch between <b>Risk Manager</b> (internal enterprise scope) and <b>Supplier Portal</b> (vendor scope).</p>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px;">
+          <strong style="color: var(--color-cyan); font-size: 0.7rem;">1. Pick Persona</strong>
+          <p style="font-size: 0.64rem; margin-top: 2px; color: var(--text-secondary); line-height: 1.3;">Switch between <b>Risk Manager</b> and <b>Supplier Portal</b> via top header.</p>
         </div>
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px;">
-          <strong style="color: var(--color-cyan); font-size: 0.74rem;">2. Click Any Metric Card</strong>
-          <p style="font-size: 0.68rem; margin-top: 4px; color: var(--text-secondary);">Every metric card across Executive Dashboard & Resilience is interactive. Click to open deep-dive breakdown modals.</p>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px;">
+          <strong style="color: var(--color-cyan); font-size: 0.7rem;">2. Click Metric Cards</strong>
+          <p style="font-size: 0.64rem; margin-top: 2px; color: var(--text-secondary); line-height: 1.3;">Click any KPI on the dashboard to launch detailed breakdown modals.</p>
         </div>
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px;">
-          <strong style="color: var(--color-cyan); font-size: 0.74rem;">3. Ask the AI Analyst</strong>
-          <p style="font-size: 0.68rem; margin-top: 4px; color: var(--text-secondary);">Type plain English questions like <i>"Show DORA gaps"</i> or <i>"Which services lack testing?"</i> into the AI Copilot.</p>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px;">
+          <strong style="color: var(--color-cyan); font-size: 0.7rem;">3. Ask AI Analyst</strong>
+          <p style="font-size: 0.64rem; margin-top: 2px; color: var(--text-secondary); line-height: 1.3;">Type queries like <i>"Show DORA gaps"</i> into the AI Copilot.</p>
         </div>
       </div>
 
-      <h4 style="color: var(--text-primary); font-size: 0.78rem; text-transform: uppercase; margin-bottom: 6px; font-weight: 700;">🌐 Regional & Global Scope</h4>
-      <p style="font-size: 0.72rem;">Designed for multi-region teams (Americas, EMEA, APAC, LATAM). Switch currency display anytime using the top dropdown selector (GBP £, USD $, EUR €, BRL R$).</p>
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 8px 10px; border-radius: 6px;">
+        <strong style="color: var(--text-primary); font-size: 0.72rem; text-transform: uppercase; font-weight: 700;">🌐 Regional & Global Multi-Currency</strong>
+        <p style="font-size: 0.66rem; margin-top: 2px; margin-bottom: 0; color: var(--text-secondary);">Switch currency display anytime using the top dropdown selector (<b>GBP £</b>, <b>USD $</b>, <b>EUR €</b>).</p>
+      </div>
     `,
 
     overview: `
