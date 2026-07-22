@@ -294,7 +294,10 @@ body.dark-mode {
 .app-sidebar.collapsed .nav-sub-item span,
 .app-sidebar.collapsed .badge,
 .app-sidebar.collapsed .nav-section,
-.app-sidebar.collapsed .nav-sub-list {
+.app-sidebar.collapsed .nav-sub-list,
+.app-sidebar.collapsed .footer-status span,
+.app-sidebar.collapsed .regulatory-seal,
+.app-sidebar.collapsed .btn-reset-label {
   display: none !important;
 }
 
@@ -302,8 +305,34 @@ body.dark-mode {
 .app-sidebar.collapsed:hover .nav-sub-item span,
 .app-sidebar.collapsed:hover .badge,
 .app-sidebar.collapsed:hover .nav-section,
-.app-sidebar.collapsed:hover .nav-sub-list {
+.app-sidebar.collapsed:hover .nav-sub-list,
+.app-sidebar.collapsed:hover .footer-status span,
+.app-sidebar.collapsed:hover .regulatory-seal,
+.app-sidebar.collapsed:hover .btn-reset-label {
   display: inline-block !important;
+}
+
+.app-sidebar.collapsed .sidebar-footer {
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-sidebar.collapsed .btn-reset-db {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  justify-content: center;
+}
+
+.app-sidebar.collapsed:hover .btn-reset-db {
+  width: 100%;
+  height: auto;
+  padding: 6px 12px;
+  border-radius: var(--border-radius-sm);
+  justify-content: center;
 }
 
 .app-sidebar.collapsed:hover .nav-sub-list {
@@ -472,7 +501,50 @@ body.light-mode .nav-item.active {
 }
 
 .sidebar-footer {
-  padding: 0 24px;
+  padding: 0 16px;
+}
+
+.btn-reset-db {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  font-size: 0.72rem;
+  padding: 6px 12px;
+  border-radius: var(--border-radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reset-db:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.light-mode .btn-reset-db {
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  color: var(--text-secondary);
+}
+
+body.light-mode .btn-reset-db:hover {
+  background: rgba(15, 23, 42, 0.08);
+  color: var(--text-primary);
+}
+
+.db-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.btn-reset-db:hover .db-icon {
+  color: var(--color-cyan);
 }
 
 .footer-status {
