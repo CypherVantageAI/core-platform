@@ -48,6 +48,7 @@ export function renderAnalystModule() {
             <button id="btn-preset-suppliers" class="btn btn-secondary btn-xs" style="font-size: 0.65rem; padding: 4px 10px;">⚠️ Suppliers w/o Exit Plan</button>
             <button id="btn-preset-dora" class="btn btn-secondary btn-xs" style="font-size: 0.65rem; padding: 4px 10px;">📜 DORA Weaknesses</button>
             <button id="btn-preset-gaps" class="btn btn-secondary btn-xs" style="font-size: 0.65rem; padding: 4px 10px;">🛡️ Identify Resilience Gaps</button>
+            <button id="btn-preset-exec-guide" class="btn btn-secondary btn-xs" style="font-size: 0.65rem; padding: 4px 10px; background: rgba(6, 182, 212, 0.15); border-color: var(--color-cyan); color: #fff;">⚡ Executive Simulator User Guide</button>
           </div>
         </div>
 
@@ -85,12 +86,13 @@ export function renderAnalystModule() {
     </div>
   `;
 
-  // Bind Preset Analysis buttons
+  // Bind Presets
   const presets = [
     { id: 'btn-preset-tolerance', did: 'exceed-tolerance' },
     { id: 'btn-preset-suppliers', did: 'exit-plan-audits' },
     { id: 'btn-preset-dora', did: 'dora-weaknesses' },
-    { id: 'btn-preset-gaps', did: 'resilience-gaps' }
+    { id: 'btn-preset-gaps', did: 'resilience-gaps' },
+    { id: 'btn-preset-exec-guide', did: 'exec-simulator-guide' }
   ];
   presets.forEach(p => {
     const btn = document.getElementById(p.id);
@@ -128,6 +130,8 @@ export function renderAnalystModule() {
         currentDossierId = 'board-monthly';
       } else if (val.includes('status') || val.includes('dora status') || val.includes('update')) {
         currentDossierId = 'board-dora-update';
+      } else if (val.includes('simulator') || val.includes('exec') || val.includes('scenario') || val.includes('guide')) {
+        currentDossierId = 'exec-simulator-guide';
       } else {
         currentDossierId = 'not-found';
       }
@@ -521,6 +525,47 @@ function renderDossierReport(state, dossierId) {
         <p style="margin:0; color:var(--text-secondary);">
           * Approve funding for active-active multi-datacenter replications of clearing databases.
         </p>
+      </div>
+    `;
+  }
+
+  if (dossierId === 'exec-simulator-guide') {
+    return `
+      <div style="border-bottom:1px solid var(--border-color); padding-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <strong style="color:var(--color-cyan); font-size:0.82rem; text-transform:uppercase;">⚡ EXECUTIVE SIMULATOR & SCENARIO ENGINE USER GUIDE</strong>
+        <span style="font-size:0.6rem; color:var(--text-muted); font-family:monospace;">MODULE: SIMULATION.JS</span>
+      </div>
+      
+      <div style="margin-top:12px; font-size:0.7rem; line-height:1.5; color:var(--text-primary); display:flex; flex-direction:column; gap:12px;">
+        <p style="margin:0; color:var(--text-secondary);">
+          The <strong>Executive Simulator</strong> allows board members, risk officers, and regulators to stress-test enterprise disruption scenarios before an actual incident occurs.
+        </p>
+
+        <div style="background:rgba(6, 182, 212, 0.05); border:1px solid rgba(6, 182, 212, 0.2); border-radius:6px; padding:10px;">
+          <strong style="color:var(--color-cyan); font-size:0.74rem; display:block; margin-bottom:4px;">🎯 6 Core Enterprise Outage Scenarios</strong>
+          <ul style="margin:0; padding-left:18px; color:var(--text-secondary);">
+            <li><strong>Cloud Outage:</strong> AWS us-east-1 region loss across core availability zones.</li>
+            <li><strong>Ransomware:</strong> LockBit malware payload locking Active Directory and databases.</li>
+            <li><strong>Third Party Failure:</strong> Global BGP drop across Infosys and Cloudflare edge networks.</li>
+            <li><strong>Identity Compromise:</strong> OAuth token theft hijacking domain admin credentials.</li>
+            <li><strong>Payment Platform Failure:</strong> Queue deadlock in SWIFT & Faster Payments clearing engines.</li>
+            <li><strong>Data Corruption:</strong> Silent database byte corruption desynchronizing journal replicas.</li>
+          </ul>
+        </div>
+
+        <div style="background:rgba(139, 92, 246, 0.05); border:1px solid rgba(139, 92, 246, 0.2); border-radius:6px; padding:10px;">
+          <strong style="color:#8b5cf6; font-size:0.74rem; display:block; margin-bottom:4px;">📊 6 Dynamic Impact Metrics</strong>
+          <p style="margin:0; color:var(--text-secondary);">
+            Every scenario dynamically calculates <em>Services Impacted</em>, <em>Customers Offline</em>, <em>Revenue Loss Rate (£/hr) & Total Financial Impact (£)</em>, <em>Regulatory Exposure (DORA Articles 11, 18, 50 & GDPR fines)</em>, <em>Recovery Time (MTTR vs RTO)</em>, and <em>Recovery Confidence (%)</em>.
+          </p>
+        </div>
+
+        <div style="background:rgba(16, 185, 129, 0.05); border:1px solid rgba(16, 185, 129, 0.2); border-radius:6px; padding:10px;">
+          <strong style="color:#10b981; font-size:0.74rem; display:block; margin-bottom:4px;">👔 5 C-Suite Persona Readouts</strong>
+          <p style="margin:0; color:var(--text-secondary);">
+            Selectable readouts tailor outputs for <strong>Executive/Board View</strong>, <strong>CRO View</strong>, <strong>COO View</strong>, <strong>CISO View</strong>, and <strong>Regulator View</strong> with a 1-click clipboard copy function.
+          </p>
+        </div>
       </div>
     `;
   }
