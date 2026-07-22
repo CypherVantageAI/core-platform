@@ -5,6 +5,19 @@
 import { getState, saveState } from '../core/db.js';
 import { createTable, createForm, createStatusBadge } from '../components/ui.js';
 import { renderSimulationTab } from './simulation.js';
+import {
+  analyzeBlastRadius,
+  getImpactPropagationChain,
+  calculateResilienceExposureScore,
+  getScoreExplainability,
+  calculateCriticalServiceHealthScore,
+  calculateRecoveryConfidenceScore,
+  calculateSupplierDependencyScore,
+  calculateOperationalRiskVelocity,
+  calculateTestingCoverageIndex,
+  calculateDoraReadinessIndex,
+  getExecutiveBoardAnswers
+} from '../core/resilienceEngine.js';
 
 let activeResilienceTab = 'services'; // 'services' | 'dependencies' | 'twin' | 'incidents' | 'readiness' | 'monitoring' | 'simulation'
 let selectedServiceId = 'srv-001';
@@ -639,47 +652,150 @@ function getTwinMetrics() {
 
 function renderTwinTab(container) {
   const state = getState();
-  const metrics = getTwinMetrics();
-  
-  const suppliers = Object.values(state.suppliers);
-  const assets = state.assets;
+
+  // Calculate 6 Executive-Grade Scores
+  const serviceHealth = calculateCriticalServiceHealthScore();
+  const recoveryConf = calculateRecoveryConfidenceScore();
+  const supplierDep = calculateSupplierDependencyScore();
+  const riskVel = calculateOperationalRiskVelocity();
+  const testingCov = calculateTestingCoverageIndex();
+  const doraIndex = calculateDoraReadinessIndex();
+
+  // Get Executive Board Answers
+  const boardAnswers = getExecutiveBoardAnswers();
 
   container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
-      <!-- 1. DORT Operational Health Dashboard Row -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; width: 100%;">
-        <div id="dort-kpi-health" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Twin Posture Health 🔍</span>
-          <span style="font-size: 1.3rem; font-weight: 700; color: ${metrics.healthScore >= 80 ? 'var(--color-cyan)' : '#ef4444'};">${metrics.healthScore}%</span>
-          <span style="font-size: 0.55rem; color: var(--text-secondary);">${metrics.healthScore >= 80 ? '✅ Secure Posture' : '⚠️ Degraded state'}</span>
+    <div style="display: flex; flex-direction: column; gap: 18px; width: 100%;">
+      
+      <!-- 1. Executive Board Cockpit: 30-Second Glance Header Banner -->
+      <div class="dashboard-card" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.98)); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 8px; padding: 16px; width: 100%; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 12px;">
+          <div>
+            <h2 style="font-size: 0.95rem; font-weight: 800; color: var(--text-primary); margin: 0; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px;">
+              <span>♊ Digital Operational Resilience Twin (DORT) — Executive Cockpit</span>
+              <span class="badge" style="background: #10b981; color: #fff; font-weight: 800; font-size: 0.58rem;">Board Ready • 30-Sec Executive Briefing</span>
+            </h2>
+          </div>
+          <div style="font-size: 0.62rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+            <span>Real-time Dynamic Twin Feed</span>
+            <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
+          </div>
         </div>
-        <div id="dort-kpi-risk" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Critical Services at Risk 🔍</span>
-          <span style="font-size: 1.3rem; font-weight: 700; color: ${metrics.uniqueAtRiskServices.length > 0 ? '#ef4444' : '#10b981'};">${metrics.uniqueAtRiskServices.length}</span>
-          <span style="font-size: 0.55rem; color: var(--text-secondary); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="${metrics.uniqueAtRiskServices.join(', ') || 'None'}">${metrics.uniqueAtRiskServices.join(', ') || 'All Services Secure'}</span>
-        </div>
-        <div id="dort-kpi-readiness" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Recovery Readiness 🔍</span>
-          <span style="font-size: 1.3rem; font-weight: 700; color: var(--color-cyan);">${metrics.readinessIndex}%</span>
-          <span style="font-size: 0.55rem; color: var(--text-secondary);">Tested DR Plans</span>
-        </div>
-        <div id="dort-kpi-gaps" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Open Control Weaknesses 🔍</span>
-          <span style="font-size: 1.3rem; font-weight: 700; color: #eab308;">${metrics.controlGaps}</span>
-          <span style="font-size: 0.55rem; color: var(--text-secondary);">Pending audit remediation</span>
-        </div>
-        <div id="dort-kpi-concentration" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; cursor:pointer;" title="Click for details">
-          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Supplier Concentration 🔍</span>
-          <span style="font-size: 1.3rem; font-weight: 700; color: #a855f7;">${metrics.concentrationStatus.split(' ')[0]}</span>
-          <span style="font-size: 0.55rem; color: var(--text-secondary); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="${metrics.concentrationStatus}">${metrics.concentrationStatus}</span>
+
+        <!-- 30-Second Board Executive Answers Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; width: 100%;">
+          
+          <!-- Q1: What is most at risk? -->
+          <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 0.58rem; font-weight: 800; color: #ef4444; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px;">
+              🚨 1. What is most at risk?
+            </span>
+            <strong style="font-size: 0.76rem; color: var(--text-primary); font-weight: 700;">${boardAnswers.mostAtRisk.title}</strong>
+            <p style="font-size: 0.64rem; color: var(--text-secondary); margin: 0;">${boardAnswers.mostAtRisk.description}</p>
+            <div style="margin-top: 4px; font-size: 0.58rem; color: #ef4444; font-weight: 700; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 3px;">
+              🎯 Immediate Action: ${boardAnswers.mostAtRisk.action}
+            </div>
+          </div>
+
+          <!-- Q2: What is deteriorating? -->
+          <div style="background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 0.58rem; font-weight: 800; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px;">
+              📉 2. What is deteriorating?
+            </span>
+            <strong style="font-size: 0.76rem; color: var(--text-primary); font-weight: 700;">${boardAnswers.deteriorating.title}</strong>
+            <p style="font-size: 0.64rem; color: var(--text-secondary); margin: 0;">${boardAnswers.deteriorating.description}</p>
+            <div style="margin-top: 4px; font-size: 0.58rem; color: #f59e0b; font-weight: 700; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 3px;">
+              🎯 Immediate Action: ${boardAnswers.deteriorating.action}
+            </div>
+          </div>
+
+          <!-- Q3: What should leadership focus on? -->
+          <div style="background: rgba(6, 182, 212, 0.06); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-size: 0.58rem; font-weight: 800; color: var(--color-cyan); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px;">
+              🎯 3. What should leadership focus on?
+            </span>
+            <div style="display: flex; flex-direction: column; gap: 2px; margin-top: 2px;">
+              ${boardAnswers.leadershipFocus.map(item => `
+                <div style="font-size: 0.62rem; color: var(--text-primary); display: flex; align-items: center; gap: 4px;">
+                  <span style="background: var(--color-cyan); color: #000; font-weight: 900; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.52rem;">${item.priority}</span>
+                  <span style="font-weight: 700;">${item.title}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <!-- 2. Dual Workspace Columns -->
+      <!-- 2. Dynamic Executive Analytics Gauges (6 Core Metrics) -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; width: 100%;">
+        
+        <!-- Gauge 1: Critical Service Health Score -->
+        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${serviceHealth.badgeColor};">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Critical Service Health</span>
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <span style="font-size: 1.4rem; font-weight: 800; color: ${serviceHealth.badgeColor};">${serviceHealth.score}%</span>
+            <span style="font-size: 0.58rem; font-weight: 700; color: #10b981;">${serviceHealth.trend}</span>
+          </div>
+          <span style="font-size: 0.56rem; color: var(--text-secondary);">${serviceHealth.status}</span>
+        </div>
+
+        <!-- Gauge 2: Recovery Confidence Score -->
+        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${recoveryConf.badgeColor};">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Recovery Confidence</span>
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <span style="font-size: 1.4rem; font-weight: 800; color: ${recoveryConf.badgeColor};">${recoveryConf.score}%</span>
+            <span style="font-size: 0.58rem; font-weight: 700; color: #10b981;">${recoveryConf.trend}</span>
+          </div>
+          <span style="font-size: 0.56rem; color: var(--text-secondary);">${recoveryConf.status}</span>
+        </div>
+
+        <!-- Gauge 3: Supplier Dependency Score -->
+        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${supplierDep.badgeColor};">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Supplier Dependency</span>
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <span style="font-size: 1.4rem; font-weight: 800; color: ${supplierDep.badgeColor};">${supplierDep.score}%</span>
+            <span style="font-size: 0.58rem; font-weight: 700; color: #f59e0b;">${supplierDep.trend}</span>
+          </div>
+          <span style="font-size: 0.56rem; color: var(--text-secondary);">${supplierDep.status}</span>
+        </div>
+
+        <!-- Gauge 4: Operational Risk Velocity -->
+        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${riskVel.badgeColor};">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Operational Risk Velocity</span>
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <span style="font-size: 1.4rem; font-weight: 800; color: ${riskVel.badgeColor};">${riskVel.velocityPct}</span>
+            <span style="font-size: 0.58rem; font-weight: 700; color: #ef4444;">⚠️ High</span>
+          </div>
+          <span style="font-size: 0.56rem; color: var(--text-secondary);">${riskVel.status}</span>
+        </div>
+
+        <!-- Gauge 5: Testing Coverage Index -->
+        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${testingCov.badgeColor};">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Testing Coverage Index</span>
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <span style="font-size: 1.4rem; font-weight: 800; color: ${testingCov.badgeColor};">${testingCov.index}%</span>
+            <span style="font-size: 0.58rem; font-weight: 700; color: #10b981;">${testingCov.trend}</span>
+          </div>
+          <span style="font-size: 0.56rem; color: var(--text-secondary);">${testingCov.status}</span>
+        </div>
+
+        <!-- Gauge 6: DORA Readiness Index -->
+        <div class="dashboard-card" style="padding: 12px; margin: 0; display: flex; flex-direction: column; gap: 4px; border-left: 3px solid ${doraIndex.badgeColor};">
+          <span style="font-size: 0.52rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">DORA Readiness Index</span>
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <span style="font-size: 1.4rem; font-weight: 800; color: ${doraIndex.badgeColor};">${doraIndex.score}%</span>
+            <span style="font-size: 0.58rem; font-weight: 700; color: #10b981;">${doraIndex.trend}</span>
+          </div>
+          <span style="font-size: 0.56rem; color: var(--text-secondary);">${doraIndex.status}</span>
+        </div>
+
+      </div>
+
+      <!-- 3. Dual Simulation & Visual Impact Workspace Columns -->
       <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
         <!-- Left: Control & Audit Panel -->
         <div class="dashboard-card" style="flex: 1.2; min-width: 380px; padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 15px;">
-          <!-- sub-navigation buttons -->
           <div style="display: flex; gap: 5px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
             <button id="btn-twin-sub-simulate" class="btn btn-secondary btn-xs ${activeTwinSubTab === 'simulate' ? 'active' : ''}" style="padding: 4px 10px; font-size: 0.65rem;">Simulation Workspace</button>
             <button id="btn-twin-sub-audit" class="btn btn-secondary btn-xs ${activeTwinSubTab === 'audit' ? 'active' : ''}" style="padding: 4px 10px; font-size: 0.65rem;">Impact &amp; Audit Queries</button>
@@ -706,6 +822,7 @@ function renderTwinTab(container) {
           </div>
         </div>
       </div>
+
     </div>
   `;
 
@@ -723,50 +840,16 @@ function renderTwinTab(container) {
     renderTwinTab(container);
   };
 
-  // Bind DORT KPI Metric Card Popups
-  const kpiHealth = document.getElementById('dort-kpi-health');
-  if (kpiHealth) {
-    kpiHealth.addEventListener('click', () => {
-      showModal('Twin Posture Health', `<div style="font-size:0.75rem; line-height:1.5;"><b>Twin Posture Score: ${metrics.healthScore}%</b><br/>Calculated dynamically from total active nodes, redundancy paths, and supplier compliance indices. Target threshold is >85% for full DORA Art. 5 compliance.</div>`);
-    });
-  }
-
-  const kpiRisk = document.getElementById('dort-kpi-risk');
-  if (kpiRisk) {
-    kpiRisk.addEventListener('click', () => {
-      showModal('Critical Services at Risk Details', `<div style="font-size:0.75rem; line-height:1.5;"><b>At-Risk Services:</b> ${metrics.uniqueAtRiskServices.join(', ') || 'None'}<br/><br/>These Important Business Services (IBS) exceed maximum tolerable disruption (MTD) limits during single-node failover simulations.</div>`);
-    });
-  }
-
-  const kpiReadiness = document.getElementById('dort-kpi-readiness');
-  if (kpiReadiness) {
-    kpiReadiness.addEventListener('click', () => {
-      showModal('Recovery Readiness Breakdown', `<div style="font-size:0.75rem; line-height:1.5;"><b>Recovery Readiness Index: ${metrics.readinessIndex}%</b><br/>Derived from automated scenario simulation passes and verified disaster recovery playbooks catalogued in the state database.</div>`);
-    });
-  }
-
-  const kpiGaps = document.getElementById('dort-kpi-gaps');
-  if (kpiGaps) {
-    kpiGaps.addEventListener('click', () => {
-      showModal('Open Control Weaknesses', `<div style="font-size:0.75rem; line-height:1.5;"><b>Control Weaknesses: ${metrics.controlGaps} Open</b><br/>Represents unmitigated audit findings and supplier TLS/encryption compliance gaps requiring resolution.</div>`);
-    });
-  }
-
-  const kpiConcentration = document.getElementById('dort-kpi-concentration');
-  if (kpiConcentration) {
-    kpiConcentration.addEventListener('click', () => {
-      showModal('Supplier Concentration Audit', `<div style="font-size:0.75rem; line-height:1.5;"><b>Concentration Assessment: ${metrics.concentrationStatus}</b><br/>Evaluates multi-cloud single points of failure across AWS, Salesforce, and Cloudflare subprocessors.</div>`);
-    });
-  }
-
   // Render Sub-Pane Content
   const subContent = document.getElementById('twin-sub-pane-content');
-  if (activeTwinSubTab === 'simulate') {
-    renderSimulateSubPane(subContent, state, suppliers, assets);
-  } else if (activeTwinSubTab === 'audit') {
-    renderAuditSubPane(subContent, state, suppliers);
-  } else if (activeTwinSubTab === 'recovery') {
-    renderRecoverySubPane(subContent, state);
+  if (subContent) {
+    if (activeTwinSubTab === 'simulate') {
+      renderSimulateSubPane(subContent, state, suppliers, assets);
+    } else if (activeTwinSubTab === 'audit') {
+      renderAuditSubPane(subContent, state, suppliers);
+    } else if (activeTwinSubTab === 'recovery') {
+      renderRecoverySubPane(subContent, state);
+    }
   }
 }
 
