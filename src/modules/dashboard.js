@@ -28,7 +28,8 @@ function renderDashboardContent() {
     const doraScore = Math.round(((compliantObligations + (partialObligations * 0.5)) / totalObligations) * 100);
 
     // Compute Supplier risk index
-    const suppliersList = Object.values(state.suppliers || {});
+    const rawSuppliers = state.suppliers || [];
+    const suppliersList = Array.isArray(rawSuppliers) ? rawSuppliers : Object.values(rawSuppliers);
     const avgSupplierScore = suppliersList.length ? (suppliersList.reduce((sum, s) => sum + s.complianceScore, 0) / suppliersList.length) : 100;
     const supplierRiskScore = Math.round(avgSupplierScore);
 
