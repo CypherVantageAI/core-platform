@@ -5757,6 +5757,16 @@ window.showHelpGuide = function() {
         <li><b>Lessons Learned:</b> After the drill completes, coordinators submit a post-mortem review, which is logged back to the database.</li>
       </ul>
     `,
+    execsimulator: `
+      <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">⚡ Executive Disruption Simulator</h4>
+      <p>Simulate severe operational disruptions before they occur to quantify executive impact, financial loss rates, and regulatory exposure:</p>
+      <ul>
+        <li><b>Enterprise Threat Scenarios:</b> Cloud Outage (AWS us-east-1), Ransomware Data Hijack, Third-Party Failure, Identity Compromise, Payment Platform Failure, and Data Corruption.</li>
+        <li><b>Dynamic Metric Calculations:</b> Calculates impacted services, affected customer counts, total revenue loss (£/hr), regulatory exposure, RTO recovery time, and recovery confidence %.</li>
+        <li><b>Board-Ready Persona Views:</b> Multi-angle C-Suite readouts for Board/Executive, CRO (Risk), COO (Ops), CISO (Security), and Regulators (DORA/PRA).</li>
+        <li><b>Interactive Control Overrides:</b> Test preventive controls (MFA, Anomaly Detection, SIEM, Database Replication) in real-time to observe resilience score improvements.</li>
+      </ul>
+    `,
     advisor: `
       <h4 style="color: var(--color-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">💬 State-Aware AI Advisor Commands</h4>
       <p>The AI chatbot is state-aware and directly queries the active database to return formatted markdown tables. Try typing these commands in the chat input box:</p>
@@ -5835,6 +5845,7 @@ window.showHelpGuide = function() {
         <button id="guide-tab-btn-aigovern" class="horizontal-sub-tab-btn" onclick="switchGuideTab('aigovern')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">🤖 AI Governance</button>
         <button id="guide-tab-btn-tprm" class="horizontal-sub-tab-btn" onclick="switchGuideTab('tprm')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">🤝 TPRM & Exits</button>
         <button id="guide-tab-btn-drills" class="horizontal-sub-tab-btn" onclick="switchGuideTab('drills')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">🔄 Tabletop Drills</button>
+        <button id="guide-tab-btn-execsimulator" class="horizontal-sub-tab-btn" onclick="switchGuideTab('execsimulator')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: rgba(6, 182, 212, 0.1); color: var(--color-cyan); font-weight: 600; cursor: pointer; width: 100%;">⚡ Executive Simulator</button>
         <button id="guide-tab-btn-advisor" class="horizontal-sub-tab-btn" onclick="switchGuideTab('advisor')" style="text-align: left; padding: 6px 8px; border-radius: 4px; border: none; background: none; color: var(--text-secondary); cursor: pointer; width: 100%;">💬 Chat Copilot</button>
       </div>
       <!-- Details panel -->

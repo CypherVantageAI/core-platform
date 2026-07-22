@@ -60,9 +60,14 @@ export function renderSimulationTab(container) {
             <h3 style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
               Operational Resilience Scenario Templates
             </h3>
-            <button id="btn-toggle-designer" class="btn btn-primary btn-xs" style="padding: 4px 10px; font-size: 0.65rem;">
-              ${isCustomDesigning ? '✕ Close Designer' : '🛠️ Design Custom Scenario'}
-            </button>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button id="btn-scenario-user-guide" class="btn btn-secondary btn-xs" style="padding: 4px 10px; font-size: 0.65rem; border-color: rgba(6, 182, 212, 0.4); color: var(--color-cyan);" onclick="if(typeof window.showHelpGuide==='function'){ window.showHelpGuide('overview'); }">
+                ⚡ Executive Simulator User Guide
+              </button>
+              <button id="btn-toggle-designer" class="btn btn-primary btn-xs" style="padding: 4px 10px; font-size: 0.65rem;">
+                ${isCustomDesigning ? '✕ Close Designer' : '🛠️ Design Custom Scenario'}
+              </button>
+            </div>
           </div>
           
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; max-height: 280px; overflow-y: auto; padding-right: 4px;">
