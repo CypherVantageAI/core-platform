@@ -24,8 +24,13 @@ export function renderDoraModule() {
   const totalGaps = state.obligations.filter(ob => ob.status !== 'Compliant').length;
   const totalEvidence = state.evidence.length;
 
-  container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+  let wrapper = container.querySelector('#dora-wrapper');
+  if (!wrapper) {
+    wrapper = document.createElement('div');
+    wrapper.id = 'dora-wrapper';
+    wrapper.style.cssText = 'display: flex; flex-direction: column; gap: 20px; width: 100%;';
+    
+    wrapper.innerHTML = `
       <!-- KPI stats row -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; width: 100%;">
         <div id="dora-kpi-score"></div>
@@ -58,14 +63,12 @@ export function renderDoraModule() {
             </select>
           </div>
 
-          <!-- Catalog list -->
-          <div id="dora-articles-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; padding-right: 4px;">
-            <!-- Populated dynamically -->
-          </div>
+          <!-- Catalog List Container -->
+          <div id="dora-catalog-list" style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; max-height: 450px;"></div>
         </div>
 
-        <!-- Right Column: Requirement Details & Control Mapping -->
-        <div class="dashboard-card" style="flex: 1.5; min-width: 450px; display: flex; flex-direction: column; gap: 15px; padding: 15px; margin: 0; min-height: 500px;">
+        <!-- Right Column: Selected Obligation Detail & Controls -->
+        <div id="dora-detail-container" style="flex: 1.8; min-width: 450px; display: flex; flex-direction: column; gap: 15px;">
           <div id="dora-detail-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
             <!-- Populated dynamically -->
           </div>
@@ -74,8 +77,14 @@ export function renderDoraModule() {
           </div>
         </div>
       </div>
-    </div>
-  `;
+    // Append after view-header
+    const header = container.querySelector('.view-header');
+    if (header) {
+      header.after(wrapper);
+    } else {
+      container.appendChild(wrapper);
+    }
+  }
 
   // Render KPI cards with tooltips and interactive drill-downs
   createCard('dora-kpi-score', {

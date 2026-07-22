@@ -17,8 +17,13 @@ export function renderIctRiskModule() {
   const container = document.getElementById('view-manager-risk');
   if (!container) return;
 
-  container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+  let wrapper = container.querySelector('#risk-wrapper');
+  if (!wrapper) {
+    wrapper = document.createElement('div');
+    wrapper.id = 'risk-wrapper';
+    wrapper.style.cssText = 'display: flex; flex-direction: column; gap: 20px; width: 100%;';
+    
+    wrapper.innerHTML = `
       <!-- Top Action bar -->
       <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.01); padding: 10px 15px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.04);">
         <div>
@@ -72,8 +77,15 @@ export function renderIctRiskModule() {
           <div id="risk-register-table-container" style="width: 100%;"></div>
         </div>
       </div>
-    </div>
-  `;
+    `;
+
+    const header = container.querySelector('.view-header');
+    if (header) {
+      header.after(wrapper);
+    } else {
+      container.appendChild(wrapper);
+    }
+  }
 
   // Bind clear filter button
   const clearBtn = document.getElementById('btn-clear-heatmap-filter');

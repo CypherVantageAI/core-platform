@@ -16,8 +16,13 @@ export function renderReportsModule() {
   const totalIncidents = state.incidents.length;
   const totalLossPrevented = state.incidents.reduce((sum, i) => sum + (i.financialLoss || 0), 0);
 
-  container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+  let wrapper = container.querySelector('#reports-wrapper');
+  if (!wrapper) {
+    wrapper = document.createElement('div');
+    wrapper.id = 'reports-wrapper';
+    wrapper.style.cssText = 'display: flex; flex-direction: column; gap: 20px; width: 100%;';
+    
+    wrapper.innerHTML = `
       <!-- KPI stats row -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; width: 100%;">
         <div id="reports-kpi-tests"></div>
@@ -39,9 +44,9 @@ export function renderReportsModule() {
         <!-- Right: Mapped Incidents -->
         <div class="dashboard-card" style="flex: 1.2; min-width: 400px; padding: 15px; display: flex; flex-direction: column; gap: 10px; margin: 0;">
           <h3 style="font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom: 6px; margin: 0;">
-            DORA Article 19 Incident Registry
+            Logged Operational Incidents
           </h3>
-          <div id="historical-incidents-table-container" style="width: 100%;"></div>
+          <div id="incidents-table-container" style="width: 100%;"></div>
         </div>
       </div>
 
@@ -82,8 +87,15 @@ export function renderReportsModule() {
           <!-- Populated dynamically -->
         </div>
       </div>
-    </div>
-  `;
+    `;
+
+    const header = container.querySelector('.view-header');
+    if (header) {
+      header.after(wrapper);
+    } else {
+      container.appendChild(wrapper);
+    }
+  }
 
   // Render KPI cards with popups
   createCard('reports-kpi-tests', {

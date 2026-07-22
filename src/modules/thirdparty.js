@@ -23,8 +23,13 @@ export function renderThirdPartyModule() {
   const activeGaps = state.actions.filter(a => a.status !== 'Closed').length;
   const totalSubcontractors = suppliersList.reduce((sum, s) => sum + (s.subcontractors ? s.subcontractors.length : 0), 0);
 
-  container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+  let wrapper = container.querySelector('#tpr-wrapper');
+  if (!wrapper) {
+    wrapper = document.createElement('div');
+    wrapper.id = 'tpr-wrapper';
+    wrapper.style.cssText = 'display: flex; flex-direction: column; gap: 20px; width: 100%;';
+    
+    wrapper.innerHTML = `
       <!-- KPI stats row -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; width: 100%;">
         <div id="tpr-kpi-total"></div>
@@ -43,8 +48,15 @@ export function renderThirdPartyModule() {
 
       <!-- Dynamic Content Area -->
       <div id="tpr-tab-content" style="width: 100%; min-height: 520px;"></div>
-    </div>
-  `;
+    `;
+
+    const header = container.querySelector('.view-header');
+    if (header) {
+      header.after(wrapper);
+    } else {
+      container.appendChild(wrapper);
+    }
+  }
 
   // Render KPI cards with popups
   createCard('tpr-kpi-total', {
