@@ -98,7 +98,8 @@ export function buildResilienceGraph() {
     addNode(app.id, app.name, 'application', app);
     
     // Link application to hosting supplier
-    const suppliersList = Object.values(state.suppliers || {});
+    const rawSuppliers = state.suppliers || [];
+    const suppliersList = Array.isArray(rawSuppliers) ? rawSuppliers : Object.values(rawSuppliers);
     const provider = app.hostingProvider || '';
     const matchedSupplier = suppliersList.find(s => s.name.toLowerCase().includes(provider.toLowerCase()) || provider.toLowerCase().includes(s.id));
     if (matchedSupplier) {
@@ -138,7 +139,9 @@ export function buildResilienceGraph() {
   });
 
   // 9. Add Suppliers
-  Object.values(state.suppliers || {}).forEach(sup => {
+  const rawSuppliersList = state.suppliers || [];
+  const suppliersArr = Array.isArray(rawSuppliersList) ? rawSuppliersList : Object.values(rawSuppliersList);
+  suppliersArr.forEach(sup => {
     addNode(sup.id, sup.name, 'supplier', sup);
   });
 
