@@ -48,7 +48,6 @@ export function renderAnalystModule() {
             <button id="btn-preset-suppliers" class="btn btn-secondary btn-xs" style="font-size: 0.65rem; padding: 4px 10px;">⚠️ Suppliers w/o Exit Plan</button>
             <button id="btn-preset-dora" class="btn btn-secondary btn-xs" style="font-size: 0.65rem; padding: 4px 10px;">📜 DORA Weaknesses</button>
             <button id="btn-preset-gaps" class="btn btn-secondary btn-xs" style="font-size: 0.65rem; padding: 4px 10px;">🛡️ Identify Resilience Gaps</button>
-            <button id="btn-preset-exec-guide" class="btn btn-secondary btn-xs" style="font-size: 0.65rem; padding: 4px 10px; background: rgba(6, 182, 212, 0.15); border-color: var(--color-cyan); color: #fff;">⚡ Executive Simulator User Guide</button>
           </div>
         </div>
 
@@ -91,8 +90,7 @@ export function renderAnalystModule() {
     { id: 'btn-preset-tolerance', did: 'exceed-tolerance' },
     { id: 'btn-preset-suppliers', did: 'exit-plan-audits' },
     { id: 'btn-preset-dora', did: 'dora-weaknesses' },
-    { id: 'btn-preset-gaps', did: 'resilience-gaps' },
-    { id: 'btn-preset-exec-guide', did: 'exec-simulator-guide' }
+    { id: 'btn-preset-gaps', did: 'resilience-gaps' }
   ];
   presets.forEach(p => {
     const btn = document.getElementById(p.id);
