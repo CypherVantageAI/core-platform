@@ -127,7 +127,7 @@ function renderDashboardContent() {
             <div class="dashboard-card" style="padding: 15px; margin: 0; display: flex; flex-direction: column; gap: 10px;">
               <h4 style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-secondary); margin: 0; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;">🌞 Resilience Posture Overview</h4>
               <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">
-                The platform is maintaining a **92% Resilience Index** with all critical networks active. However, simulated failovers reveal that RTO tolerances for payments processing are exceeded by 165 minutes during ransomware scenarios due to outdated backup test certificates.
+                The platform is maintaining a <b>92% Resilience Index</b> with all critical networks active. However, simulated failovers reveal that RTO tolerances for payments processing are exceeded by 165 minutes during ransomware scenarios due to outdated backup test certificates.
               </p>
             </div>
 
