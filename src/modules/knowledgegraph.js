@@ -579,50 +579,28 @@ export function renderResilienceGraph(containerId, options = {}) {
                 </div>
               </div>
 
-              <!-- Blast Radius Intelligence Section -->
-              <div style="background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.18); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
-                <div style="font-weight: 700; color: var(--color-cyan); text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px;">
-                  <span>💥 Blast Radius Analysis</span>
+              <!-- Compact Blast Radius Summary Card -->
+              <div style="background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.18); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="font-weight: 700; color: var(--color-cyan); text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.05em;">
+                  💥 Blast Radius Quick Stats
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                  <div style="background: rgba(0,0,0,0.25); padding: 6px; border-radius: 4px;">
-                    <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Direct Impact</span>
-                    <span style="font-size:0.8rem; font-weight:700; color:var(--text-primary);">${blast.directImpact.length} Nodes</span>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                  <div style="background: rgba(0,0,0,0.2); padding: 4px 6px; border-radius: 4px;">
+                    <span style="display:block; font-size:0.5rem; color:var(--text-muted); text-transform:uppercase;">Direct</span>
+                    <span style="font-size:0.75rem; font-weight:700; color:var(--text-primary);">${blast.directImpact.length} Nodes</span>
                   </div>
-                  <div style="background: rgba(0,0,0,0.25); padding: 6px; border-radius: 4px;">
-                    <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Indirect Impact</span>
-                    <span style="font-size:0.8rem; font-weight:700; color:var(--text-primary);">${blast.indirectImpact.length} Nodes</span>
+                  <div style="background: rgba(0,0,0,0.2); padding: 4px 6px; border-radius: 4px;">
+                    <span style="display:block; font-size:0.5rem; color:var(--text-muted); text-transform:uppercase;">Indirect</span>
+                    <span style="font-size:0.75rem; font-weight:700; color:var(--text-primary);">${blast.indirectImpact.length} Nodes</span>
                   </div>
-                  <div style="background: rgba(0,0,0,0.25); padding: 6px; border-radius: 4px; border-left: 2px solid #ef4444;">
-                    <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Revenue Impact</span>
-                    <span style="font-size:0.75rem; font-weight:700; color:#ef4444;">${blast.revenueImpact.formattedCost}</span>
+                  <div style="background: rgba(0,0,0,0.2); padding: 4px 6px; border-radius: 4px; border-left: 2px solid #ef4444;">
+                    <span style="display:block; font-size:0.5rem; color:var(--text-muted); text-transform:uppercase;">Loss / Hr</span>
+                    <span style="font-size:0.7rem; font-weight:700; color:#ef4444;">${blast.revenueImpact.formattedCost}</span>
                   </div>
-                  <div style="background: rgba(0,0,0,0.25); padding: 6px; border-radius: 4px; border-left: 2px solid var(--color-cyan);">
-                    <span style="display:block; font-size:0.52rem; color:var(--text-muted); text-transform:uppercase;">Customers Affected</span>
-                    <span style="font-size:0.75rem; font-weight:700; color:var(--color-cyan);">~${blast.customersAffected.totalCount.toLocaleString()}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span style="font-weight:600; color:var(--text-secondary); display:block; margin-bottom:2px; font-size:0.56rem;">Business Services Affected (${blast.servicesAffected.length}):</span>
-                  <div style="display: flex; flex-direction: column; gap: 2px; max-height: 80px; overflow-y: auto;">
-                    ${blast.servicesAffected.map(s => `<div style="font-size:0.62rem; color:var(--text-primary); display:flex; justify-space-between;"><span>🏢 ${s.name}</span><span style="color:#ef4444; font-weight:600; font-size:0.55rem;">(MTD ${s.mtd})</span></div>`).join('')}
-                  </div>
-                </div>
-
-                <div>
-                  <span style="font-weight:600; color:var(--text-secondary); display:block; margin-bottom:2px; font-size:0.56rem;">Regulatory Compliance Impact:</span>
-                  <div style="display: flex; flex-direction: column; gap: 2px; max-height: 75px; overflow-y: auto;">
-                    ${blast.regulatoryImpact.map(r => `<div style="font-size:0.6rem; color:#f43f5e;">• <b>${r.article}:</b> ${r.title}</div>`).join('')}
-                  </div>
-                </div>
-
-                <!-- Visual Propagation Chain Step List -->
-                <div style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 4px;">
-                  <span style="font-weight:700; color:var(--color-cyan); font-size:0.58rem; text-transform:uppercase; display:block; margin-bottom:4px;">Failure Propagation Path:</span>
-                  <div style="display:flex; flex-direction:column; gap:4px; font-size:0.64rem;">
-                    ${chain.steps.map(s => `<div style="display:flex; align-items:center; gap:6px; background:rgba(0,0,0,0.15); padding:3px 6px; border-radius:4px;"><span style="font-size:0.75rem;">${s.icon}</span><span style="font-weight:700; color:var(--text-primary);">L${s.level}: ${s.title}</span></div>`).join('')}
+                  <div style="background: rgba(0,0,0,0.2); padding: 4px 6px; border-radius: 4px; border-left: 2px solid var(--color-cyan);">
+                    <span style="display:block; font-size:0.5rem; color:var(--text-muted); text-transform:uppercase;">Exposure</span>
+                    <span style="font-size:0.7rem; font-weight:700; color:var(--color-cyan);">~${blast.customersAffected.totalCount.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -719,26 +697,47 @@ export function renderResilienceGraph(containerId, options = {}) {
           </svg>
         </div>
 
-        <!-- Space-efficient Intelligence Engine Summary Strip below Canvas -->
+        <!-- Space-efficient Intelligence Engine Panel below Canvas -->
         ${selectedNodeId ? (() => {
           const blast = analyzeBlastRadius(selectedNodeId, graph);
+          const chain = getImpactPropagationChain(selectedNodeId, graph);
           return `
-            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(6, 182, 212, 0.04); border: 1px solid rgba(6, 182, 212, 0.15); border-radius: 6px; padding: 6px 12px; margin-top: 8px; font-size: 0.68rem; flex-wrap: wrap; gap: 8px;">
-              <div>
-                <span style="color: var(--text-muted); font-size: 0.58rem; text-transform: uppercase; font-weight: 700; display: block;">Active Node</span>
-                <strong style="color: var(--text-primary);">${blast.target.name} (${blast.target.type})</strong>
+            <div style="display: flex; flex-direction: column; gap: 6px; background: rgba(6, 182, 212, 0.03); border: 1px solid rgba(6, 182, 212, 0.15); border-radius: 6px; padding: 8px 12px; margin-top: 8px; font-size: 0.68rem;">
+              <!-- Top Row: Metrics -->
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom: 6px;">
+                <div>
+                  <span style="color: var(--text-muted); font-size: 0.55rem; text-transform: uppercase; font-weight: 700; display: block;">Selected Failure Object</span>
+                  <strong style="color: var(--text-primary); font-size: 0.72rem;">${blast.target.name} (${blast.target.type})</strong>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted); font-size: 0.55rem; text-transform: uppercase; font-weight: 700; display: block;">Cascading Nodes</span>
+                  <strong style="color: var(--color-cyan); font-size: 0.72rem;">${blast.directImpact.length} Direct / ${blast.indirectImpact.length} Indirect</strong>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted); font-size: 0.55rem; text-transform: uppercase; font-weight: 700; display: block;">Revenue Impact</span>
+                  <strong style="color: #ef4444; font-size: 0.72rem;">${blast.revenueImpact.formattedCost}</strong>
+                </div>
+                <div>
+                  <span style="color: var(--text-muted); font-size: 0.55rem; text-transform: uppercase; font-weight: 700; display: block;">Customer Exposure</span>
+                  <strong style="color: var(--color-cyan); font-size: 0.72rem;">~${blast.customersAffected.totalCount.toLocaleString()} Users</strong>
+                </div>
               </div>
-              <div>
-                <span style="color: var(--text-muted); font-size: 0.58rem; text-transform: uppercase; font-weight: 700; display: block;">Cascading Impact</span>
-                <strong style="color: var(--color-cyan);">${blast.directImpact.length} Direct / ${blast.indirectImpact.length} Indirect</strong>
-              </div>
-              <div>
-                <span style="color: var(--text-muted); font-size: 0.58rem; text-transform: uppercase; font-weight: 700; display: block;">Financial Exposure</span>
-                <strong style="color: #ef4444;">${blast.revenueImpact.formattedCost}</strong>
-              </div>
-              <div>
-                <span style="color: var(--text-muted); font-size: 0.58rem; text-transform: uppercase; font-weight: 700; display: block;">Customer Impact</span>
-                <strong style="color: var(--color-cyan);">~${blast.customersAffected.totalCount.toLocaleString()} Users</strong>
+
+              <!-- Bottom Row: Failure Propagation Path Stepper -->
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-weight:700; color:var(--color-cyan); font-size:0.58rem; text-transform:uppercase; letter-spacing:0.04em;">Failure Propagation Path Across Graph:</span>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; overflow-x: auto; padding-bottom: 2px;">
+                  ${chain.steps.map((step, idx) => `
+                    <div style="flex: 1; min-width: 90px; background: rgba(0,0,0,0.2); border: 1px solid ${idx === 0 ? '#ef4444' : 'rgba(255,255,255,0.06)'}; border-radius: 4px; padding: 4px 6px; display: flex; flex-direction: column; gap: 1px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.52rem; font-weight: 800; color: ${idx === 0 ? '#ef4444' : 'var(--color-cyan)'};">L${step.level} ${step.icon}</span>
+                        ${idx === 0 ? `<span style="font-size: 0.48rem; font-weight: 800; color: #ef4444;">ROOT</span>` : ''}
+                      </div>
+                      <span style="font-size: 0.62rem; font-weight: 700; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${step.title.split(' ')[0]} ${step.title.split(' ')[1] || ''}</span>
+                    </div>
+                    ${idx < chain.steps.length - 1 ? `<span style="color: #ef4444; font-weight: 800; font-size: 0.7rem;">➔</span>` : ''}
+                  `).join('')}
+                </div>
               </div>
             </div>
           `;
