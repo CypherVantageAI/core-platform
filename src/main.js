@@ -48,7 +48,28 @@ window.onload = function() {
   // 6. Initialize Theme Selector
   initTheme(state);
 
-  // 7. Global listener for ESC key or native fullscreen exit
+  // 7. Priority Esc key listener: Close active modals first; exit fullscreen only if no modal is open
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      // Check for any visible modal overlay (excluding .hidden)
+      const visibleModal = Array.from(document.querySelectorAll('.modal-overlay')).find(m => {
+        return !m.classList.contains('hidden') && window.getComputedStyle(m).display !== 'none';
+      });
+
+      if (visibleModal) {
+        // Prevent default browser behavior (exiting fullscreen)
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Close the modal
+        visibleModal.classList.add('hidden');
+        visibleModal.style.display = 'none';
+        return false;
+      }
+    }
+  }, true); // Use capture phase to intercept Esc key before native browser defaults
+
+  // 8. Global listener for native browser fullscreen change
   document.addEventListener('fullscreenchange', function() {
     if (!document.fullscreenElement) {
       document.querySelectorAll('.view-fullscreen-mode').forEach(pane => {

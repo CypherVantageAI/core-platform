@@ -36,6 +36,17 @@ let startDragY = 0;
 let mapFilter = 'all'; // 'all' | 'critical' | 'infra'
 let highlightCriticalPath = false;
 
+export function setResilienceActiveTab(tab) {
+  activeResilienceTab = tab;
+}
+window.setResilienceActiveTab = setResilienceActiveTab;
+window.launchDigitalTwin = function() {
+  setResilienceActiveTab('twin');
+  if (typeof window.switchTab === 'function') {
+    window.switchTab('manager-resilience');
+  }
+};
+
 export function renderResilienceModule() {
   window.activeResilienceTab = activeResilienceTab;
   window.executeTwinSimulation = executeTwinSimulation;

@@ -501,7 +501,7 @@ export function renderExecutiveDashboard() {
           <button id="btn-db-tab-overview" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'overview' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">Executive Overview</button>
           <button id="btn-db-tab-threatmap" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'threatmap' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🗺️ Global Threat Map &amp; Feed</button>
           <button id="btn-db-tab-graph" class="btn btn-secondary btn-xs ${activeDashboardSubTab === 'graph' ? 'active' : ''}" style="padding: 6px 14px; font-size: 0.72rem;">🕸️ Resilience Knowledge Graph</button>
-          <button class="btn btn-primary btn-xs" onclick="switchTab('manager-resilience'); setTimeout(() => { const btn = document.getElementById('btn-res-tab-twin'); if(btn) btn.click(); }, 100);" style="font-size: 0.68rem; padding: 5px 12px; background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: #fff; border: none; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+          <button class="btn btn-primary btn-xs" onclick="window.launchDigitalTwin()" style="font-size: 0.68rem; padding: 5px 12px; background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: #fff; border: none; font-weight: 700; display: flex; align-items: center; gap: 5px;">
             ♊ Launch Digital Resilience Twin ➔
           </button>
         </div>
