@@ -680,10 +680,7 @@ body.light-mode .pane-help-btn:hover {
   color: #0284c7;
 }
 
-/* Fullscreen Mode Styling: Hide ? help icon when in fullscreen mode */
-.view-fullscreen-mode .pane-help-btn[onclick*="showPaneHelp"] {
-  display: none !important;
-}
+
 
 .view-fullscreen-mode {
   position: fixed !important;
