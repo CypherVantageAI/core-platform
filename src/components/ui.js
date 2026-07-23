@@ -502,7 +502,7 @@ export function showModal(title, contentHtml) {
     modal = document.createElement('div');
     modal.id = 'cv-dynamic-modal';
     modal.className = 'modal-overlay';
-    modal.style.zIndex = '2000';
+    modal.style.zIndex = '99999';
     modal.style.display = 'flex';
     modal.style.alignItems = 'center';
     modal.style.justifyContent = 'center';

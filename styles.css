@@ -1825,7 +1825,7 @@ body.light-mode .pane-help-btn:hover {
   bottom: 0;
   background-color: rgba(5, 7, 12, 0.88);
   backdrop-filter: blur(8px);
-  z-index: 1000;
+  z-index: 9999 !important;
   display: flex;
   align-items: center;
   justify-content: center;
