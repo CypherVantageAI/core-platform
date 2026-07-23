@@ -304,7 +304,44 @@ export function showPaneHelp(paneKey) {
   showModal(guide.title, guide.content);
 }
 
+export function togglePaneFullscreen(paneId) {
+  const pane = document.getElementById(paneId);
+  if (!pane) return;
+
+  const isFullscreenNow = pane.classList.contains('view-fullscreen-mode');
+
+  if (!isFullscreenNow) {
+    pane.classList.add('view-fullscreen-mode');
+
+    // Hide sidebar
+    const sidebar = document.querySelector('.app-sidebar');
+    if (sidebar) sidebar.style.display = 'none';
+
+    // Trigger Browser Fullscreen if supported
+    if (pane.requestFullscreen) {
+      pane.requestFullscreen().catch(err => {
+        console.log('Browser requestFullscreen prevented:', err);
+      });
+    }
+  } else {
+    pane.classList.remove('view-fullscreen-mode');
+
+    // Restore sidebar
+    const sidebar = document.querySelector('.app-sidebar');
+    if (sidebar) sidebar.style.display = '';
+
+    // Exit Browser Fullscreen if active
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(err => {
+        console.log('Browser exitFullscreen error:', err);
+      });
+    }
+  }
+}
+
 // Bind globally for inline HTML onclick handlers
 if (typeof window !== 'undefined') {
   window.showPaneHelp = showPaneHelp;
+  window.togglePaneFullscreen = togglePaneFullscreen;
 }
+

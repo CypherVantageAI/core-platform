@@ -680,6 +680,23 @@ body.light-mode .pane-help-btn:hover {
   color: #0284c7;
 }
 
+/* Fullscreen Mode Styling: Hide ? help icon when in fullscreen mode */
+.view-fullscreen-mode .pane-help-btn[onclick*="showPaneHelp"] {
+  display: none !important;
+}
+
+.view-fullscreen-mode {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 1500 !important;
+  background: var(--bg-primary, #0a0e1a) !important;
+  padding: 24px !important;
+  overflow-y: auto !important;
+}
+
 .dashboard-card {
   background-color: var(--bg-card);
   backdrop-filter: blur(16px);
