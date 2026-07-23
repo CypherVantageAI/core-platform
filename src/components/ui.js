@@ -548,6 +548,13 @@ export function showModal(title, contentHtml) {
     });
   }
   
+  // If a Native Browser Fullscreen element is active, append modal inside it so it renders on top-layer
+  if (document.fullscreenElement) {
+    document.fullscreenElement.appendChild(modal);
+  } else {
+    document.body.appendChild(modal);
+  }
+
   modal.querySelector('#cv-dynamic-modal-title').innerText = title;
   modal.querySelector('#cv-dynamic-modal-body').innerHTML = contentHtml;
   modal.style.display = 'flex';
