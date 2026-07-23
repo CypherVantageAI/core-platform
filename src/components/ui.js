@@ -539,13 +539,6 @@ export function showModal(title, contentHtml) {
     modal.onclick = (e) => {
       if (e.target === modal) closeFn();
     };
-
-    // Add Escape key handler
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' || e.key === 'Esc') {
-        closeFn();
-      }
-    });
   }
   
   // If a Native Browser Fullscreen element is active, append modal inside it so it renders on top-layer
